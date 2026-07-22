@@ -1,0 +1,67 @@
+"use client";
+
+import React from 'react'
+import {
+    FileText,
+    FolderGit2,
+    Briefcase,
+    Table,
+    Mail,
+    MessageSquareText,
+    MonitorPlay,
+    UserCircle,
+    ListTree,
+    BookOpen,
+    GraduationCap,
+    Trash2,
+    HelpCircle
+} from 'lucide-react'
+
+// Represents an interactive desktop application or link
+export interface AppItem {
+    label: string
+    Icon: React.ReactNode
+    url?: string
+    onClick?: () => void
+    source?: string
+}
+
+export interface AppIconProps {
+    name: string
+    className?: string
+}
+
+export const AppIcon = ({ name, className = "w-12 h-12 text-primary" }: AppIconProps) => {
+    // Applying a uniform style and stroke width to all desktop icons
+    const iconProps = { className, strokeWidth: 1.5 }
+
+    // Maps the legacy string names used in Desktop/index.tsx to Lucide React icons
+    switch (name.toLowerCase()) {
+        case 'doc': 
+            return <FileText {...iconProps} /> // Home
+        case 'notebook': 
+            return <FolderGit2 {...iconProps} /> // Projects
+        case 'pricing': 
+            return <Briefcase {...iconProps} /> // Services
+        case 'spreadsheet': 
+            return <Table {...iconProps} /> // Experience
+        case 'envelope': 
+            return <Mail {...iconProps} /> // Contact
+        case 'forums': 
+            return <MessageSquareText {...iconProps} /> // Ask AI
+        case 'switch': 
+            return <MonitorPlay {...iconProps} /> // Website mode switch
+        case 'posthog': 
+            return <UserCircle {...iconProps} /> // Replaced PostHog mascot with generic User for "About Me"
+        case 'invite': 
+            return <ListTree {...iconProps} /> // Changelog
+        case 'handbook': 
+            return <BookOpen {...iconProps} /> // Handbook
+        case 'typewriter': 
+            return <GraduationCap {...iconProps} /> // Careers
+        case 'trash': 
+            return <Trash2 {...iconProps} /> // Trash
+        default: 
+            return <HelpCircle {...iconProps} /> // Fallback icon
+    }
+}

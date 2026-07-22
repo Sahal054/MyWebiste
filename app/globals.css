@@ -1,26 +1,100 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --color-cream: #fff7e9;
+    --color-yellow: #fdbd2d;
+    --color-red: #f54e00;
+    --color-blue: #1d4ed8;
+    --color-dark: #111111;
+    --shadow-neo: 4px 4px 0px 0px #111111;
+    --shadow-neo-lg: 6px 6px 0px 0px #111111;
+  }
+
+  body {
+    background-color: var(--color-cream);
+    color: var(--color-dark);
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    overflow-x: hidden;
+    margin: 0;
+  }
+
+  body.dark {
+    background-color: #1d1f27;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer utilities {
+  .light [data-scheme='primary'] {
+    --bg: 253 253 248;
+    --accent: 229 231 224;
+    --border: 191 193 183;
+    --input-bg: 238 239 233;
+    --text-primary: 77 79 70;
+    --text-secondary: 101 103 94;
+    --text-muted: 158 160 150;
+    --primary: var(--text-primary);
+    --secondary: var(--text-secondary);
+  }
+
+  .dark [data-scheme='primary'] {
+    --bg: 30 31 35;
+    --accent: 45 46 55;
+    --border: 62 66 79;
+    --input-bg: 37 38 43;
+    --text-primary: 234 236 246;
+    --text-secondary: 174 179 194;
+    --text-muted: 98 102 116;
+    --primary: var(--text-primary);
+    --secondary: var(--text-secondary);
+  }
+
+  .bg-primary { background-color: rgb(var(--bg)); }
+  .bg-accent { background-color: rgb(var(--accent)); }
+  .border-primary { border-color: rgb(var(--border)); }
+  .text-primary { color: rgb(var(--text-primary)); }
+  .text-secondary { color: rgb(var(--text-secondary)); }
+  .text-muted { color: rgb(var(--text-muted)); }
+}
+
+/* Radix UI Toast & Animation Essentials */
+:root {
+  --viewport-padding: 25px;
+}
+[data-radix-toast-viewport] {
+  --viewport-padding: 25px;
+}
+.ToastRoot[data-swipe='move'] {
+  transform: translateX(var(--radix-toast-swipe-move-x));
+}
+.ToastRoot[data-swipe='cancel'] {
+  transform: translateX(0);
+  transition: transform 200ms ease-out;
+}
+.ToastRoot[data-swipe='end'] {
+  animation: slideRight 100ms ease-out;
+}
+
+@keyframes slideRight {
+  from { transform: translateX(var(--radix-toast-swipe-end-x)); }
+  to { transform: translateX(100%); }
+}
+
+::-webkit-scrollbar {
+  height: 0.625rem;
+  width: 0.625rem;
+}
+::-webkit-scrollbar-track {
+  background-color: rgb(var(--accent, 229 231 224));
+  box-shadow: inset 1px 0 0 #D0D1C9;
+}
+.dark ::-webkit-scrollbar-track {
+  box-shadow: inset 1px 0 0 #4A4C52;
+}
+::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 9999px;
+}
+.dark ::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.2);
 }
