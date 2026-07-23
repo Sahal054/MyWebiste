@@ -3,6 +3,7 @@
 import React from 'react'
 import {
     FileText,
+    FilePlus,
     FolderGit2,
     Briefcase,
     Table,
@@ -37,8 +38,12 @@ export const AppIcon = ({ name, className = "w-12 h-12 text-primary" }: AppIconP
 
     // Maps the legacy string names used in Desktop/index.tsx to Lucide React icons
     switch (name.toLowerCase()) {
+        case 'new doc':
+        case 'newdoc':
+            return <FilePlus {...iconProps} />
         case 'doc': 
-            return <FileText {...iconProps} /> // Home
+        case 'resume':
+            return <FileText {...iconProps} /> // Resume / Home
         case 'notebook': 
             return <FolderGit2 {...iconProps} /> // Projects
         case 'pricing': 
