@@ -112,6 +112,7 @@ export default function Desktop() {
         setDocOpen,
         setNewDocOpen, setNewDocMinimized, setOpenSavedDocId,
         savedDocs,
+        websiteMode,
     } = useApp()
     const [showWallpaperPicker, setShowWallpaperPicker] = useState(false)
 
@@ -156,8 +157,10 @@ export default function Desktop() {
         onClick: () => { setNewDocMinimized(false); setOpenSavedDocId(doc.id); setNewDocOpen(true) },
     }))
 
+    const isGardenTheme = wallpaper === 'https://res.cloudinary.com/dyyfvzis2/image/upload/v1784807608/BgImageLight_xrzkez.png';
+
     // Build the background style from the stored wallpaper value
-    const bgStyle: React.CSSProperties = wallpaper
+    const bgStyle: React.CSSProperties = wallpaper  && !isGardenTheme
         ? wallpaper.startsWith('#') || wallpaper.startsWith('rgb')
             ? { backgroundColor: wallpaper }
             : { backgroundImage: `url(${wallpaper})`, backgroundSize: 'cover', backgroundPosition: 'center' }
@@ -168,10 +171,73 @@ export default function Desktop() {
             <ContextMenu menuItems={contextMenuItems} className="w-full h-full">
                 <div
                     ref={constraintsRef}
-                    className="relative w-full h-[calc(100vh-3rem)] overflow-hidden"
+                    className="relative w-full h-screen overflow-hidden"
                     style={bgStyle}
                     data-scheme="primary"
                 >
+                    {/* --- POSTHOG STYLE WALLPAPER LAYOUT --- */}
+                    {isGardenTheme && (
+                        <div className="absolute inset-0 pointer-events-none z-0">
+                            {/* Light mode repeating texture */}
+                            <div
+                                className="absolute inset-0 opacity-100 dark:opacity-0 transition-opacity duration-300"
+                                style={{
+                                    backgroundImage: "url('https://res.cloudinary.com/dmukukwp6/image/upload/keyboard_garden_bg_light_03a349af5c.png')",
+                                    backgroundSize: '100px 100px',
+                                    backgroundRepeat: 'repeat',
+                                }}
+                            />
+                            {/* Dark mode repeating texture */}
+                            <div
+                                className="absolute inset-0 opacity-0 dark:opacity-100 transition-opacity duration-300"
+                                style={{
+                                    backgroundImage: "url('https://res.cloudinary.com/dmukukwp6/image/upload/keyboard_garden_bg_dark_9ab088797a.png')",
+                                    backgroundSize: '200px 200px',
+                                    backgroundRepeat: 'repeat',
+                                }}
+                            />
+
+                            {/* Main Garden Graphic (Bottom Right) */}
+                            {/* <div className={`absolute bottom-0 right-0 md:bottom-4 md:right-4`}>
+                                <img
+                                    loading="lazy"
+                                    src="https://res.cloudinary.com/dmukukwp6/image/upload/keyboard_garden_light_opt_compressed_5094746caf.png"
+                                    width={1401}
+                                    height={1400}
+                                    // Replaced size-* with explicit width and h-auto
+                                    className={"w-[350px] md:w-[750px] h-auto'} dark:hidden object-contain"}
+                                    draggable={false}
+                                    alt="Sahal Tech Garden"
+                                />
+                            </div> */}
+
+                            {/* Main Garden Graphic (Bottom Right) */}
+                                <div 
+                                    className="absolute"
+                                    style={{
+                                        bottom: '16px',
+                                        right: '16px',
+                                        width: 'clamp(300px, 50vw, 750px)',
+                                        zIndex: 10
+                                    }}
+                                >
+                                    <img
+                                        loading="lazy"
+                                         src="https://res.cloudinary.com/dmukukwp6/image/upload/keyboard_garden_light_opt_compressed_5094746caf.png"
+                                        // src="https://res.cloudinary.com/dyyfvzis2/image/upload/v1784807608/BgImageLight_xrzkez.png"
+                                        style={{ 
+                                            width: '100%', 
+                                            height: 'auto', 
+                                            display: 'block',
+                                            objectFit: 'contain'
+                                        }}
+                                        draggable={false}
+                                        alt="Sahal Tech Garden"
+                                    />
+                                </div>
+                        </div>
+                    )}
+                    {/* --- END WALLPAPER LAYOUT --- */}
                     <div className="p-6 flex flex-col flex-wrap gap-6 h-full content-start">
                         {desktopApps.map((app, index) => (
                             <div key={index} className="relative w-24 h-24">
