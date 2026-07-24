@@ -35,6 +35,13 @@ export interface AppIconProps {
 export const AppIcon = ({ name, className = "w-12 h-12 text-primary" }: AppIconProps) => {
     // Applying a uniform style and stroke width to all desktop icons
     const iconProps = { className, strokeWidth: 1.5 }
+    const lowerName = name.toLowerCase()
+
+    if (lowerName.endsWith('.mdx')) {
+        return <FileText {...iconProps} /> // Use the standard document icon
+    }
+
+    
 
     // Maps the legacy string names used in Desktop/index.tsx to Lucide React icons
     switch (name.toLowerCase()) {
