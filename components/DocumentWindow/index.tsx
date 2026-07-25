@@ -66,7 +66,7 @@ export default function DocumentWindow() {
         }
         if (editorRef.current && !initializedRef.current) {
             const saved = localStorage.getItem(STORAGE_KEY)
-            editorRef.current.innerHTML = saved || DEFAULT_CONTENT
+            editorRef.current.innerHTML = saved ||DEFAULT_CONTENT //  use editorRef.current.innerHTML = saved || DEFAULT_CONTENT  to load the changes made to resume
             initializedRef.current = true
         }
     }, [isDocOpen])
