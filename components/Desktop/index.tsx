@@ -223,7 +223,6 @@ export default function Desktop() {
                                 >
                                     <img
                                         loading="lazy"
-                                        //  src="https://res.cloudinary.com/dmukukwp6/image/upload/keyboard_garden_light_opt_compressed_5094746caf.png"
                                         src="https://res.cloudinary.com/dyyfvzis2/image/upload/v1784988973/BgImageLight-removebgreal_tipb9u.png"
                                         style={{ 
                                             width: '100%', 
