@@ -10,32 +10,24 @@ import {
 } from 'lucide-react'
 import { useApp } from '../../context/App'
 
-const DEFAULT_CONTENT = `<h1 style="font-size:1.75rem;font-weight:800;margin:0 0 4px">Your Name</h1>
-<p style="margin:0 0 16px;opacity:.75"><strong>Full-Stack Developer</strong>&nbsp;·&nbsp;your@email.com&nbsp;·&nbsp;<a href="https://github.com" style="color:#2563eb;text-decoration:underline">github.com/yourusername</a></p>
-<hr style="margin:14px 0;border:none;border-top:2px solid currentColor;opacity:.2"/>
-
-<h2 style="font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin:20px 0 6px">About</h2>
-<p style="margin:0 0 12px">A brief description of who you are, what you build, and why you love it. This document is fully editable — click anywhere and start typing!</p>
-
-<h2 style="font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin:20px 0 6px">Experience</h2>
-<p style="margin:0"><strong>Company Name</strong>&nbsp;&mdash;&nbsp;Senior Engineer&nbsp;&nbsp;<span style="opacity:.5;font-size:.85em">2022 – present</span></p>
-<ul style="margin:6px 0 12px 20px;padding:0;line-height:1.7">
-  <li>Shipped X feature used by N users</li>
-  <li>Reduced build time by 40% through pipeline optimisation</li>
-</ul>
-
-<h2 style="font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin:20px 0 6px">Skills</h2>
-<p style="margin:0 0 12px">TypeScript&nbsp;·&nbsp;React&nbsp;·&nbsp;Next.js&nbsp;·&nbsp;Node.js&nbsp;·&nbsp;Docker&nbsp;·&nbsp;PostgreSQL&nbsp;·&nbsp;Tailwind CSS</p>
-
-<h2 style="font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin:20px 0 6px">Education</h2>
-<p style="margin:0"><strong>Your University</strong>&nbsp;·&nbsp;B.Sc. Computer Science&nbsp;·&nbsp;2021</p>`
+const DEFAULT_CONTENT = `
+<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding-top: 15%; text-align: center; color: inherit;">
+  <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style="margin-bottom: 16px; opacity: 0.5;">
+    <circle cx="12" cy="12" r="10"></circle>
+    <polyline points="12 6 12 12 16 14"></polyline>
+  </svg>
+  <h2 style="font-size: 1.5rem; font-weight: 700; margin: 0 0 8px; opacity: 0.8;">Coming Soon</h2>
+  <p style="margin: 0; font-size: 0.95rem; max-width: 280px; opacity: 0.6; line-height: 1.6;">
+    I'm currently linking up my projects to this website. Check back a little later!
+  </p>
+</div>`
 
 const MIN_W = 480
 const MIN_H = 320
 const STORAGE_KEY = 'doc-Projects-content'
 
-export default function DocumentWindow() {
-    const { isDocOpen, setDocOpen, isDocMinimized, setDocMinimized } = useApp()
+export default function ProjectWindow() {
+    const { isProjectsOpen, setProjectsOpen,isProjectsMinimized, setProjectsMinimized } = useApp()
     const dragControls = useDragControls()
     const editorRef = useRef<HTMLDivElement>(null)
     const windowRef = useRef<HTMLDivElement>(null)
@@ -60,7 +52,7 @@ export default function DocumentWindow() {
     // Load saved content or fall back to default template
     // Reset the flag when the window closes so it reloads fresh from storage next time
     useEffect(() => {
-        if (!isDocOpen) {
+        if (!isProjectsOpen) {
             initializedRef.current = false
             return
         }
@@ -69,7 +61,7 @@ export default function DocumentWindow() {
             editorRef.current.innerHTML = DEFAULT_CONTENT
             initializedRef.current = true
         }
-    }, [isDocOpen])
+    }, [isProjectsOpen])
 
     // Ctrl+S / Cmd+S → immediate save
     useEffect(() => {
@@ -132,7 +124,7 @@ export default function DocumentWindow() {
         editorRef.current?.focus()
     }
 
-    const isVisible = isDocOpen && !isDocMinimized
+    const isVisible = isProjectsOpen && !isProjectsMinimized
     const isFloating = !isMobile && !isMaximized
 
     return (
@@ -176,7 +168,7 @@ export default function DocumentWindow() {
                             {/* Red — Close */}
                             <button
                                 onPointerDown={e => e.stopPropagation()}
-                                onClick={() => setDocOpen(false)}
+                                onClick={() => setProjectsOpen(false)}
                                 className="w-3.5 h-3.5 rounded-full bg-[#ff5f57] border border-[#e0443e] flex items-center justify-center transition-opacity hover:opacity-90 active:opacity-70"
                                 aria-label="Close"
                             >
@@ -185,7 +177,7 @@ export default function DocumentWindow() {
                             {/* Yellow — Minimize */}
                             <button
                                 onPointerDown={e => e.stopPropagation()}
-                                onClick={() => setDocMinimized(true)}
+                                onClick={() => setProjectsMinimized(true)}
                                 className="w-3.5 h-3.5 rounded-full bg-[#ffbd2e] border border-[#e0a21c] flex items-center justify-center transition-opacity hover:opacity-90 active:opacity-70"
                                 aria-label="Minimize"
                             >

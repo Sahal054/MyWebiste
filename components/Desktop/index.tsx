@@ -112,13 +112,15 @@ export default function Desktop() {
         setDocOpen,
         setNewDocOpen, setNewDocMinimized, setOpenSavedDocId,
         savedDocs,
+        setProjectsOpen,setProjectsMinimized,
         websiteMode,
     } = useApp()
     const [showWallpaperPicker, setShowWallpaperPicker] = useState(false)
 
+
     const desktopApps: AppItem[] = [
         { label: 'Resume',      Icon: null, onClick: () => setDocOpen(true) },
-        { label: 'Notebook',    Icon: null, onClick: () => router.push('/projects') },
+        { label: 'Projects',    Icon: null, onClick: () => setProjectsOpen(true)  },
         { label: 'Spreadsheet', Icon: null, onClick: () => router.push('/experience') },
         { label: 'Envelope',    Icon: null, onClick: () => router.push('/contact') },
         { label: 'Server Stats',      Icon: null, onClick: () => setNotificationsOpen(true) },

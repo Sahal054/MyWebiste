@@ -18,6 +18,12 @@ interface AppContextValue {
     toggleDarkMode: () => void
     wallpaper: string | null
     setWallpaper: (url: string | null) => void
+    // Projects Window
+
+    isProjectsOpen:boolean
+    setProjectsOpen:(open:boolean) => void
+    isProjectsMinimized: boolean
+    setProjectsMinimized:(open:boolean) => void
     // Resume window (pre-populated personal resume)
     isDocOpen: boolean
     setDocOpen: (open: boolean) => void
@@ -51,6 +57,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     const [isNewDocMinimized, setNewDocMinimized] = useState(false)
     const [openSavedDocId, setOpenSavedDocId] = useState<string | null>(null)
     const [savedDocs, setSavedDocs] = useState<SavedDoc[]>([])
+    const [isProjectsOpen, setProjectsOpen] = useState(false)
+    const [isProjectsMinimized, setProjectsMinimized] = useState(false)
 
     useEffect(() => {
         const savedDark = localStorage.getItem('darkMode') === 'true'
@@ -125,6 +133,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
                 savedDocs,
                 addSavedDoc,
                 updateSavedDoc,
+                isProjectsOpen,
+                setProjectsOpen,
+                isProjectsMinimized,
+                setProjectsMinimized,
             }}
         >
             {children}
