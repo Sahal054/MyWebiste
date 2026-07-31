@@ -18,6 +18,9 @@ interface AppContextValue {
     toggleDarkMode: () => void
     wallpaper: string | null
     setWallpaper: (url: string | null) => void
+    // Trash
+    clearAllDocs: () => void
+
     // Projects Window
 
     isProjectsOpen:boolean
@@ -101,6 +104,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         return doc
     }
 
+    const clearAllDocs = () =>{
+        setSavedDocs([])
+        localStorage.removeItem(DOCS_KEY)
+    }
+
     const updateSavedDoc = (id: string, content: string) => {
         setSavedDocs(prev => {
             const updated = prev.map(d => d.id === id ? { ...d, content } : d)
@@ -137,6 +145,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
                 setProjectsOpen,
                 isProjectsMinimized,
                 setProjectsMinimized,
+                clearAllDocs,
             }}
         >
             {children}

@@ -113,7 +113,7 @@ export default function Desktop() {
         setNewDocOpen, setNewDocMinimized, setOpenSavedDocId,
         savedDocs,
         setProjectsOpen,setProjectsMinimized,
-        websiteMode,
+        websiteMode,clearAllDocs
     } = useApp()
     const [showWallpaperPicker, setShowWallpaperPicker] = useState(false)
 
@@ -135,7 +135,7 @@ export default function Desktop() {
         },
         { label: 'Notebook', Icon: null, onClick: () => router.push('/projects') },
         { label: 'Envelope', Icon: null, onClick: () => router.push('/contact') },
-        { label: 'Trash',    Icon: null, onClick: () => console.log('Emptying trash...') },
+        { label: 'Trash',    Icon: null, onClick: () => clearAllDocs },
     ]
 
     const contextMenuItems: ContextMenuItemProps[] = [
