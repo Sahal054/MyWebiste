@@ -4,7 +4,9 @@ import Desktop from '../components/Desktop'
 import ServerStatsPanel from '../components/ServerStatsPanel'
 import DocumentWindow from '../components/DocumentWindow'
 import DocEditorWindow from '../components/DocEditorWindow'
-import ProjectWindow from '@/components/ProjectsWindow';
+import ProjectWindow from '@/components/ProjectsWindow'
+import TrashWindow from '../components/TrashWindow'
+import FolderWindow from '../components/FolderWindow'
 import { useApp } from '../context/App'
 import { motion, AnimatePresence } from 'framer-motion'
 
@@ -62,8 +64,10 @@ export default function Home() {
             <Desktop />
             <ServerStatsPanel />
             <DocumentWindow />
-            <ProjectWindow/>
+            <ProjectWindow />
             <DocEditorWindow />
+            <TrashWindow />
+            <FolderWindow />
             <MinimizedTaskbar />
         </main>
     )

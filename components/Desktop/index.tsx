@@ -10,15 +10,27 @@ import ContextMenu, { ContextMenuItemProps } from '../RadixUI/ContextMenu'
 import { Check } from 'lucide-react'
 
 // ── Wallpaper presets ─────────────────────────────────────────────────────────
-// Add or replace any of these three URLs with your own Cloudinary links.
-const WALLPAPERS: { id: string; name: string; value: string; thumb: string | null; isUrl: boolean; color: string }[] = [
+type GardenConfig = {
+    lightTexture: string
+    darkTexture: string
+    illustration: string
+}
+const WALLPAPERS: {
+    id: string; name: string; value: string; thumb: string | null;
+    isUrl: boolean; color: string; gardenConfig?: GardenConfig
+}[] = [
     {
         id: 'sandy',
         name: 'Sandy Cream',
         value: 'https://res.cloudinary.com/dyyfvzis2/image/upload/v1784807608/BgImageLight_xrzkez.png',
-        thumb: 'https://res.cloudinary.com/dyyfvzis2/image/upload/w_1401,h_1400,c_fill/v1784807608/BgImageLight_xrzkez.png',
-        isUrl: true,
-        color: '',
+        thumb: 'https://res.cloudinary.com/dmukukwp6/image/upload/keyboard_garden_bg_light_03a349af5c.png',
+        isUrl: false,
+        color: '#f5efe0',
+        gardenConfig: {
+            lightTexture: 'https://res.cloudinary.com/dmukukwp6/image/upload/keyboard_garden_bg_light_03a349af5c.png',
+            darkTexture: 'https://res.cloudinary.com/dmukukwp6/image/upload/keyboard_garden_bg_dark_9ab088797a.png',
+            illustration: 'https://res.cloudinary.com/dyyfvzis2/image/upload/v1784988973/BgImageLight-removebgreal_tipb9u.png',
+        },
     },
     {
         id: 'night',
@@ -111,21 +123,27 @@ export default function Desktop() {
         setNotificationsOpen, toggleDarkMode, darkMode, wallpaper, setWallpaper,
         setDocOpen,
         setNewDocOpen, setNewDocMinimized, setOpenSavedDocId,
-        savedDocs, deleteDoc,
-        isTrashOpen,setTrashOpen,
-        setProjectsOpen,setProjectsMinimized,
-        websiteMode,clearAllDocs
+        savedDocs, moveToTrash, addSavedDoc,
+        isTrashOpen, setTrashOpen,
+        setProjectsOpen,
+        projectFolderItems, addToProjectFolder,
+        userFolders, createFolder, addDocToFolder,
+        setActiveFolderWindowId, setFolderWindowOpen,
     } = useApp()
     const [showWallpaperPicker, setShowWallpaperPicker] = useState(false)
+    const [newFolderPrompt, setNewFolderPrompt] = useState(false)
+    const [folderName, setFolderName] = useState('')
+    const [addFilePrompt, setAddFilePrompt] = useState(false)
+    const [newFileName, setNewFileName] = useState('')
 
 
     const desktopApps: AppItem[] = [
         { label: 'Resume',      Icon: null, onClick: () => setDocOpen(true) },
-        { label: 'Projects',    Icon: null, onClick: () => setProjectsOpen(true)  },
+        { label: 'Projects',    Icon: null, onClick: () => setProjectsOpen(true) },
         { label: 'Spreadsheet', Icon: null, onClick: () => router.push('/experience') },
         { label: 'Envelope',    Icon: null, onClick: () => router.push('/contact') },
-        { label: 'Server Stats',      Icon: null, onClick: () => setNotificationsOpen(true) },
-        { label: 'Trash',    Icon: null, onClick: () => setTrashOpen(true)},
+        { label: 'Server Stats', Icon: null, onClick: () => setNotificationsOpen(true) },
+        { label: 'Trash', Icon: null, iconUrl: 'https://res.cloudinary.com/dmukukwp6/image/upload/trash_classic_20ed394a8d.png', onClick: () => setTrashOpen(true) },
         
     ]
 
@@ -147,28 +165,27 @@ export default function Desktop() {
             onClick: toggleDarkMode,
         },
         { type: 'separator' },
-        {
-            type: 'item',
-            label: 'Change Wallpaper',
-            onClick: () => setShowWallpaperPicker(true),
-        },
+        { type: 'item', label: 'Change Wallpaper', onClick: () => setShowWallpaperPicker(true) },
+        { type: 'separator' },
+        { type: 'item', label: 'New Folder…', onClick: () => { setFolderName(''); setNewFolderPrompt(true) } },
+        { type: 'item', label: 'Add File…', onClick: () => { setNewFileName(''); setAddFilePrompt(true) } },
     ]
 
-    // Build saved-doc icon items — each creates a desktop file that opens in the editor
-    const savedDocApps: AppItem[] = savedDocs.map(doc => ({
-        label: doc.filename,
-        Icon: null,
-        id: doc.id,
-        isDeletable:true,
+    // Exclude trashed, in-projects-folder, and in-user-folder docs
+    const savedDocApps: AppItem[] = savedDocs
+        .filter(d => !d.trashed && !projectFolderItems.includes(d.id) && !userFolders.some(f => f.items.includes(d.id)))
+        .map(doc => ({
+            label: doc.filename,
+            Icon: null,
+            id: doc.id,
+            isDeletable: true,
+            onClick: () => { setNewDocMinimized(false); setOpenSavedDocId(doc.id); setNewDocOpen(true) },
+        }))
 
-        
-        onClick: () => { setNewDocMinimized(false); setOpenSavedDocId(doc.id); setNewDocOpen(true) },
-    }))
-
-    const isGardenTheme = wallpaper === 'https://res.cloudinary.com/dyyfvzis2/image/upload/v1784807608/BgImageLight_xrzkez.png';
+    const activeGardenConfig = WALLPAPERS.find(w => w.value === wallpaper)?.gardenConfig ?? null
 
     // Build the background style from the stored wallpaper value
-    const bgStyle: React.CSSProperties = wallpaper  && !isGardenTheme
+    const bgStyle: React.CSSProperties = wallpaper && !activeGardenConfig
         ? wallpaper.startsWith('#') || wallpaper.startsWith('rgb')
             ? { backgroundColor: wallpaper }
             : { backgroundImage: `url(${wallpaper})`, backgroundSize: 'cover', backgroundPosition: 'center' }
@@ -184,13 +201,13 @@ export default function Desktop() {
                     data-scheme="primary"
                 >
                     {/* --- POSTHOG STYLE WALLPAPER LAYOUT --- */}
-                    {isGardenTheme && (
+                    {activeGardenConfig && (
                         <div className="absolute inset-0 pointer-events-none z-0">
                             {/* Light mode repeating texture */}
                             <div
                                 className="absolute inset-0 opacity-100 dark:opacity-0 transition-opacity duration-300"
                                 style={{
-                                    backgroundImage: "url('https://res.cloudinary.com/dmukukwp6/image/upload/keyboard_garden_bg_light_03a349af5c.png')",
+                                    backgroundImage: `url('${activeGardenConfig.lightTexture}')`,
                                     backgroundSize: '100px 100px',
                                     backgroundRepeat: 'repeat',
                                 }}
@@ -199,128 +216,174 @@ export default function Desktop() {
                             <div
                                 className="absolute inset-0 opacity-0 dark:opacity-100 transition-opacity duration-300"
                                 style={{
-                                    backgroundImage: "url('https://res.cloudinary.com/dmukukwp6/image/upload/keyboard_garden_bg_dark_9ab088797a.png')",
+                                    backgroundImage: `url('${activeGardenConfig.darkTexture}')`,
                                     backgroundSize: '200px 200px',
                                     backgroundRepeat: 'repeat',
                                 }}
                             />
-
-                            {/* Main Garden Graphic (Bottom Right) */}
-                            {/* <div className={`absolute bottom-0 right-0 md:bottom-4 md:right-4`}>
+                            {/* Illustration (Bottom Right) */}
+                            <div
+                                className="absolute"
+                                style={{
+                                    bottom: '16px',
+                                    right: '16px',
+                                    width: 'clamp(300px, 50vw, 750px)',
+                                    zIndex: 10,
+                                }}
+                            >
                                 <img
                                     loading="lazy"
-                                    src="https://res.cloudinary.com/dmukukwp6/image/upload/keyboard_garden_light_opt_compressed_5094746caf.png"
-                                    width={1401}
-                                    height={1400}
-                                    // Replaced size-* with explicit width and h-auto
-                                    className={"w-[350px] md:w-[750px] h-auto'} dark:hidden object-contain"}
+                                    src={activeGardenConfig.illustration}
+                                    style={{ width: '100%', height: 'auto', display: 'block', objectFit: 'contain' }}
                                     draggable={false}
-                                    alt="Sahal Tech Garden"
+                                    alt="Desktop illustration"
                                 />
-                            </div> */}
-
-                            {/* Main Garden Graphic (Bottom Right) */}
-                                <div 
-                                    className="absolute"
-                                    style={{
-                                        bottom: '16px',
-                                        right: '16px',
-                                        width: 'clamp(300px, 50vw, 750px)',
-                                        zIndex: 10
-                                    }}
-                                >
-                                    <img
-                                        loading="lazy"
-                                        src="https://res.cloudinary.com/dyyfvzis2/image/upload/v1784988973/BgImageLight-removebgreal_tipb9u.png"
-                                        style={{ 
-                                            width: '100%', 
-                                            height: 'auto', 
-                                            display: 'block',
-                                            objectFit: 'contain'
-                                        }}
-                                        draggable={false}
-                                        alt="Sahal Tech Garden"
-                                    />
-                                </div>
+                            </div>
                         </div>
                     )}
                     {/* --- END WALLPAPER LAYOUT --- */}
                     <div className="p-6 flex flex-col flex-wrap gap-6 h-full content-start">
                         {desktopApps.map((app, index) => (
-                            // Add an ID to the desktop trash icon so we can detect drops!
-                            <div key={index} className="relative w-24 h-24" id={app.label === 'Trash' ? 'trash-desktop' : undefined}>
+                            <div
+                                key={index}
+                                className="relative w-24 h-24"
+                                id={app.label === 'Trash' ? 'trash-desktop' : undefined}
+                                data-folder-id={app.label === 'Projects' ? 'projects' : undefined}
+                            >
                                 <DraggableDesktopIcon app={app} constraintsRef={constraintsRef} />
                             </div>
                         ))}
                         {savedDocApps.map((app, index) => (
                             <div key={`saved-${index}`} className="relative w-24 h-24">
-                                {/* Pass the delete function down */}
-                                <DraggableDesktopIcon app={app} constraintsRef={constraintsRef} onDropOnTrash={deleteDoc} />
+                                <DraggableDesktopIcon
+                                    app={app}
+                                    constraintsRef={constraintsRef}
+                                    onDropOnTrash={moveToTrash}
+                                    onDropOnFolder={(docId, folderId) => {
+                                        if (folderId === 'projects') addToProjectFolder(docId)
+                                        else addDocToFolder(folderId, docId)
+                                    }}
+                                />
+                            </div>
+                        ))}
+                        {userFolders.map(folder => (
+                            <div
+                                key={folder.id}
+                                className="relative w-24 h-24"
+                                data-folder-id={folder.id}
+                            >
+                                <DraggableDesktopIcon
+                                    app={{
+                                        label: folder.name,
+                                        Icon: null,
+                                        onClick: () => { setActiveFolderWindowId(folder.id); setFolderWindowOpen(true) },
+                                    }}
+                                    constraintsRef={constraintsRef}
+                                />
                             </div>
                         ))}
                     </div>
 
-                    {/* Important: You will need to pass an ID to the Trash icon inside your Dock.tsx file too! */}
-                    <div id="trash-dock">
-                        <Dock apps={dockApps} />
-                    </div>
+                    <Dock apps={dockApps} />
                 </div>
             </ContextMenu>
-           {/* NEW: The Trash Manager Modal */}
-            {isTrashOpen && (
-                <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/20 backdrop-blur-sm" onClick={() => setTrashOpen(false)}>
-                    <div className="bg-white dark:bg-[#1e2130] w-[400px] max-h-[60vh] flex flex-col rounded-xl shadow-2xl border-2 border-black/40 overflow-hidden" onClick={e => e.stopPropagation()}>
-                        
-                        {/* Header */}
-                        <div className="flex justify-between items-center px-4 py-3 bg-gray-100 dark:bg-black/30 border-b border-gray-200 dark:border-white/10">
-                            <h3 className="font-bold text-gray-800 dark:text-gray-200 flex items-center gap-2">
-                                🗑️ Trash Manager
-                            </h3>
-                            <button onClick={() => setTrashOpen(false)} className="text-gray-500 hover:text-red-500 font-bold">✕</button>
-                        </div>
-
-                        {/* File List */}
-                        <div className="p-4 flex-1 overflow-y-auto">
-                            {savedDocs.length === 0 ? (
-                                <p className="text-center text-gray-500 dark:text-gray-400 py-8 text-sm font-medium">Trash is empty. All documents are safe.</p>
-                            ) : (
-                                <ul className="flex flex-col gap-2">
-                                    {savedDocs.map(doc => (
-                                        <li key={doc.id} className="flex justify-between items-center p-2.5 bg-gray-50 dark:bg-white/5 rounded-lg border border-gray-100 dark:border-white/10">
-                                            <span className="text-sm font-medium text-gray-700 dark:text-gray-300 truncate pr-4">{doc.filename}</span>
-                                            <button 
-                                                onClick={() => deleteDoc(doc.id)} 
-                                                className="px-3 py-1 bg-red-100 hover:bg-red-500 text-red-600 hover:text-white dark:bg-red-900/30 dark:hover:bg-red-500 dark:text-red-400 text-xs rounded transition-colors font-bold"
-                                            >
-                                                Delete
-                                            </button>
-                                        </li>
-                                    ))}
-                                </ul>
-                            )}
-                        </div>
-
-                        {/* Footer Action */}
-                        {savedDocs.length > 0 && (
-                            <div className="p-3 border-t border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-black/20">
-                                <button 
-                                    onClick={clearAllDocs}
-                                    className="w-full py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg text-sm font-bold shadow transition-colors"
-                                >
-                                    Empty Trash (Delete All)
-                                </button>
-                            </div>
-                        )}
-                    </div>
-                </div>
-            )}
-
             {showWallpaperPicker && (
                 <WallpaperPicker
                     current={wallpaper}
                     onPick={setWallpaper}
                     onClose={() => setShowWallpaperPicker(false)}
                 />
+            )}
+
+            {/* New Folder prompt */}
+            {newFolderPrompt && (
+                <div
+                    className="fixed inset-0 z-[70] flex items-center justify-center bg-black/20 backdrop-blur-sm"
+                    onClick={() => setNewFolderPrompt(false)}
+                >
+                    <div
+                        className="bg-white dark:bg-[#1e2130] border-2 border-black dark:border-gray-600 shadow-[6px_6px_0px_0px_rgba(0,0,0,0.8)] rounded-xl p-5 w-[280px]"
+                        onClick={e => e.stopPropagation()}
+                    >
+                        <h3 className="text-sm font-bold uppercase tracking-widest mb-4 dark:text-white">New Folder</h3>
+                        <input
+                            type="text"
+                            value={folderName}
+                            onChange={e => setFolderName(e.target.value)}
+                            onKeyDown={e => {
+                                if (e.key === 'Enter' && folderName.trim()) {
+                                    createFolder(folderName.trim())
+                                    setNewFolderPrompt(false)
+                                }
+                                if (e.key === 'Escape') setNewFolderPrompt(false)
+                            }}
+                            placeholder="Folder name"
+                            autoFocus
+                            className="w-full border-2 border-black dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-gray-50 dark:bg-[#2a2d3a] dark:text-white focus:outline-none focus:border-blue-500 mb-3"
+                        />
+                        <div className="flex gap-2 justify-end">
+                            <button
+                                onClick={() => setNewFolderPrompt(false)}
+                                className="px-3 py-1.5 text-xs font-bold text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/10 rounded-lg transition-colors"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                disabled={!folderName.trim()}
+                                onClick={() => { if (folderName.trim()) { createFolder(folderName.trim()); setNewFolderPrompt(false) } }}
+                                className="px-3 py-1.5 text-xs font-bold bg-black text-white dark:bg-white dark:text-black rounded-lg disabled:opacity-40 hover:opacity-80 transition-opacity"
+                            >
+                                Create
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Add File prompt */}
+            {addFilePrompt && (
+                <div
+                    className="fixed inset-0 z-[70] flex items-center justify-center bg-black/20 backdrop-blur-sm"
+                    onClick={() => setAddFilePrompt(false)}
+                >
+                    <div
+                        className="bg-white dark:bg-[#1e2130] border-2 border-black dark:border-gray-600 shadow-[6px_6px_0px_0px_rgba(0,0,0,0.8)] rounded-xl p-5 w-[300px]"
+                        onClick={e => e.stopPropagation()}
+                    >
+                        <h3 className="text-sm font-bold uppercase tracking-widest mb-1 dark:text-white">Add File</h3>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mb-4">Use extensions like .png, .mov, .pdf for media icons.</p>
+                        <input
+                            type="text"
+                            value={newFileName}
+                            onChange={e => setNewFileName(e.target.value)}
+                            onKeyDown={e => {
+                                if (e.key === 'Enter' && newFileName.trim()) {
+                                    addSavedDoc(newFileName.trim(), '')
+                                    setAddFilePrompt(false)
+                                }
+                                if (e.key === 'Escape') setAddFilePrompt(false)
+                            }}
+                            placeholder="photo.png, video.mov, notes…"
+                            autoFocus
+                            className="w-full border-2 border-black dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-gray-50 dark:bg-[#2a2d3a] dark:text-white focus:outline-none focus:border-blue-500 mb-3"
+                        />
+                        <div className="flex gap-2 justify-end">
+                            <button
+                                onClick={() => setAddFilePrompt(false)}
+                                className="px-3 py-1.5 text-xs font-bold text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/10 rounded-lg transition-colors"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                disabled={!newFileName.trim()}
+                                onClick={() => { if (newFileName.trim()) { addSavedDoc(newFileName.trim(), ''); setAddFilePrompt(false) } }}
+                                className="px-3 py-1.5 text-xs font-bold bg-black text-white dark:bg-white dark:text-black rounded-lg disabled:opacity-40 hover:opacity-80 transition-opacity"
+                            >
+                                Add
+                            </button>
+                        </div>
+                    </div>
+                </div>
             )}
         </>
     )

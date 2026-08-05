@@ -1,329 +1,167 @@
 "use client";
-
-import React, { useRef, useEffect, useState, useCallback } from 'react'
+import React, { useState } from 'react'
 import { motion, AnimatePresence, useDragControls } from 'framer-motion'
-import {
-    Bold, Italic, Underline,
-    AlignLeft, AlignCenter, AlignRight,
-    ChevronDown, Undo, Redo,
-    X, Minus, Maximize2,
-} from 'lucide-react'
+import { X, Maximize2, ExternalLink, FileText, Film, FolderMinus, Image as ImageIcon } from 'lucide-react'
 import { useApp } from '../../context/App'
 
-const DEFAULT_CONTENT = `
-<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding-top: 15%; text-align: center; color: inherit;">
-  <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style="margin-bottom: 16px; opacity: 0.5;">
-    <circle cx="12" cy="12" r="10"></circle>
-    <polyline points="12 6 12 12 16 14"></polyline>
-  </svg>
-  <h2 style="font-size: 1.5rem; font-weight: 700; margin: 0 0 8px; opacity: 0.8;">Coming Soon</h2>
-  <p style="margin: 0; font-size: 0.95rem; max-width: 280px; opacity: 0.6; line-height: 1.6;">
-    I'm currently linking up my projects to this website. Check back a little later!
-  </p>
-</div>`
+// Edit your portfolio projects here
+const PORTFOLIO = [
+    { id: 'p1', name: 'my-website',  lang: 'TypeScript',    desc: 'This OS-style portfolio',        url: '#' },
+    { id: 'p2', name: 'api-server',  lang: 'Python',        desc: 'FastAPI + PostgreSQL backend',   url: '#' },
+    { id: 'p3', name: 'mobile-app',  lang: 'React Native',  desc: 'Cross-platform app',             url: '#' },
+]
 
-const MIN_W = 480
-const MIN_H = 320
-const STORAGE_KEY = 'doc-Projects-content'
+const LANG_COLOR: Record<string, string> = {
+    TypeScript: 'bg-blue-500',
+    Python: 'bg-yellow-500',
+    'React Native': 'bg-cyan-500',
+    JavaScript: 'bg-yellow-400',
+    Rust: 'bg-orange-500',
+    Go: 'bg-teal-500',
+}
+
+function fileIcon(filename: string) {
+    const ext = filename.toLowerCase().split('.').pop() ?? ''
+    if (['mov', 'mp4', 'avi'].includes(ext)) return Film
+    if (['png', 'jpg', 'jpeg', 'gif', 'webp'].includes(ext)) return ImageIcon
+    return FileText
+}
 
 export default function ProjectWindow() {
-    const { isProjectsOpen, setProjectsOpen,isProjectsMinimized, setProjectsMinimized } = useApp()
+    const { isProjectsOpen, setProjectsOpen, savedDocs, projectFolderItems, removeFromProjectFolder } = useApp()
     const dragControls = useDragControls()
-    const editorRef = useRef<HTMLDivElement>(null)
-    const windowRef = useRef<HTMLDivElement>(null)
-    const [filename, setFilename] = useState('resume.mdx')
-    const [editingFilename, setEditingFilename] = useState(false)
     const [isMaximized, setIsMaximized] = useState(false)
-    const [size, setSize] = useState({ w: 800, h: 560 })
-    const [isMobile, setIsMobile] = useState(false)
-    const [saveIndicator, setSaveIndicator] = useState(false)
-    const initializedRef = useRef(false)
-    const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-    const indicatorTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-
-    // Detect mobile and respond to viewport changes
-    useEffect(() => {
-        const check = () => setIsMobile(window.innerWidth < 768)
-        check()
-        window.addEventListener('resize', check)
-        return () => window.removeEventListener('resize', check)
-    }, [])
-
-    // Load saved content or fall back to default template
-    // Reset the flag when the window closes so it reloads fresh from storage next time
-    useEffect(() => {
-        if (!isProjectsOpen) {
-            initializedRef.current = false
-            return
-        }
-        if (editorRef.current && !initializedRef.current) {
-            const saved = localStorage.getItem(STORAGE_KEY)
-            editorRef.current.innerHTML = DEFAULT_CONTENT
-            initializedRef.current = true
-        }
-    }, [isProjectsOpen])
-
-    // Ctrl+S / Cmd+S → immediate save
-    useEffect(() => {
-        const onKeyDown = (e: KeyboardEvent) => {
-            if ((e.ctrlKey || e.metaKey) && e.key === 's') {
-                e.preventDefault()
-                if (editorRef.current) {
-                    localStorage.setItem(STORAGE_KEY, editorRef.current.innerHTML)
-                    setSaveIndicator(true)
-                    if (indicatorTimerRef.current) clearTimeout(indicatorTimerRef.current)
-                    indicatorTimerRef.current = setTimeout(() => setSaveIndicator(false), 1500)
-                }
-            }
-        }
-        window.addEventListener('keydown', onKeyDown)
-        return () => window.removeEventListener('keydown', onKeyDown)
-    }, [])
-
-    // Debounced save whenever the user types
-    const onEditorInput = useCallback(() => {
-        if (saveTimerRef.current) clearTimeout(saveTimerRef.current)
-        saveTimerRef.current = setTimeout(() => {
-            if (editorRef.current) {
-                localStorage.setItem(STORAGE_KEY, editorRef.current.innerHTML)
-                setSaveIndicator(true)
-                if (indicatorTimerRef.current) clearTimeout(indicatorTimerRef.current)
-                indicatorTimerRef.current = setTimeout(() => setSaveIndicator(false), 1500)
-            }
-        }, 600)
-    }, [])
-
-    // ── Resize logic ────────────────────────────────────────────────────────
-    const startResize = useCallback((
-        e: React.PointerEvent,
-        edges: { right?: boolean; bottom?: boolean }
-    ) => {
-        e.preventDefault()
-        e.stopPropagation()
-        const startX = e.clientX
-        const startY = e.clientY
-        const startW = size.w
-        const startH = size.h
-
-        const onMove = (ev: PointerEvent) => {
-            setSize(prev => ({
-                w: edges.right  ? Math.max(MIN_W, startW + ev.clientX - startX) : prev.w,
-                h: edges.bottom ? Math.max(MIN_H, startH + ev.clientY - startY) : prev.h,
-            }))
-        }
-        const onUp = () => {
-            window.removeEventListener('pointermove', onMove)
-            window.removeEventListener('pointerup', onUp)
-        }
-        window.addEventListener('pointermove', onMove)
-        window.addEventListener('pointerup', onUp)
-    }, [size])
-
-    const exec = (cmd: string, value?: string) => {
-        document.execCommand(cmd, false, value)
-        editorRef.current?.focus()
-    }
-
-    const isVisible = isProjectsOpen && !isProjectsMinimized
-    const isFloating = !isMobile && !isMaximized
+    const W = 760, H = 500
+    const folderDocs = savedDocs.filter(d => projectFolderItems.includes(d.id))
 
     return (
         <AnimatePresence>
-            {isVisible && (
+            {isProjectsOpen && (
                 <motion.div
-                    ref={windowRef}
-                    drag={isFloating}
+                    drag={!isMaximized}
                     dragControls={dragControls}
                     dragListener={false}
                     dragMomentum={false}
-                    initial={{ scale: 0.95, opacity: 0, y: isMobile ? 40 : 20 }}
+                    initial={{ scale: 0.95, opacity: 0, y: 20 }}
                     animate={{ scale: 1, opacity: 1, y: 0 }}
-                    exit={{ scale: 0.95, opacity: 0, y: isMobile ? 40 : 20 }}
+                    exit={{ scale: 0.95, opacity: 0, y: 20 }}
                     transition={{ type: 'spring', stiffness: 320, damping: 28 }}
-                    className={`fixed z-50 flex flex-col overflow-hidden select-none ${
-                        isMobile ? 'rounded-none' : 'rounded-xl'
-                    }`}
-                    style={
-                        isMobile
-                            ? { inset: 0 }
-                            : isMaximized
-                                ? { inset: '1rem' }
-                                : { top: '6vh', left: `calc(50% - ${size.w / 2}px)`, width: size.w, height: size.h }
-                    }
+                    className="fixed z-[47] flex flex-col overflow-hidden select-none rounded-xl"
+                    style={isMaximized ? { inset: '1rem' } : { top: '7vh', left: `calc(50% - ${W / 2}px + 30px)`, width: W, height: H }}
                 >
-                    {/* Outer border — always visible against any background */}
                     <div className="absolute inset-0 rounded-xl border-2 border-black/60 dark:border-white/20 pointer-events-none z-10" />
-                    {/* Drop shadow */}
                     <div className="absolute inset-0 rounded-xl shadow-[0_20px_60px_rgba(0,0,0,0.45)] pointer-events-none" />
 
-                    {/* ── Title bar ── */}
+                    {/* Title bar */}
                     <div
-                        className={`relative flex items-center justify-between px-3 h-9 bg-[#e8e6e2] dark:bg-[#2a2d3a] border-b border-black/20 dark:border-white/10 flex-shrink-0 ${
-                            isFloating ? 'cursor-grab active:cursor-grabbing' : ''
-                        }`}
-                        onPointerDown={isFloating ? e => dragControls.start(e) : undefined}
+                        className={`relative flex items-center justify-between px-3 h-9 bg-[#e8e6e2] dark:bg-[#2a2d3a] border-b border-black/20 dark:border-white/10 flex-shrink-0 ${!isMaximized ? 'cursor-grab active:cursor-grabbing' : ''}`}
+                        onPointerDown={!isMaximized ? e => dragControls.start(e) : undefined}
                     >
-                        {/* Traffic lights */}
                         <div className="flex items-center gap-1.5 group/lights">
-                            {/* Red — Close */}
                             <button
                                 onPointerDown={e => e.stopPropagation()}
                                 onClick={() => setProjectsOpen(false)}
-                                className="w-3.5 h-3.5 rounded-full bg-[#ff5f57] border border-[#e0443e] flex items-center justify-center transition-opacity hover:opacity-90 active:opacity-70"
-                                aria-label="Close"
+                                className="w-3.5 h-3.5 rounded-full bg-[#ff5f57] border border-[#e0443e] flex items-center justify-center hover:opacity-90"
                             >
-                                <X className="w-2 h-2 opacity-0 group-hover/lights:opacity-100 text-[#4d0000] transition-opacity" strokeWidth={3} />
+                                <X className="w-2 h-2 opacity-0 group-hover/lights:opacity-100 text-[#4d0000]" strokeWidth={3} />
                             </button>
-                            {/* Yellow — Minimize */}
                             <button
                                 onPointerDown={e => e.stopPropagation()}
-                                onClick={() => setProjectsMinimized(true)}
-                                className="w-3.5 h-3.5 rounded-full bg-[#ffbd2e] border border-[#e0a21c] flex items-center justify-center transition-opacity hover:opacity-90 active:opacity-70"
-                                aria-label="Minimize"
-                            >
-                                <Minus className="w-2 h-2 opacity-0 group-hover/lights:opacity-100 text-[#5a3800] transition-opacity" strokeWidth={3} />
-                            </button>
-                            {/* Green — Fullscreen */}
+                                className="w-3.5 h-3.5 rounded-full bg-[#ffbd2e] border border-[#e0a21c]"
+                            />
                             <button
                                 onPointerDown={e => e.stopPropagation()}
                                 onClick={() => setIsMaximized(m => !m)}
-                                className="w-3.5 h-3.5 rounded-full bg-[#28c840] border border-[#1aaa2f] flex items-center justify-center transition-opacity hover:opacity-90 active:opacity-70"
-                                aria-label="Fullscreen"
+                                className="w-3.5 h-3.5 rounded-full bg-[#28c840] border border-[#1aaa2f] flex items-center justify-center hover:opacity-90"
                             >
-                                <Maximize2 className="w-1.5 h-1.5 opacity-0 group-hover/lights:opacity-100 text-[#003d00] transition-opacity" strokeWidth={3} />
+                                <Maximize2 className="w-1.5 h-1.5 opacity-0 group-hover/lights:opacity-100 text-[#003d00]" strokeWidth={3} />
                             </button>
                         </div>
+                        <span className="absolute left-1/2 -translate-x-1/2 text-[13px] font-semibold text-gray-700 dark:text-gray-200">Projects</span>
+                    </div>
 
-                        {/* Filename */}
-                        <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-1 text-[13px] font-semibold text-gray-700 dark:text-gray-200">
-                            {editingFilename ? (
-                                <input
-                                    autoFocus
-                                    value={filename}
-                                    onChange={e => setFilename(e.target.value)}
-                                    onBlur={() => setEditingFilename(false)}
-                                    onKeyDown={e => e.key === 'Enter' && setEditingFilename(false)}
-                                    onPointerDown={e => e.stopPropagation()}
-                                    className="bg-transparent border-b border-current outline-none w-36 text-center"
-                                />
-                            ) : (
-                                <button
-                                    onPointerDown={e => e.stopPropagation()}
-                                    onClick={() => setEditingFilename(true)}
-                                    className="flex items-center gap-0.5 hover:opacity-60 transition-opacity"
-                                >
-                                    {filename}
-                                    <ChevronDown className="w-3 h-3 opacity-50" />
-                                </button>
+                    {/* Body */}
+                    <div className="flex flex-1 overflow-hidden bg-white dark:bg-[#1e2130]">
+                        {/* Sidebar */}
+                        <div className="w-44 flex-shrink-0 border-r border-gray-200 dark:border-white/10 p-4 flex flex-col gap-3 bg-gray-50 dark:bg-[#191b26]">
+                            <div className="flex items-center gap-2">
+                                <span className="text-xl">📁</span>
+                                <span className="font-bold text-sm text-gray-800 dark:text-gray-200">Projects</span>
+                            </div>
+                            <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
+                                Portfolio repos and desktop files dropped into this folder.
+                            </p>
+                            <p className="text-[10px] text-gray-400 dark:text-gray-600 mt-auto">
+                                Drag desktop files onto the Projects icon to add them here.
+                            </p>
+                        </div>
+
+                        {/* Content */}
+                        <div className="flex-1 overflow-y-auto p-5 flex flex-col gap-6">
+                            {/* Portfolio section */}
+                            <section>
+                                <div className="flex items-baseline gap-2 mb-3">
+                                    <span className="text-xs font-bold uppercase tracking-widest text-gray-600 dark:text-gray-400">Portfolio</span>
+                                    <span className="text-xs text-gray-400">({PORTFOLIO.length})</span>
+                                </div>
+                                <div className="grid grid-cols-[repeat(auto-fill,minmax(140px,1fr))] gap-3">
+                                    {PORTFOLIO.map(p => (
+                                        <a
+                                            key={p.id}
+                                            href={p.url}
+                                            target="_blank"
+                                            rel="noreferrer"
+                                            className="group flex flex-col gap-1.5 p-3 rounded-xl border border-gray-200 dark:border-white/10 hover:border-gray-400 dark:hover:border-white/30 bg-gray-50 dark:bg-white/5 transition-all"
+                                        >
+                                            <div className="flex items-center justify-between">
+                                                <span className="text-xs font-bold text-gray-800 dark:text-gray-200 truncate">{p.name}</span>
+                                                <ExternalLink className="w-3 h-3 text-gray-400 opacity-0 group-hover:opacity-100 flex-shrink-0 ml-1" strokeWidth={2} />
+                                            </div>
+                                            <p className="text-[10px] text-gray-500 dark:text-gray-400 leading-snug line-clamp-2">{p.desc}</p>
+                                            {p.lang && (
+                                                <div className="flex items-center gap-1 mt-auto pt-1">
+                                                    <span className={`w-2 h-2 rounded-full flex-shrink-0 ${LANG_COLOR[p.lang] ?? 'bg-gray-400'}`} />
+                                                    <span className="text-[10px] text-gray-500 dark:text-gray-400">{p.lang}</span>
+                                                </div>
+                                            )}
+                                        </a>
+                                    ))}
+                                </div>
+                            </section>
+
+                            {/* Files dropped into folder */}
+                            {folderDocs.length > 0 && (
+                                <section>
+                                    <div className="flex items-baseline gap-2 mb-3">
+                                        <span className="text-xs font-bold uppercase tracking-widest text-gray-600 dark:text-gray-400">Files in Folder</span>
+                                        <span className="text-xs text-gray-400">({folderDocs.length})</span>
+                                    </div>
+                                    <div className="grid grid-cols-[repeat(auto-fill,minmax(88px,1fr))] gap-4">
+                                        {folderDocs.map(doc => {
+                                            const Icon = fileIcon(doc.filename)
+                                            return (
+                                                <div key={doc.id} className="group flex flex-col items-center gap-1.5">
+                                                    <div className="relative w-16 h-16 flex items-center justify-center bg-gray-100 dark:bg-white/5 rounded-xl border border-gray-200 dark:border-white/10 group-hover:border-gray-400 dark:group-hover:border-white/30 transition-all">
+                                                        <Icon className="w-8 h-8 text-gray-500 dark:text-gray-400" strokeWidth={1.5} />
+                                                        <button
+                                                            onClick={() => removeFromProjectFolder(doc.id)}
+                                                            title="Remove from folder"
+                                                            className="absolute inset-0 bg-black/60 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+                                                        >
+                                                            <FolderMinus className="w-5 h-5 text-white" strokeWidth={2} />
+                                                        </button>
+                                                    </div>
+                                                    <span className="text-[10px] text-gray-600 dark:text-gray-400 text-center leading-tight max-w-full truncate px-1">
+                                                        {doc.filename}
+                                                    </span>
+                                                </div>
+                                            )
+                                        })}
+                                    </div>
+                                </section>
                             )}
                         </div>
                     </div>
-
-                    {/* ── Toolbar ── */}
-                    <div className="flex items-center gap-0.5 px-2 py-1 bg-white dark:bg-[#1e2130] border-b border-gray-200 dark:border-white/10 flex-shrink-0 flex-wrap">
-                        {[
-                            { Icon: Undo,       cmd: 'undo',          title: 'Undo' },
-                            { Icon: Redo,       cmd: 'redo',          title: 'Redo' },
-                        ].map(({ Icon, cmd, title }) => (
-                            <button key={cmd} onMouseDown={e => { e.preventDefault(); exec(cmd) }} title={title}
-                                className="p-1.5 rounded hover:bg-gray-100 dark:hover:bg-white/10 transition-colors text-gray-700 dark:text-gray-300">
-                                <Icon className="w-3.5 h-3.5" />
-                            </button>
-                        ))}
-
-                        <div className="w-px h-4 bg-gray-200 dark:bg-white/15 mx-0.5 flex-shrink-0" />
-
-                        {[
-                            { Icon: Bold,        cmd: 'bold',          title: 'Bold' },
-                            { Icon: Italic,      cmd: 'italic',        title: 'Italic' },
-                            { Icon: Underline,   cmd: 'underline',     title: 'Underline' },
-                        ].map(({ Icon, cmd, title }) => (
-                            <button key={cmd} onMouseDown={e => { e.preventDefault(); exec(cmd) }} title={title}
-                                className="p-1.5 rounded hover:bg-gray-100 dark:hover:bg-white/10 transition-colors text-gray-700 dark:text-gray-300">
-                                <Icon className="w-3.5 h-3.5" />
-                            </button>
-                        ))}
-
-                        <div className="w-px h-4 bg-gray-200 dark:bg-white/15 mx-0.5 flex-shrink-0" />
-
-                        {[
-                            { Icon: AlignLeft,   cmd: 'justifyLeft',   title: 'Left' },
-                            { Icon: AlignCenter, cmd: 'justifyCenter', title: 'Center' },
-                            { Icon: AlignRight,  cmd: 'justifyRight',  title: 'Right' },
-                        ].map(({ Icon, cmd, title }) => (
-                            <button key={cmd} onMouseDown={e => { e.preventDefault(); exec(cmd) }} title={title}
-                                className="p-1.5 rounded hover:bg-gray-100 dark:hover:bg-white/10 transition-colors text-gray-700 dark:text-gray-300">
-                                <Icon className="w-3.5 h-3.5" />
-                            </button>
-                        ))}
-
-                        <div className="w-px h-4 bg-gray-200 dark:bg-white/15 mx-0.5 flex-shrink-0" />
-
-                        <select onMouseDown={e => e.stopPropagation()} onChange={e => exec('formatBlock', e.target.value)} defaultValue="p"
-                            className="text-xs border border-gray-200 dark:border-white/20 rounded px-1.5 py-0.5 bg-white dark:bg-[#1e2130] text-gray-700 dark:text-gray-300 outline-none cursor-pointer">
-                            <option value="p">Paragraph</option>
-                            <option value="h1">Heading 1</option>
-                            <option value="h2">Heading 2</option>
-                            <option value="h3">Heading 3</option>
-                        </select>
-
-                        <select onMouseDown={e => e.stopPropagation()} onChange={e => exec('fontSize', e.target.value)} defaultValue="3"
-                            className="text-xs border border-gray-200 dark:border-white/20 rounded px-1.5 py-0.5 bg-white dark:bg-[#1e2130] text-gray-700 dark:text-gray-300 outline-none cursor-pointer">
-                            <option value="1">8pt</option>
-                            <option value="2">10pt</option>
-                            <option value="3">12pt</option>
-                            <option value="4">14pt</option>
-                            <option value="5">18pt</option>
-                            <option value="6">24pt</option>
-                        </select>
-                    </div>
-
-                    {/* ── Editor content ── */}
-                    <div
-                        ref={editorRef}
-                        contentEditable
-                        suppressContentEditableWarning
-                        spellCheck
-                        onInput={onEditorInput}
-                        className={`flex-1 overflow-y-auto outline-none text-[14px] leading-relaxed bg-white dark:bg-[#1e2130] text-gray-900 dark:text-gray-100 [&_h1]:text-gray-900 dark:[&_h1]:text-white [&_h2]:text-gray-800 dark:[&_h2]:text-gray-200 [&_a]:text-blue-600 dark:[&_a]:text-blue-400 [&_a]:underline [&_ul]:list-disc [&_ul]:pl-5 [&_li]:mb-1 [&_hr]:border-gray-200 dark:[&_hr]:border-gray-600 ${
-                            isMobile ? 'p-4' : 'p-8'
-                        }`}
-                    />
-
-                    {/* ── Status bar ── */}
-                    <div className="flex items-center justify-between px-4 py-1 bg-[#e8e6e2] dark:bg-[#2a2d3a] border-t border-black/10 dark:border-white/10 flex-shrink-0">
-                        <span className={`text-[11px] transition-colors duration-300 ${
-                            saveIndicator ? 'text-green-600 dark:text-green-400 font-medium' : 'text-gray-500 dark:text-gray-400'
-                        }`}>
-                            {saveIndicator ? '✓ Saved' : 'Click any text to edit'}
-                        </span>
-                        <span className="text-[11px] text-gray-500 dark:text-gray-400 font-mono">{filename}</span>
-                    </div>
-
-                    {/* ── Resize handles (desktop only) ── */}
-                    {isFloating && (
-                        <>
-                            {/* Right edge */}
-                            <div
-                                className="absolute right-0 top-8 bottom-0 w-1.5 cursor-ew-resize z-20"
-                                onPointerDown={e => startResize(e, { right: true })}
-                            />
-                            {/* Bottom edge */}
-                            <div
-                                className="absolute bottom-0 left-0 right-0 h-1.5 cursor-ns-resize z-20"
-                                onPointerDown={e => startResize(e, { bottom: true })}
-                            />
-                            {/* Bottom-right corner */}
-                            <div
-                                className="absolute bottom-0 right-0 w-4 h-4 cursor-nwse-resize z-30 flex items-end justify-end pr-1 pb-1"
-                                onPointerDown={e => startResize(e, { right: true, bottom: true })}
-                            >
-                                <svg width="8" height="8" viewBox="0 0 8 8" className="text-gray-400 dark:text-gray-500">
-                                    <path d="M1 7 L7 1 M4 7 L7 4 M7 7 L7 7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-                                </svg>
-                            </div>
-                        </>
-                    )}
                 </motion.div>
             )}
         </AnimatePresence>

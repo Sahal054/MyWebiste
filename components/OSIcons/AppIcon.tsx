@@ -5,6 +5,7 @@ import {
     FileText,
     FilePlus,
     FolderGit2,
+    FolderOpen,
     Briefcase,
     Table,
     Mail,
@@ -15,16 +16,26 @@ import {
     BookOpen,
     GraduationCap,
     Trash2,
-    HelpCircle
+    HelpCircle,
+    Film,
+    Server,
+    Image as ImageIcon,
 } from 'lucide-react'
 
 // Represents an interactive desktop application or link
 export interface AppItem {
-    label: string
-    Icon: React.ReactNode
-    url?: string
-    onClick?: () => void
-    source?: string
+    label: string;
+    Icon: React.ReactNode;
+    url?: string;
+    onClick?: () => void;
+    source?: string;
+    
+    // Properties for drag-and-drop / trash
+    id?: string; 
+    isDeletable?: boolean; 
+    
+    // Property for custom Cloudinary images
+    iconUrl?: string; 
 }
 
 export interface AppIconProps {
@@ -32,15 +43,7 @@ export interface AppIconProps {
     className?: string
 }
 
-export interface AppItem {
-    label: string
-    Icon: React.ReactNode
-    url?: string
-    onClick?: () => void
-    source?: string
-    id?: string //  Used to identify which file to delete
-    isDeletable?: boolean //  Prevents dragging core apps to the trash
-}
+
 
 export const AppIcon = ({ name, className = "w-12 h-12 text-primary" }: AppIconProps) => {
     // Applying a uniform style and stroke width to all desktop icons
@@ -48,10 +51,17 @@ export const AppIcon = ({ name, className = "w-12 h-12 text-primary" }: AppIconP
     const lowerName = name.toLowerCase()
 
     if (lowerName.endsWith('.mdx')) {
-        return <FileText {...iconProps} /> // Use the standard document icon
+        return <FileText {...iconProps} />
     }
-
-    
+    if (lowerName.endsWith('.mov') || lowerName.endsWith('.mp4') || lowerName.endsWith('.avi') || lowerName.endsWith('.webm')) {
+        return <Film {...iconProps} />
+    }
+    if (lowerName.endsWith('.png') || lowerName.endsWith('.jpg') || lowerName.endsWith('.jpeg') || lowerName.endsWith('.gif') || lowerName.endsWith('.webp')) {
+        return <ImageIcon {...iconProps} />
+    }
+    if (lowerName.endsWith('.pdf') || lowerName.endsWith('.docx') || lowerName.endsWith('.doc')) {
+        return <FileText {...iconProps} />
+    }
 
     // Maps the legacy string names used in Desktop/index.tsx to Lucide React icons
     switch (name.toLowerCase()) {
@@ -62,7 +72,12 @@ export const AppIcon = ({ name, className = "w-12 h-12 text-primary" }: AppIconP
         case 'resume':
             return <FileText {...iconProps} /> // Resume / Home
         case 'notebook': 
-            return <FolderGit2 {...iconProps} /> // Projects
+            return <FolderGit2 {...iconProps} />
+        case 'projects':
+        case 'folder':
+            return <FolderOpen {...iconProps} />
+        case 'server stats':
+            return <Server {...iconProps} />
         case 'pricing': 
             return <Briefcase {...iconProps} /> // Services
         case 'spreadsheet': 
