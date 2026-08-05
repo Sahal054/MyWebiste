@@ -67,8 +67,14 @@ interface AppContextValue {
     deleteFolder: (folderId: string) => void
     isFolderWindowOpen: boolean
     setFolderWindowOpen: (open: boolean) => void
+    isFolderWindowMinimized: boolean
+    setFolderWindowMinimized: (min: boolean) => void
     activeFolderWindowId: string | null
     setActiveFolderWindowId: (id: string | null) => void
+    isMediaWindowOpen: boolean
+    setMediaWindowOpen: (open: boolean) => void
+    activeMediaDocId: string | null
+    setActiveMediaDocId: (id: string | null) => void
 }
 
 const AppContext = createContext<AppContextValue | undefined>(undefined)
@@ -94,7 +100,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     const [projectFolderItems, setProjectFolderItems] = useState<string[]>([])
     const [userFolders, setUserFolders] = useState<UserFolder[]>([])
     const [isFolderWindowOpen, setFolderWindowOpen] = useState(false)
+    const [isFolderWindowMinimized, setFolderWindowMinimized] = useState(false)
     const [activeFolderWindowId, setActiveFolderWindowId] = useState<string | null>(null)
+    const [isMediaWindowOpen, setMediaWindowOpen] = useState(false)
+    const [activeMediaDocId, setActiveMediaDocId] = useState<string | null>(null)
 
 
     useEffect(() => {
@@ -290,8 +299,14 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
                 deleteFolder,
                 isFolderWindowOpen,
                 setFolderWindowOpen,
+                isFolderWindowMinimized,
+                setFolderWindowMinimized,
                 activeFolderWindowId,
                 setActiveFolderWindowId,
+                isMediaWindowOpen,
+                setMediaWindowOpen,
+                activeMediaDocId,
+                setActiveMediaDocId,
             }}
         >
             {children}

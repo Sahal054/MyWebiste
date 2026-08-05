@@ -50,6 +50,18 @@ const WALLPAPERS: {
     },
 ]
 
+const MEDIA_DEFAULTS: Record<string, string> = {
+    'png': 'https://res.cloudinary.com/dyyfvzis2/image/upload/v1784988973/BgImageLight-removebgreal_tipb9u.png',
+    'jpg': 'https://res.cloudinary.com/dyyfvzis2/image/upload/v1784988973/BgImageLight-removebgreal_tipb9u.png',
+    'jpeg': 'https://res.cloudinary.com/dyyfvzis2/image/upload/v1784988973/BgImageLight-removebgreal_tipb9u.png',
+    'gif': 'https://res.cloudinary.com/dyyfvzis2/image/upload/v1784988973/BgImageLight-removebgreal_tipb9u.png',
+    'webp': 'https://res.cloudinary.com/dyyfvzis2/image/upload/v1784988973/BgImageLight-removebgreal_tipb9u.png',
+    'mov': 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4',
+    'mp4': 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4',
+    'avi': 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4',
+    'webm': 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4',
+}
+
 function WallpaperPicker({
     current, onPick, onClose,
 }: {
@@ -128,13 +140,29 @@ export default function Desktop() {
         setProjectsOpen,
         projectFolderItems, addToProjectFolder,
         userFolders, createFolder, addDocToFolder,
-        setActiveFolderWindowId, setFolderWindowOpen,
+        setActiveFolderWindowId, setFolderWindowOpen, setFolderWindowMinimized,
+        setMediaWindowOpen, setActiveMediaDocId,
     } = useApp()
     const [showWallpaperPicker, setShowWallpaperPicker] = useState(false)
     const [newFolderPrompt, setNewFolderPrompt] = useState(false)
     const [folderName, setFolderName] = useState('')
     const [addFilePrompt, setAddFilePrompt] = useState(false)
     const [newFileName, setNewFileName] = useState('')
+
+    const isMediaFilename = (name: string) => ['mov', 'mp4', 'avi', 'webm', 'png', 'jpg', 'jpeg', 'gif', 'webp'].includes(name.toLowerCase().split('.').pop() ?? '')
+
+    const openSavedItem = (docId: string) => {
+        const doc = savedDocs.find(d => d.id === docId)
+        if (!doc) return
+        if (isMediaFilename(doc.filename)) {
+            setActiveMediaDocId(doc.id)
+            setMediaWindowOpen(true)
+            return
+        }
+        setNewDocMinimized(false)
+        setOpenSavedDocId(doc.id)
+        setNewDocOpen(true)
+    }
 
 
     const desktopApps: AppItem[] = [
@@ -179,7 +207,7 @@ export default function Desktop() {
             Icon: null,
             id: doc.id,
             isDeletable: true,
-            onClick: () => { setNewDocMinimized(false); setOpenSavedDocId(doc.id); setNewDocOpen(true) },
+            onClick: () => openSavedItem(doc.id),
         }))
 
     const activeGardenConfig = WALLPAPERS.find(w => w.value === wallpaper)?.gardenConfig ?? null
@@ -276,7 +304,7 @@ export default function Desktop() {
                                     app={{
                                         label: folder.name,
                                         Icon: null,
-                                        onClick: () => { setActiveFolderWindowId(folder.id); setFolderWindowOpen(true) },
+                                        onClick: () => { setActiveFolderWindowId(folder.id); setFolderWindowOpen(true); setFolderWindowMinimized(false) },
                                     }}
                                     constraintsRef={constraintsRef}
                                 />
@@ -376,7 +404,13 @@ export default function Desktop() {
                             </button>
                             <button
                                 disabled={!newFileName.trim()}
-                                onClick={() => { if (newFileName.trim()) { addSavedDoc(newFileName.trim(), ''); setAddFilePrompt(false) } }}
+                                onClick={() => {
+                                    if (!newFileName.trim()) return
+                                    const ext = newFileName.trim().toLowerCase().split('.').pop() ?? ''
+                                    const content = MEDIA_DEFAULTS[ext] ?? ''
+                                    addSavedDoc(newFileName.trim(), content)
+                                    setAddFilePrompt(false)
+                                }}
                                 className="px-3 py-1.5 text-xs font-bold bg-black text-white dark:bg-white dark:text-black rounded-lg disabled:opacity-40 hover:opacity-80 transition-opacity"
                             >
                                 Add

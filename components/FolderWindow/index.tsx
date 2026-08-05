@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from 'react'
 import { motion, AnimatePresence, useDragControls } from 'framer-motion'
-import { X, Maximize2, FileText, Film, FolderMinus, Image as ImageIcon } from 'lucide-react'
+import { X, Maximize2, Minimize2, FileText, Film, FolderMinus, Image as ImageIcon } from 'lucide-react'
 import { useApp } from '../../context/App'
 
 function fileIcon(filename: string) {
@@ -14,9 +14,12 @@ function fileIcon(filename: string) {
 export default function FolderWindow() {
     const {
         isFolderWindowOpen, setFolderWindowOpen,
+        isFolderWindowMinimized, setFolderWindowMinimized,
         activeFolderWindowId, setActiveFolderWindowId,
         userFolders, savedDocs,
         removeDocFromFolder, deleteFolder,
+        setNewDocOpen, setNewDocMinimized, setOpenSavedDocId,
+        setMediaWindowOpen, setActiveMediaDocId,
     } = useApp()
     const dragControls = useDragControls()
     const [isMaximized, setIsMaximized] = useState(false)
@@ -24,15 +27,31 @@ export default function FolderWindow() {
 
     const folder = userFolders.find(f => f.id === activeFolderWindowId)
     const folderDocs = savedDocs.filter(d => folder?.items.includes(d.id))
+    const isVideo = (filename: string) => ['mov', 'mp4', 'avi', 'webm'].includes(filename.toLowerCase().split('.').pop() ?? '')
+    const isImage = (filename: string) => ['png', 'jpg', 'jpeg', 'gif', 'webp'].includes(filename.toLowerCase().split('.').pop() ?? '')
 
     const handleClose = () => {
         setFolderWindowOpen(false)
         setActiveFolderWindowId(null)
+        setFolderWindowMinimized(false)
+    }
+
+    const openItem = (docId: string) => {
+        const doc = savedDocs.find(d => d.id === docId)
+        if (!doc) return
+        if (isVideo(doc.filename) || isImage(doc.filename)) {
+            setActiveMediaDocId(doc.id)
+            setMediaWindowOpen(true)
+            return
+        }
+        setNewDocMinimized(false)
+        setOpenSavedDocId(doc.id)
+        setNewDocOpen(true)
     }
 
     return (
         <AnimatePresence>
-            {isFolderWindowOpen && folder && (
+            {isFolderWindowOpen && folder && !isFolderWindowMinimized && (
                 <motion.div
                     drag={!isMaximized}
                     dragControls={dragControls}
@@ -61,7 +80,13 @@ export default function FolderWindow() {
                             >
                                 <X className="w-2 h-2 opacity-0 group-hover/lights:opacity-100 text-[#4d0000]" strokeWidth={3} />
                             </button>
-                            <button onPointerDown={e => e.stopPropagation()} className="w-3.5 h-3.5 rounded-full bg-[#ffbd2e] border border-[#e0a21c]" />
+                            <button
+                                onPointerDown={e => e.stopPropagation()}
+                                onClick={() => setFolderWindowMinimized(true)}
+                                className="w-3.5 h-3.5 rounded-full bg-[#ffbd2e] border border-[#e0a21c] flex items-center justify-center hover:opacity-90"
+                            >
+                                <Minimize2 className="w-1.5 h-1.5 opacity-0 group-hover/lights:opacity-100 text-[#5a3800]" strokeWidth={3} />
+                            </button>
                             <button
                                 onPointerDown={e => e.stopPropagation()}
                                 onClick={() => setIsMaximized(m => !m)}
@@ -113,11 +138,19 @@ export default function FolderWindow() {
                                         return (
                                             <div key={doc.id} className="group flex flex-col items-center gap-1.5">
                                                 <div className="relative w-16 h-16 flex items-center justify-center bg-gray-100 dark:bg-white/5 rounded-xl border border-gray-200 dark:border-white/10 group-hover:border-gray-400 dark:group-hover:border-white/30 transition-all">
-                                                    <Icon className="w-8 h-8 text-gray-500 dark:text-gray-400" strokeWidth={1.5} />
                                                     <button
+                                                        type="button"
+                                                        onClick={() => openItem(doc.id)}
+                                                        className="absolute inset-0 flex items-center justify-center"
+                                                    >
+                                                    <Icon className="w-8 h-8 text-gray-500 dark:text-gray-400" strokeWidth={1.5} />
+                                                    </button>
+                                                    <button
+                                                        type="button"
                                                         onClick={() => removeDocFromFolder(folder.id, doc.id)}
                                                         title="Remove from folder"
-                                                        className="absolute inset-0 bg-black/60 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+                                                        onPointerDown={e => e.stopPropagation()}
+                                                        className="absolute top-1 right-1 p-1 bg-black/60 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
                                                     >
                                                         <FolderMinus className="w-5 h-5 text-white" strokeWidth={2} />
                                                     </button>

@@ -7,6 +7,7 @@ import DocEditorWindow from '../components/DocEditorWindow'
 import ProjectWindow from '@/components/ProjectsWindow'
 import TrashWindow from '../components/TrashWindow'
 import FolderWindow from '../components/FolderWindow'
+import MediaWindow from '../components/MediaWindow'
 import { useApp } from '../context/App'
 import { motion, AnimatePresence } from 'framer-motion'
 
@@ -15,7 +16,11 @@ function MinimizedTaskbar() {
     const {
         isDocOpen, isDocMinimized, setDocMinimized,
         isNewDocOpen, isNewDocMinimized, setNewDocMinimized,
+        isFolderWindowOpen, isFolderWindowMinimized, setFolderWindowMinimized,
+        activeFolderWindowId, userFolders,
     } = useApp()
+
+    const activeFolder = userFolders.find(folder => folder.id === activeFolderWindowId)
 
     const pills = [
         isDocOpen && isDocMinimized && {
@@ -29,6 +34,12 @@ function MinimizedTaskbar() {
             label: 'New Doc',
             color: 'bg-blue-400',
             onClick: () => setNewDocMinimized(false),
+        },
+        isFolderWindowOpen && isFolderWindowMinimized && activeFolder && {
+            key: 'folder',
+            label: activeFolder.name,
+            color: 'bg-green-400',
+            onClick: () => setFolderWindowMinimized(false),
         },
     ].filter(Boolean) as { key: string; label: string; color: string; onClick: () => void }[]
 
@@ -68,6 +79,7 @@ export default function Home() {
             <DocEditorWindow />
             <TrashWindow />
             <FolderWindow />
+            <MediaWindow />
             <MinimizedTaskbar />
         </main>
     )
