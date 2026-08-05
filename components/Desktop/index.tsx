@@ -125,6 +125,7 @@ export default function Desktop() {
         { label: 'Spreadsheet', Icon: null, onClick: () => router.push('/experience') },
         { label: 'Envelope',    Icon: null, onClick: () => router.push('/contact') },
         { label: 'Server Stats',      Icon: null, onClick: () => setNotificationsOpen(true) },
+        { label: 'Trash',    Icon: null, onClick: () => setTrashOpen(true)},
         
     ]
 

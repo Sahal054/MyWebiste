@@ -23,7 +23,9 @@ interface AppContextValue {
     deleteDoc:(id : string) => void
     isTrashOpen: boolean
     setTrashOpen: (open:boolean) => void
-
+    
+    isHoveringTrash: boolean; 
+    setIsHoveringTrash: (val: boolean) => void;
 
 
     // Projects Window
@@ -68,6 +70,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     const [isProjectsOpen, setProjectsOpen] = useState(false)
     const [isProjectsMinimized, setProjectsMinimized] = useState(false)
     const [isTrashOpen, setTrashOpen] = useState(false)
+    const [isHoveringTrash, setIsHoveringTrash] = useState(false);
 
 
     useEffect(() => {
@@ -161,6 +164,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
                 setProjectsMinimized,
                 clearAllDocs,
                 deleteDoc,
+                isHoveringTrash,
+                setIsHoveringTrash,
                 isTrashOpen,
                 setTrashOpen,
             }}

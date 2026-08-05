@@ -1,8 +1,9 @@
 "use client";
 
-import React from 'react'
+import React,{ useRef }  from 'react'
 import { motion } from 'framer-motion'
 import { AppIcon, AppItem } from '../OSIcons/AppIcon'
+import { useApp } from '../../context/App'
 
 interface DraggableDesktopIconProps {
     app: AppItem
@@ -11,28 +12,53 @@ interface DraggableDesktopIconProps {
 }
 
 export default function DraggableDesktopIcon({ app, constraintsRef ,onDropOnTrash}: DraggableDesktopIconProps) {
-    // Checks if the mouse coordinates intersect with the Trash icon
-    const handleDragEnd = (event: any, info: any) => {
-        if (!app.isDeletable || !app.id || !onDropOnTrash) return;
+    const { setIsHoveringTrash } = useApp();
+    const isHoveringRef = useRef(false); // Tracks state without forcing re-renders
 
+    // Helper function to check if cursor is over either trash can
+const checkTrashIntersection = (info: any) => {
         const dockTrash = document.getElementById('trash-dock');
         const desktopTrash = document.getElementById('trash-desktop');
 
         const isOver = (el: HTMLElement | null) => {
             if (!el) return false;
             const rect = el.getBoundingClientRect();
-            // Check if cursor X and Y are inside the element's bounds
+            // Expanded hit area by 10px to make dropping easier
             return (
-                info.point.x >= rect.left && info.point.x <= rect.right &&
-                info.point.y >= rect.top && info.point.y <= rect.bottom
+                info.point.x >= (rect.left - 10) && info.point.x <= (rect.right + 10) &&
+                info.point.y >= (rect.top - 10) && info.point.y <= (rect.bottom + 10)
             );
         };
 
-        if (isOver(dockTrash) || isOver(desktopTrash)) {
-            onDropOnTrash(app.id);
+        return isOver(dockTrash) || isOver(desktopTrash);
+    };
+
+    // NEW: Fires continuously while dragging
+    const handleDrag = (event: any, info: any) => {
+        if (!app.isDeletable) return;
+        
+        const isIntersecting = checkTrashIntersection(info);
+        
+        // Only update the global context if the state actually changes
+        if (isIntersecting !== isHoveringRef.current) {
+            isHoveringRef.current = isIntersecting;
+            setIsHoveringTrash(isIntersecting);
         }
     };
 
+    // Checks if the mouse coordinates intersect with the Trash icon
+const handleDragEnd = (event: any, info: any) => {
+        // 1. Reset hover visual state immediately
+        isHoveringRef.current = false;
+        setIsHoveringTrash(false);
+
+        // 2. Process deletion if necessary
+        if (!app.isDeletable || !app.id || !onDropOnTrash) return;
+
+        if (checkTrashIntersection(info)) {
+            onDropOnTrash(app.id);
+        }
+    };
 
 
 
@@ -42,10 +68,12 @@ export default function DraggableDesktopIcon({ app, constraintsRef ,onDropOnTras
             dragConstraints={constraintsRef}
             dragElastic={0.1}
             dragMomentum={false}
+            onDrag={handleDrag}       // NEW: Track drag in real time
             onDragEnd={handleDragEnd}
             onDoubleClick={app.onClick}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
+            whileDrag={{ zIndex: 50, scale: 1.05 }}
             className="flex flex-col items-center justify-center w-24 h-24 gap-2 cursor-pointer group active:cursor-grabbing hover:bg-black/5 rounded-lg transition-colors absolute z-10"
         >
             <div className="w-14 h-14 flex items-center justify-center bg-white border-2 border-primary shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] rounded-xl group-hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-shadow">
