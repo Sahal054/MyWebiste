@@ -41,11 +41,16 @@ export interface AppItem {
 export interface AppIconProps {
     name: string
     className?: string
+    iconUrl?: string
 }
 
 
 
-export const AppIcon = ({ name, className = "w-12 h-12 text-primary" }: AppIconProps) => {
+export const AppIcon = ({ name, className = "w-12 h-12 text-primary", iconUrl }: AppIconProps) => {
+    if (iconUrl) {
+        return <img src={iconUrl} alt={name} className={`${className} object-contain`} draggable={false} />
+    }
+
     // Applying a uniform style and stroke width to all desktop icons
     const iconProps = { className, strokeWidth: 1.5 }
     const lowerName = name.toLowerCase()
@@ -99,6 +104,14 @@ export const AppIcon = ({ name, className = "w-12 h-12 text-primary" }: AppIconP
         case 'trash': 
             return <Trash2 {...iconProps} /> // Trash
         default: 
-            return <HelpCircle {...iconProps} /> // Fallback icon
+          //  return <HelpCircle {...iconProps} /> // Fallback icon
+          return (
+                <img 
+                    src="https://res.cloudinary.com/dmukukwp6/image/upload/folder_classic_d2fdf96f82.png" 
+                    alt={name} 
+                    className={`${className} object-contain`} 
+                    draggable={false} 
+                />
+            )
     }
 }

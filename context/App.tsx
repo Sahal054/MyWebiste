@@ -7,6 +7,7 @@ export interface UserFolder {
     id: string
     name: string
     items: string[]
+    trashed?: boolean
 }
 
 export interface SavedDoc {
@@ -71,6 +72,8 @@ interface AppContextValue {
     addDocToFolder: (folderId: string, docId: string) => void
     removeDocFromFolder: (folderId: string, docId: string) => void
     deleteFolder: (folderId: string) => void
+    restoreFolder: (folderId: string) => void
+    deleteFolderPermanently: (folderId: string) => void
     isFolderWindowOpen: boolean
     setFolderWindowOpen: (open: boolean) => void
     isFolderWindowMinimized: boolean
@@ -212,6 +215,23 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         void clearMediaFiles()
     }
 
+    const updateFolderTrashState = (folderId: string, trashed: boolean) => {
+        const folder = userFolders.find(f => f.id === folderId)
+        if (!folder) return
+
+        setUserFolders(prev => {
+            const updated = prev.map(f => f.id === folderId ? { ...f, trashed } : f)
+            localStorage.setItem(FOLDERS_KEY, JSON.stringify(updated))
+            return updated
+        })
+
+        setSavedDocs(prev => {
+            const updated = prev.map(d => folder.items.includes(d.id) ? { ...d, trashed } : d)
+            localStorage.setItem(DOCS_KEY, JSON.stringify(updated))
+            return updated
+        })
+    }
+
     const moveToTrash = (id: string) => {
         setSavedDocs(prev => {
             const updated = prev.map(d => d.id === id ? { ...d, trashed: true } : d)
@@ -232,6 +252,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         setSavedDocs(prev => {
             const updated = prev.filter(d => !d.trashed)
             localStorage.setItem(DOCS_KEY, JSON.stringify(updated))
+            return updated
+        })
+        setUserFolders(prev => {
+            const updated = prev.filter(f => !f.trashed)
+            localStorage.setItem(FOLDERS_KEY, JSON.stringify(updated))
             return updated
         })
     }
@@ -286,9 +311,26 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     }
 
     const deleteFolder = (folderId: string) => {
+        updateFolderTrashState(folderId, true)
+    }
+
+    const restoreFolder = (folderId: string) => {
+        updateFolderTrashState(folderId, false)
+    }
+
+    const deleteFolderPermanently = (folderId: string) => {
+        const folder = userFolders.find(f => f.id === folderId)
+        if (!folder) return
+
         setUserFolders(prev => {
             const updated = prev.filter(f => f.id !== folderId)
             localStorage.setItem(FOLDERS_KEY, JSON.stringify(updated))
+            return updated
+        })
+
+        setSavedDocs(prev => {
+            const updated = prev.filter(d => !folder.items.includes(d.id))
+            localStorage.setItem(DOCS_KEY, JSON.stringify(updated))
             return updated
         })
     }
@@ -358,6 +400,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
                 addDocToFolder,
                 removeDocFromFolder,
                 deleteFolder,
+                restoreFolder,
+                deleteFolderPermanently,
                 isFolderWindowOpen,
                 setFolderWindowOpen,
                 isFolderWindowMinimized,

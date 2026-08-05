@@ -51,11 +51,20 @@ return (
                         }`}
                         aria-label={`Open ${app.label}`}
                     >
-                        <AppIcon
-                            // If you have a 'Trash Open' SVG, this will swap to it. Otherwise, it uses the standard 'Trash'.
-                            name={isTrashTargeted ? 'Trash Open' : app.label}
-                            className={`w-7 h-7 transition-transform ${isTrashTargeted ? 'text-red-500' : 'text-gray-800 dark:text-gray-100 group-hover:-translate-y-1'}`}
-                        />
+                        {app.iconUrl ? (
+                            <img
+                                src={app.iconUrl}
+                                alt={app.label}
+                                className={`w-10 h-10 object-contain transition-transform ${isTrashTargeted ? 'scale-105' : 'group-hover:-translate-y-1'}`}
+                                draggable={false}
+                            />
+                        ) : (
+                            <AppIcon
+                                // If you have a 'Trash Open' SVG, this will swap to it. Otherwise, it uses the standard 'Trash'.
+                                name={isTrashTargeted ? 'Trash Open' : app.label}
+                                className={`w-7 h-7 transition-transform ${isTrashTargeted ? 'text-red-500' : 'text-gray-800 dark:text-gray-100 group-hover:-translate-y-1'}`}
+                            />
+                        )}
                         {/* Active dot — shown when the app's window is open */}
                         <span
                             className={`w-1 h-1 rounded-full transition-all duration-300 ${

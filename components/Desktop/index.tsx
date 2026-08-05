@@ -144,6 +144,8 @@ export default function Desktop() {
         userFolders, createFolder, addDocToFolder,
         setActiveFolderWindowId, setFolderWindowOpen, setFolderWindowMinimized,
         setMediaWindowOpen, setMediaWindowMinimized, setActiveMediaDocId,
+        activeFolderWindowId,
+        deleteFolder,
     } = useApp()
     const [showWallpaperPicker, setShowWallpaperPicker] = useState(false)
     const [newFolderPrompt, setNewFolderPrompt] = useState(false)
@@ -177,7 +179,7 @@ export default function Desktop() {
 
     const desktopApps: AppItem[] = [
         { label: 'Resume',      Icon: null, onClick: () => setDocOpen(true) },
-        { label: 'Projects',    Icon: null, onClick: () => setProjectsOpen(true) },
+        { label: 'Projects',Icon: null,iconUrl:'https://res.cloudinary.com/dmukukwp6/image/upload/folder_classic_d2fdf96f82.png', onClick: () => setProjectsOpen(true) },
         { label: 'Spreadsheet', Icon: null, onClick: () => router.push('/experience') },
         { label: 'Envelope',    Icon: null, onClick: () => router.push('/contact') },
         { label: 'Server Stats', Icon: null, onClick: () => setNotificationsOpen(true) },
@@ -189,11 +191,12 @@ export default function Desktop() {
         {
             label: 'New Doc',
             Icon: null,
+            iconUrl:'https://res.cloudinary.com/dmukukwp6/image/upload/doc_classic_7f14381c43.png',
             onClick: () => { setNewDocMinimized(false); setOpenSavedDocId(null); setNewDocOpen(true) },
         },
         { label: 'Notebook', Icon: null, onClick: () => router.push('/projects') },
         { label: 'Envelope', Icon: null, onClick: () => router.push('/contact') },
-        { label: 'Trash',    Icon: null, onClick: () => { setTrashMinimized(false); setTrashOpen(true) }},
+        { label: 'Trash',    Icon: null,  iconUrl: 'https://res.cloudinary.com/dmukukwp6/image/upload/trash_classic_20ed394a8d.png', onClick: () => { setTrashMinimized(false); setTrashOpen(true) }},
     ]
 
     const contextMenuItems: ContextMenuItemProps[] = [
@@ -305,7 +308,7 @@ export default function Desktop() {
                                 />
                             </div>
                         ))}
-                        {userFolders.map(folder => (
+                        {userFolders.filter(folder => !folder.trashed).map(folder => (
                             <div
                                 key={folder.id}
                                 className="relative w-24 h-24"
@@ -315,9 +318,19 @@ export default function Desktop() {
                                     app={{
                                         label: folder.name,
                                         Icon: null,
+                                        id: folder.id,
+                                        isDeletable: true,
                                         onClick: () => { setActiveFolderWindowId(folder.id); setFolderWindowOpen(true); setFolderWindowMinimized(false) },
                                     }}
                                     constraintsRef={constraintsRef}
+                                    onDropOnTrash={(folderId) => {
+                                        deleteFolder(folderId)
+                                        if (activeFolderWindowId === folderId) {
+                                            setFolderWindowOpen(false)
+                                            setActiveFolderWindowId(null)
+                                            setFolderWindowMinimized(false)
+                                        }
+                                    }}
                                 />
                             </div>
                         ))}

@@ -17,7 +17,7 @@ export default function FolderWindow() {
         isFolderWindowMinimized, setFolderWindowMinimized,
         activeFolderWindowId, setActiveFolderWindowId,
         userFolders, savedDocs,
-        removeDocFromFolder, deleteFolder,
+        removeDocFromFolder,
         setNewDocOpen, setNewDocMinimized, setOpenSavedDocId,
         setMediaWindowOpen, setActiveMediaDocId,
     } = useApp()
@@ -99,13 +99,6 @@ export default function FolderWindow() {
                         <span className="absolute left-1/2 -translate-x-1/2 text-[13px] font-semibold text-gray-700 dark:text-gray-200">
                             {folder.name}
                         </span>
-                        <button
-                            onPointerDown={e => e.stopPropagation()}
-                            onClick={() => { deleteFolder(folder.id); handleClose() }}
-                            className="text-[10px] text-red-400 hover:text-red-600 font-semibold px-2 py-0.5 rounded transition-colors"
-                        >
-                            Delete Folder
-                        </button>
                     </div>
 
                     {/* Body */}
