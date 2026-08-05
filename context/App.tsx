@@ -1,6 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from 'react'
+import { deleteMediaFile, clearMediaFiles } from '../components/Desktop/mediaStorage'
 
 export interface UserFolder {
     id: string
@@ -14,6 +15,8 @@ export interface SavedDoc {
     content: string
     createdAt: number
     trashed?: boolean
+    mediaStorageKey?: string
+    mediaMimeType?: string
 }
 
 interface AppContextValue {
@@ -33,6 +36,8 @@ interface AppContextValue {
     emptyTrash: () => void
     isTrashOpen: boolean
     setTrashOpen: (open: boolean) => void
+    isTrashMinimized: boolean
+    setTrashMinimized: (min: boolean) => void
     isHoveringTrash: boolean
     setIsHoveringTrash: (val: boolean) => void
     // Projects folder
@@ -58,6 +63,7 @@ interface AppContextValue {
     // User-created documents
     savedDocs: SavedDoc[]
     addSavedDoc: (filename: string, content: string) => SavedDoc
+    addMediaDoc: (filename: string, storageKey: string, mimeType: string) => SavedDoc
     updateSavedDoc: (id: string, content: string) => void
     // User-created folders
     userFolders: UserFolder[]
@@ -73,6 +79,8 @@ interface AppContextValue {
     setActiveFolderWindowId: (id: string | null) => void
     isMediaWindowOpen: boolean
     setMediaWindowOpen: (open: boolean) => void
+    isMediaWindowMinimized: boolean
+    setMediaWindowMinimized: (min: boolean) => void
     activeMediaDocId: string | null
     setActiveMediaDocId: (id: string | null) => void
 }
@@ -97,6 +105,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     const [isProjectsOpen, setProjectsOpen] = useState(false)
     const [isProjectsMinimized, setProjectsMinimized] = useState(false)
     const [isTrashOpen, setTrashOpen] = useState(false)
+    const [isTrashMinimized, setTrashMinimized] = useState(false)
     const [isHoveringTrash, setIsHoveringTrash] = useState(false)
     const [projectFolderItems, setProjectFolderItems] = useState<string[]>([])
     const [userFolders, setUserFolders] = useState<UserFolder[]>([])
@@ -104,6 +113,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     const [isFolderWindowMinimized, setFolderWindowMinimized] = useState(false)
     const [activeFolderWindowId, setActiveFolderWindowId] = useState<string | null>(null)
     const [isMediaWindowOpen, setMediaWindowOpen] = useState(false)
+    const [isMediaWindowMinimized, setMediaWindowMinimized] = useState(false)
     const [activeMediaDocId, setActiveMediaDocId] = useState<string | null>(null)
 
 
@@ -174,9 +184,32 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         return doc
     }
 
+    const addMediaDoc = (filename: string, storageKey: string, mimeType: string): SavedDoc => {
+        const doc: SavedDoc = {
+            id: `doc-${Date.now()}`,
+            filename,
+            content: '',
+            createdAt: Date.now(),
+            mediaStorageKey: storageKey,
+            mediaMimeType: mimeType,
+        }
+        setSavedDocs(prev => {
+            const updated = [doc, ...prev]
+            localStorage.setItem(DOCS_KEY, JSON.stringify(updated))
+            return updated
+        })
+        return doc
+    }
+
     const clearAllDocs = () => {
-        setSavedDocs([])
+        setSavedDocs(prev => {
+            prev.forEach(doc => {
+                if (doc.mediaStorageKey) void deleteMediaFile(doc.mediaStorageKey)
+            })
+            return []
+        })
         localStorage.removeItem(DOCS_KEY)
+        void clearMediaFiles()
     }
 
     const moveToTrash = (id: string) => {
@@ -262,6 +295,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
     const deleteDoc = (id: string) => {
         setSavedDocs(prev => {
+            const target = prev.find(d => d.id === id)
+            if (target?.mediaStorageKey) void deleteMediaFile(target.mediaStorageKey)
             const updated = prev.filter(d => d.id !== id)
             localStorage.setItem(DOCS_KEY, JSON.stringify(updated))
             return updated
@@ -298,6 +333,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
                 setOpenSavedDocId,
                 savedDocs,
                 addSavedDoc,
+                addMediaDoc,
                 updateSavedDoc,
                 isProjectsOpen,
                 setProjectsOpen,
@@ -312,6 +348,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
                 setIsHoveringTrash,
                 isTrashOpen,
                 setTrashOpen,
+                isTrashMinimized,
+                setTrashMinimized,
                 projectFolderItems,
                 addToProjectFolder,
                 removeFromProjectFolder,
@@ -328,6 +366,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
                 setActiveFolderWindowId,
                 isMediaWindowOpen,
                 setMediaWindowOpen,
+                isMediaWindowMinimized,
+                setMediaWindowMinimized,
                 activeMediaDocId,
                 setActiveMediaDocId,
             }}

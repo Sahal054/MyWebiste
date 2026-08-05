@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { motion, AnimatePresence, useDragControls } from 'framer-motion'
 import { X, Maximize2, Minimize2 } from 'lucide-react'
 import { useApp } from '../../context/App'
+import { loadMediaObjectUrl } from '../Desktop/mediaStorage'
 
 function isVideo(filename: string) {
     return ['mov', 'mp4', 'avi', 'webm'].includes(filename.toLowerCase().split('.').pop() ?? '')
@@ -14,24 +15,57 @@ function isImage(filename: string) {
 }
 
 export default function MediaWindow() {
-    const { isMediaWindowOpen, setMediaWindowOpen, activeMediaDocId, setActiveMediaDocId, savedDocs } = useApp()
+    const { isMediaWindowOpen, setMediaWindowOpen, isMediaWindowMinimized, setMediaWindowMinimized, activeMediaDocId, setActiveMediaDocId, savedDocs } = useApp()
     const dragControls = useDragControls()
     const [isMaximized, setIsMaximized] = useState(false)
+    const [resolvedSrc, setResolvedSrc] = useState<string | null>(null)
 
     const doc = savedDocs.find(d => d.id === activeMediaDocId)
+
+    useEffect(() => {
+        let objectUrl: string | null = null
+        let cancelled = false
+
+        const resolve = async () => {
+            if (!doc || (!isVideo(doc.filename) && !isImage(doc.filename))) {
+                setResolvedSrc(null)
+                return
+            }
+            if (doc.mediaStorageKey) {
+                const url = await loadMediaObjectUrl(doc.mediaStorageKey)
+                if (cancelled) {
+                    if (url) URL.revokeObjectURL(url)
+                    return
+                }
+                objectUrl = url
+                setResolvedSrc(url)
+                return
+            }
+
+            setResolvedSrc(doc.content || doc.filename)
+        }
+
+        void resolve()
+
+        return () => {
+            cancelled = true
+            if (objectUrl) URL.revokeObjectURL(objectUrl)
+        }
+    }, [doc])
+
     if (!doc || (!isVideo(doc.filename) && !isImage(doc.filename))) return null
 
     const close = () => {
         setMediaWindowOpen(false)
+        setMediaWindowMinimized(false)
         setActiveMediaDocId(null)
     }
 
-    const src = doc.content || doc.filename
     const isVideoFile = isVideo(doc.filename)
 
     return (
         <AnimatePresence>
-            {isMediaWindowOpen && (
+            {isMediaWindowOpen && !isMediaWindowMinimized && (
                 <motion.div
                     drag={!isMaximized}
                     dragControls={dragControls}
@@ -59,7 +93,13 @@ export default function MediaWindow() {
                             >
                                 <X className="w-2 h-2 opacity-0 group-hover/lights:opacity-100 text-[#4d0000]" strokeWidth={3} />
                             </button>
-                            <button onPointerDown={e => e.stopPropagation()} className="w-3.5 h-3.5 rounded-full bg-[#ffbd2e] border border-[#e0a21c]" />
+                            <button
+                                onPointerDown={e => e.stopPropagation()}
+                                onClick={() => setMediaWindowMinimized(true)}
+                                className="w-3.5 h-3.5 rounded-full bg-[#ffbd2e] border border-[#e0a21c] flex items-center justify-center hover:opacity-90"
+                            >
+                                <Minimize2 className="w-1.5 h-1.5 opacity-0 group-hover/lights:opacity-100 text-[#5a3800]" strokeWidth={3} />
+                            </button>
                             <button
                                 onPointerDown={e => e.stopPropagation()}
                                 onClick={() => setIsMaximized(m => !m)}
@@ -80,7 +120,7 @@ export default function MediaWindow() {
                     <div className="flex-1 bg-black/90 dark:bg-black flex items-center justify-center overflow-hidden">
                         {isVideoFile ? (
                             <video
-                                src={src}
+                                src={resolvedSrc ?? undefined}
                                 controls
                                 autoPlay
                                 muted
@@ -89,7 +129,7 @@ export default function MediaWindow() {
                             />
                         ) : (
                             <img
-                                src={src}
+                                src={resolvedSrc ?? undefined}
                                 alt={doc.filename}
                                 className="max-w-full max-h-full object-contain"
                             />

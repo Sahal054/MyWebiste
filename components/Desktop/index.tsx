@@ -8,6 +8,7 @@ import { AppItem } from '../OSIcons/AppIcon'
 import { useApp } from '../../context/App'
 import ContextMenu, { ContextMenuItemProps } from '../RadixUI/ContextMenu'
 import { Check } from 'lucide-react'
+import { storeMediaFile } from './mediaStorage'
 
 // ── Wallpaper presets ─────────────────────────────────────────────────────────
 type GardenConfig = {
@@ -130,24 +131,26 @@ function WallpaperPicker({
 // ── Desktop ───────────────────────────────────────────────────────────────────
 export default function Desktop() {
     const constraintsRef = useRef<HTMLDivElement>(null)
+    const mediaInputRef = useRef<HTMLInputElement>(null)
     const router = useRouter()
     const {
         setNotificationsOpen, toggleDarkMode, darkMode, wallpaper, setWallpaper,
         setDocOpen,
         setNewDocOpen, setNewDocMinimized, setOpenSavedDocId,
-        savedDocs, moveToTrash, addSavedDoc,
-        isTrashOpen, setTrashOpen,
+        savedDocs, moveToTrash, addSavedDoc, addMediaDoc,
+        isTrashOpen, setTrashOpen, setTrashMinimized,
         setProjectsOpen,
         projectFolderItems, addToProjectFolder,
         userFolders, createFolder, addDocToFolder,
         setActiveFolderWindowId, setFolderWindowOpen, setFolderWindowMinimized,
-        setMediaWindowOpen, setActiveMediaDocId,
+        setMediaWindowOpen, setMediaWindowMinimized, setActiveMediaDocId,
     } = useApp()
     const [showWallpaperPicker, setShowWallpaperPicker] = useState(false)
     const [newFolderPrompt, setNewFolderPrompt] = useState(false)
     const [folderName, setFolderName] = useState('')
     const [addFilePrompt, setAddFilePrompt] = useState(false)
     const [newFileName, setNewFileName] = useState('')
+    const [addDeviceMediaPrompt, setAddDeviceMediaPrompt] = useState(false)
 
     const isMediaFilename = (name: string) => ['mov', 'mp4', 'avi', 'webm', 'png', 'jpg', 'jpeg', 'gif', 'webp'].includes(name.toLowerCase().split('.').pop() ?? '')
 
@@ -156,12 +159,19 @@ export default function Desktop() {
         if (!doc) return
         if (isMediaFilename(doc.filename)) {
             setActiveMediaDocId(doc.id)
+            setMediaWindowMinimized(false)
             setMediaWindowOpen(true)
             return
         }
         setNewDocMinimized(false)
         setOpenSavedDocId(doc.id)
         setNewDocOpen(true)
+    }
+
+    const handleDeviceMediaPick = async (file: File) => {
+        const { storageKey, mimeType } = await storeMediaFile(file)
+        addMediaDoc(file.name, storageKey, mimeType)
+        setMediaWindowMinimized(false)
     }
 
 
@@ -171,7 +181,7 @@ export default function Desktop() {
         { label: 'Spreadsheet', Icon: null, onClick: () => router.push('/experience') },
         { label: 'Envelope',    Icon: null, onClick: () => router.push('/contact') },
         { label: 'Server Stats', Icon: null, onClick: () => setNotificationsOpen(true) },
-        { label: 'Trash', Icon: null, iconUrl: 'https://res.cloudinary.com/dmukukwp6/image/upload/trash_classic_20ed394a8d.png', onClick: () => setTrashOpen(true) },
+        { label: 'Trash', Icon: null, iconUrl: 'https://res.cloudinary.com/dmukukwp6/image/upload/trash_classic_20ed394a8d.png', onClick: () => { setTrashMinimized(false); setTrashOpen(true) } },
         
     ]
 
@@ -183,7 +193,7 @@ export default function Desktop() {
         },
         { label: 'Notebook', Icon: null, onClick: () => router.push('/projects') },
         { label: 'Envelope', Icon: null, onClick: () => router.push('/contact') },
-        { label: 'Trash',    Icon: null, onClick: () => setTrashOpen(true)},
+        { label: 'Trash',    Icon: null, onClick: () => { setTrashMinimized(false); setTrashOpen(true) }},
     ]
 
     const contextMenuItems: ContextMenuItemProps[] = [
@@ -197,6 +207,7 @@ export default function Desktop() {
         { type: 'separator' },
         { type: 'item', label: 'New Folder…', onClick: () => { setFolderName(''); setNewFolderPrompt(true) } },
         { type: 'item', label: 'Add File…', onClick: () => { setNewFileName(''); setAddFilePrompt(true) } },
+        { type: 'item', label: 'Add Media From Device…', onClick: () => setAddDeviceMediaPrompt(true) },
     ]
 
     // Exclude trashed, in-projects-folder, and in-user-folder docs
@@ -414,6 +425,55 @@ export default function Desktop() {
                                 className="px-3 py-1.5 text-xs font-bold bg-black text-white dark:bg-white dark:text-black rounded-lg disabled:opacity-40 hover:opacity-80 transition-opacity"
                             >
                                 Add
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {addDeviceMediaPrompt && (
+                <div
+                    className="fixed inset-0 z-[70] flex items-center justify-center bg-black/20 backdrop-blur-sm"
+                    onClick={() => setAddDeviceMediaPrompt(false)}
+                >
+                    <div
+                        className="bg-white dark:bg-[#1e2130] border-2 border-black dark:border-gray-600 shadow-[6px_6px_0px_0px_rgba(0,0,0,0.8)] rounded-xl p-5 w-[320px]"
+                        onClick={e => e.stopPropagation()}
+                    >
+                        <h3 className="text-sm font-bold uppercase tracking-widest mb-2 dark:text-white">Add Media</h3>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mb-4">
+                            Pick an image or video from your device. It will be saved as a desktop item.
+                        </p>
+                        <input
+                            ref={mediaInputRef}
+                            type="file"
+                            accept="image/*,video/*"
+                            className="hidden"
+                            onChange={async e => {
+                                const file = e.target.files?.[0]
+                                if (!file) return
+                                try {
+                                    await handleDeviceMediaPick(file)
+                                    setAddDeviceMediaPrompt(false)
+                                } catch {
+                                    alert('Media upload failed. Check your Cloudinary upload preset and network connection.')
+                                } finally {
+                                    e.target.value = ''
+                                }
+                            }}
+                        />
+                        <div className="flex gap-2 justify-end">
+                            <button
+                                onClick={() => setAddDeviceMediaPrompt(false)}
+                                className="px-3 py-1.5 text-xs font-bold text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/10 rounded-lg transition-colors"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={() => mediaInputRef.current?.click()}
+                                className="px-3 py-1.5 text-xs font-bold bg-black text-white dark:bg-white dark:text-black rounded-lg hover:opacity-80 transition-opacity"
+                            >
+                                Choose File
                             </button>
                         </div>
                     </div>

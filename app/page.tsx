@@ -18,9 +18,13 @@ function MinimizedTaskbar() {
         isNewDocOpen, isNewDocMinimized, setNewDocMinimized,
         isFolderWindowOpen, isFolderWindowMinimized, setFolderWindowMinimized,
         activeFolderWindowId, userFolders,
+        isTrashOpen, isTrashMinimized, setTrashMinimized, setTrashOpen,
+        isMediaWindowOpen, isMediaWindowMinimized, setMediaWindowMinimized,
+        activeMediaDocId, savedDocs,
     } = useApp()
 
     const activeFolder = userFolders.find(folder => folder.id === activeFolderWindowId)
+    const activeMediaDoc = savedDocs.find(doc => doc.id === activeMediaDocId)
 
     const pills = [
         isDocOpen && isDocMinimized && {
@@ -40,6 +44,18 @@ function MinimizedTaskbar() {
             label: activeFolder.name,
             color: 'bg-green-400',
             onClick: () => setFolderWindowMinimized(false),
+        },
+        isTrashOpen && isTrashMinimized && {
+            key: 'trash',
+            label: 'Trash',
+            color: 'bg-red-400',
+            onClick: () => { setTrashMinimized(false); setTrashOpen(true) },
+        },
+        isMediaWindowOpen && isMediaWindowMinimized && activeMediaDoc && {
+            key: 'media',
+            label: activeMediaDoc.filename,
+            color: 'bg-purple-400',
+            onClick: () => setMediaWindowMinimized(false),
         },
     ].filter(Boolean) as { key: string; label: string; color: string; onClick: () => void }[]
 

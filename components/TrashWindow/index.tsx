@@ -12,7 +12,7 @@ function fileIcon(filename: string) {
 }
 
 export default function TrashWindow() {
-    const { isTrashOpen, setTrashOpen, savedDocs, restoreDoc, deleteDoc, emptyTrash } = useApp()
+    const { isTrashOpen, setTrashOpen, isTrashMinimized, setTrashMinimized, savedDocs, restoreDoc, deleteDoc, emptyTrash } = useApp()
     const dragControls = useDragControls()
     const [isMaximized, setIsMaximized] = useState(false)
     const W = 700, H = 460
@@ -20,7 +20,7 @@ export default function TrashWindow() {
 
     return (
         <AnimatePresence>
-            {isTrashOpen && (
+            {isTrashOpen && !isTrashMinimized && (
                 <motion.div
                     drag={!isMaximized}
                     dragControls={dragControls}
@@ -51,6 +51,7 @@ export default function TrashWindow() {
                             </button>
                             <button
                                 onPointerDown={e => e.stopPropagation()}
+                                onClick={() => setTrashMinimized(true)}
                                 className="w-3.5 h-3.5 rounded-full bg-[#ffbd2e] border border-[#e0a21c]"
                             />
                             <button
