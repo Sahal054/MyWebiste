@@ -59,15 +59,16 @@ const checkTrashIntersection = (info: any) => {
             return
         }
 
-        // Folder drop detection — scans all elements tagged with data-folder-id
+        // Folder drop detection — scans folder icons and open folder windows.
         if (onDropOnFolder) {
-            const folderEls = document.querySelectorAll('[data-folder-id]')
+            const folderEls = document.querySelectorAll('[data-folder-id], [data-folder-window-id]')
             for (const el of Array.from(folderEls)) {
                 const r = el.getBoundingClientRect()
                 const hit = info.point.x >= r.left - 10 && info.point.x <= r.right + 10 &&
                             info.point.y >= r.top - 10 && info.point.y <= r.bottom + 10
                 if (hit) {
-                    onDropOnFolder(app.id, el.getAttribute('data-folder-id')!)
+                    const folderId = el.getAttribute('data-folder-id') ?? el.getAttribute('data-folder-window-id')
+                    if (folderId) onDropOnFolder(app.id, folderId)
                     return
                 }
             }

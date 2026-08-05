@@ -62,6 +62,7 @@ export default function FolderWindow() {
                     exit={{ scale: 0.95, opacity: 0, y: 20 }}
                     transition={{ type: 'spring', stiffness: 320, damping: 28 }}
                     className="fixed z-[46] flex flex-col overflow-hidden select-none rounded-xl"
+                    data-folder-window-id={folder.id}
                     style={isMaximized ? { inset: '1rem' } : { top: '10vh', left: `calc(50% - ${W / 2}px)`, width: W, height: H }}
                 >
                     <div className="absolute inset-0 rounded-xl border-2 border-black/60 dark:border-white/20 pointer-events-none z-10" />
@@ -143,7 +144,7 @@ export default function FolderWindow() {
                                                         onClick={() => openItem(doc.id)}
                                                         className="absolute inset-0 flex items-center justify-center"
                                                     >
-                                                    <Icon className="w-8 h-8 text-gray-500 dark:text-gray-400" strokeWidth={1.5} />
+                                                        <Icon className="w-8 h-8 text-gray-500 dark:text-gray-400" strokeWidth={1.5} />
                                                     </button>
                                                     <button
                                                         type="button"

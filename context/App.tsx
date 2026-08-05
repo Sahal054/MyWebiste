@@ -82,6 +82,7 @@ const AppContext = createContext<AppContextValue | undefined>(undefined)
 const SANDY_CREAM_URL = 'https://res.cloudinary.com/dyyfvzis2/image/upload/v1784807608/BgImageLight_xrzkez.png'
 const FOLDERS_KEY = 'user-folders'
 const DOCS_KEY = 'user-docs'
+const DEFAULT_MOV_URL = 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4'
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
     const [isNotificationsOpen, setNotificationsOpen] = useState(false)
@@ -113,7 +114,29 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         setWallpaperState(savedWallpaper ?? SANDY_CREAM_URL)
         try {
             const raw = localStorage.getItem(DOCS_KEY)
-            if (raw) setSavedDocs(JSON.parse(raw))
+            if (raw) {
+                const parsedDocs = JSON.parse(raw) as SavedDoc[]
+                setSavedDocs(parsedDocs)
+                if (parsedDocs.length === 0) {
+                    const defaultMov = {
+                        id: 'doc-default-mov',
+                        filename: 'demo.mov',
+                        content: DEFAULT_MOV_URL,
+                        createdAt: Date.now(),
+                    }
+                    setSavedDocs([defaultMov])
+                    localStorage.setItem(DOCS_KEY, JSON.stringify([defaultMov]))
+                }
+            } else {
+                const defaultMov = {
+                    id: 'doc-default-mov',
+                    filename: 'demo.mov',
+                    content: DEFAULT_MOV_URL,
+                    createdAt: Date.now(),
+                }
+                setSavedDocs([defaultMov])
+                localStorage.setItem(DOCS_KEY, JSON.stringify([defaultMov]))
+            }
             const pf = localStorage.getItem('project-folder')
             if (pf) setProjectFolderItems(JSON.parse(pf))
             const uf = localStorage.getItem(FOLDERS_KEY)
