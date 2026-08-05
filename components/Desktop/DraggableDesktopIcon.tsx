@@ -7,15 +7,42 @@ import { AppIcon, AppItem } from '../OSIcons/AppIcon'
 interface DraggableDesktopIconProps {
     app: AppItem
     constraintsRef: React.RefObject<HTMLDivElement | null>
+    onDropOnTrash?: (id: string) => void 
 }
 
-export default function DraggableDesktopIcon({ app, constraintsRef }: DraggableDesktopIconProps) {
+export default function DraggableDesktopIcon({ app, constraintsRef ,onDropOnTrash}: DraggableDesktopIconProps) {
+    // Checks if the mouse coordinates intersect with the Trash icon
+    const handleDragEnd = (event: any, info: any) => {
+        if (!app.isDeletable || !app.id || !onDropOnTrash) return;
+
+        const dockTrash = document.getElementById('trash-dock');
+        const desktopTrash = document.getElementById('trash-desktop');
+
+        const isOver = (el: HTMLElement | null) => {
+            if (!el) return false;
+            const rect = el.getBoundingClientRect();
+            // Check if cursor X and Y are inside the element's bounds
+            return (
+                info.point.x >= rect.left && info.point.x <= rect.right &&
+                info.point.y >= rect.top && info.point.y <= rect.bottom
+            );
+        };
+
+        if (isOver(dockTrash) || isOver(desktopTrash)) {
+            onDropOnTrash(app.id);
+        }
+    };
+
+
+
+
     return (
         <motion.div
             drag
             dragConstraints={constraintsRef}
             dragElastic={0.1}
             dragMomentum={false}
+            onDragEnd={handleDragEnd}
             onDoubleClick={app.onClick}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}

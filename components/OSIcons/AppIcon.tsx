@@ -32,6 +32,16 @@ export interface AppIconProps {
     className?: string
 }
 
+export interface AppItem {
+    label: string
+    Icon: React.ReactNode
+    url?: string
+    onClick?: () => void
+    source?: string
+    id?: string //  Used to identify which file to delete
+    isDeletable?: boolean //  Prevents dragging core apps to the trash
+}
+
 export const AppIcon = ({ name, className = "w-12 h-12 text-primary" }: AppIconProps) => {
     // Applying a uniform style and stroke width to all desktop icons
     const iconProps = { className, strokeWidth: 1.5 }

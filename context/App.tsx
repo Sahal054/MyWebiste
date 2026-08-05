@@ -20,6 +20,11 @@ interface AppContextValue {
     setWallpaper: (url: string | null) => void
     // Trash
     clearAllDocs: () => void
+    deleteDoc:(id : string) => void
+    isTrashOpen: boolean
+    setTrashOpen: (open:boolean) => void
+
+
 
     // Projects Window
 
@@ -62,6 +67,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     const [savedDocs, setSavedDocs] = useState<SavedDoc[]>([])
     const [isProjectsOpen, setProjectsOpen] = useState(false)
     const [isProjectsMinimized, setProjectsMinimized] = useState(false)
+    const [isTrashOpen, setTrashOpen] = useState(false)
+
 
     useEffect(() => {
         const savedDark = localStorage.getItem('darkMode') === 'true'
@@ -109,6 +116,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         localStorage.removeItem(DOCS_KEY)
     }
 
+    const deleteDoc = (id: string) => {
+        setSavedDocs(prev => {
+            const updated = prev.filter(d => d.id !== id)
+            localStorage.setItem(DOCS_KEY, JSON.stringify(updated))
+            return updated
+        })
+    }
     const updateSavedDoc = (id: string, content: string) => {
         setSavedDocs(prev => {
             const updated = prev.map(d => d.id === id ? { ...d, content } : d)
@@ -146,6 +160,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
                 isProjectsMinimized,
                 setProjectsMinimized,
                 clearAllDocs,
+                deleteDoc,
+                isTrashOpen,
+                setTrashOpen,
             }}
         >
             {children}

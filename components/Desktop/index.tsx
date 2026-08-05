@@ -111,7 +111,8 @@ export default function Desktop() {
         setNotificationsOpen, toggleDarkMode, darkMode, wallpaper, setWallpaper,
         setDocOpen,
         setNewDocOpen, setNewDocMinimized, setOpenSavedDocId,
-        savedDocs,
+        savedDocs, deleteDoc,
+        isTrashOpen,setTrashOpen,
         setProjectsOpen,setProjectsMinimized,
         websiteMode,clearAllDocs
     } = useApp()
@@ -124,7 +125,7 @@ export default function Desktop() {
         { label: 'Spreadsheet', Icon: null, onClick: () => router.push('/experience') },
         { label: 'Envelope',    Icon: null, onClick: () => router.push('/contact') },
         { label: 'Server Stats',      Icon: null, onClick: () => setNotificationsOpen(true) },
-        { label: 'Trash',       Icon: null, onClick: () => console.log('Emptying trash...') },
+        
     ]
 
     const dockApps: AppItem[] = [
@@ -135,19 +136,19 @@ export default function Desktop() {
         },
         { label: 'Notebook', Icon: null, onClick: () => router.push('/projects') },
         { label: 'Envelope', Icon: null, onClick: () => router.push('/contact') },
-        { label: 'Trash',    Icon: null, onClick: () => clearAllDocs },
+        { label: 'Trash',    Icon: null, onClick: () => setTrashOpen(true)},
     ]
 
     const contextMenuItems: ContextMenuItemProps[] = [
         {
             type: 'item',
-            label: darkMode ? '☀️  Switch to Light Mode' : '🌙  Switch to Dark Mode',
+            label: darkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode',
             onClick: toggleDarkMode,
         },
         { type: 'separator' },
         {
             type: 'item',
-            label: '🖼️  Change Wallpaper',
+            label: 'Change Wallpaper',
             onClick: () => setShowWallpaperPicker(true),
         },
     ]
@@ -156,6 +157,10 @@ export default function Desktop() {
     const savedDocApps: AppItem[] = savedDocs.map(doc => ({
         label: doc.filename,
         Icon: null,
+        id: doc.id,
+        isDeletable:true,
+
+        
         onClick: () => { setNewDocMinimized(false); setOpenSavedDocId(doc.id); setNewDocOpen(true) },
     }))
 
@@ -241,19 +246,73 @@ export default function Desktop() {
                     {/* --- END WALLPAPER LAYOUT --- */}
                     <div className="p-6 flex flex-col flex-wrap gap-6 h-full content-start">
                         {desktopApps.map((app, index) => (
-                            <div key={index} className="relative w-24 h-24">
+                            // Add an ID to the desktop trash icon so we can detect drops!
+                            <div key={index} className="relative w-24 h-24" id={app.label === 'Trash' ? 'trash-desktop' : undefined}>
                                 <DraggableDesktopIcon app={app} constraintsRef={constraintsRef} />
                             </div>
                         ))}
                         {savedDocApps.map((app, index) => (
                             <div key={`saved-${index}`} className="relative w-24 h-24">
-                                <DraggableDesktopIcon app={app} constraintsRef={constraintsRef} />
+                                {/* Pass the delete function down */}
+                                <DraggableDesktopIcon app={app} constraintsRef={constraintsRef} onDropOnTrash={deleteDoc} />
                             </div>
                         ))}
                     </div>
-                    <Dock apps={dockApps} />
+
+                    {/* Important: You will need to pass an ID to the Trash icon inside your Dock.tsx file too! */}
+                    <div id="trash-dock">
+                        <Dock apps={dockApps} />
+                    </div>
                 </div>
             </ContextMenu>
+           {/* NEW: The Trash Manager Modal */}
+            {isTrashOpen && (
+                <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/20 backdrop-blur-sm" onClick={() => setTrashOpen(false)}>
+                    <div className="bg-white dark:bg-[#1e2130] w-[400px] max-h-[60vh] flex flex-col rounded-xl shadow-2xl border-2 border-black/40 overflow-hidden" onClick={e => e.stopPropagation()}>
+                        
+                        {/* Header */}
+                        <div className="flex justify-between items-center px-4 py-3 bg-gray-100 dark:bg-black/30 border-b border-gray-200 dark:border-white/10">
+                            <h3 className="font-bold text-gray-800 dark:text-gray-200 flex items-center gap-2">
+                                🗑️ Trash Manager
+                            </h3>
+                            <button onClick={() => setTrashOpen(false)} className="text-gray-500 hover:text-red-500 font-bold">✕</button>
+                        </div>
+
+                        {/* File List */}
+                        <div className="p-4 flex-1 overflow-y-auto">
+                            {savedDocs.length === 0 ? (
+                                <p className="text-center text-gray-500 dark:text-gray-400 py-8 text-sm font-medium">Trash is empty. All documents are safe.</p>
+                            ) : (
+                                <ul className="flex flex-col gap-2">
+                                    {savedDocs.map(doc => (
+                                        <li key={doc.id} className="flex justify-between items-center p-2.5 bg-gray-50 dark:bg-white/5 rounded-lg border border-gray-100 dark:border-white/10">
+                                            <span className="text-sm font-medium text-gray-700 dark:text-gray-300 truncate pr-4">{doc.filename}</span>
+                                            <button 
+                                                onClick={() => deleteDoc(doc.id)} 
+                                                className="px-3 py-1 bg-red-100 hover:bg-red-500 text-red-600 hover:text-white dark:bg-red-900/30 dark:hover:bg-red-500 dark:text-red-400 text-xs rounded transition-colors font-bold"
+                                            >
+                                                Delete
+                                            </button>
+                                        </li>
+                                    ))}
+                                </ul>
+                            )}
+                        </div>
+
+                        {/* Footer Action */}
+                        {savedDocs.length > 0 && (
+                            <div className="p-3 border-t border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-black/20">
+                                <button 
+                                    onClick={clearAllDocs}
+                                    className="w-full py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg text-sm font-bold shadow transition-colors"
+                                >
+                                    Empty Trash (Delete All)
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            )}
 
             {showWallpaperPicker && (
                 <WallpaperPicker
