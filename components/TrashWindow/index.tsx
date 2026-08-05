@@ -23,6 +23,7 @@ export default function TrashWindow() {
         <AnimatePresence>
             {isTrashOpen && !isTrashMinimized && (
                 <motion.div
+                    id="trash-window"
                     drag={!isMaximized}
                     dragControls={dragControls}
                     dragListener={false}
