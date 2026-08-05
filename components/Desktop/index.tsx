@@ -178,11 +178,11 @@ export default function Desktop() {
 
 
     const desktopApps: AppItem[] = [
-        { label: 'Resume',      Icon: null, onClick: () => setDocOpen(true) },
-        { label: 'Projects',Icon: null,iconUrl:'https://res.cloudinary.com/dmukukwp6/image/upload/folder_classic_d2fdf96f82.png', onClick: () => setProjectsOpen(true) },
+        { label: 'Resume',  iconUrl:'https://res.cloudinary.com/dmukukwp6/image/upload/typewriter_classic_3e6454d7f6.png',    Icon: null, onClick: () => setDocOpen(true) },
+        { label: 'Projects',Icon: null, iconUrl:'https://res.cloudinary.com/dmukukwp6/image/upload/document_bb8267664e.png', onClick: () => setProjectsOpen(true) },
         { label: 'Spreadsheet', Icon: null, onClick: () => router.push('/experience') },
-        { label: 'Envelope',    Icon: null, onClick: () => router.push('/contact') },
-        { label: 'Server Stats', Icon: null, onClick: () => setNotificationsOpen(true) },
+        { label: 'Envelope',    Icon: null, iconUrl: 'https://res.cloudinary.com/dmukukwp6/image/upload/contact_4af3eed18f.png', onClick: () => router.push('/contact') },
+        { label: 'Server Stats', Icon: null, iconUrl:'https://res.cloudinary.com/dmukukwp6/image/upload/data_warehouse_classic_224c4dcd25.png', onClick: () => setNotificationsOpen(true) },
         { label: 'Trash', Icon: null, iconUrl: 'https://res.cloudinary.com/dmukukwp6/image/upload/trash_classic_20ed394a8d.png', onClick: () => { setTrashMinimized(false); setTrashOpen(true) } },
         
     ]
@@ -195,7 +195,7 @@ export default function Desktop() {
             onClick: () => { setNewDocMinimized(false); setOpenSavedDocId(null); setNewDocOpen(true) },
         },
         { label: 'Notebook', Icon: null, onClick: () => router.push('/projects') },
-        { label: 'Envelope', Icon: null, onClick: () => router.push('/contact') },
+        { label: 'Envelope', Icon: null, iconUrl: 'https://res.cloudinary.com/dmukukwp6/image/upload/envelope_classic_8ccd5e8abc.png', onClick: () => router.push('/contact') },
         { label: 'Trash',    Icon: null,  iconUrl: 'https://res.cloudinary.com/dmukukwp6/image/upload/trash_classic_20ed394a8d.png', onClick: () => { setTrashMinimized(false); setTrashOpen(true) }},
     ]
 

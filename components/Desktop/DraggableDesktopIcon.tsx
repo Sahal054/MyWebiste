@@ -16,7 +16,9 @@ export default function DraggableDesktopIcon({ app, constraintsRef, onDropOnTras
     const { setIsHoveringTrash } = useApp();
     const isHoveringRef = useRef(false); // Tracks state without forcing re-renders
     const isTrash = app.label === 'Trash'
-    const isPlainImageIcon = isTrash || app.label === 'Projects'
+    const isPlainImageIcon = isTrash || app.label === 'Projects' || app.label === 'Server Stats' 
+    || app.label === 'Envelope'|| app.label === 'Resume'
+    || app.label === 'Spreadsheet'
 
     // Helper function to check if cursor is over either trash can
 const checkTrashIntersection = (info: any) => {

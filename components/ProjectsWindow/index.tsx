@@ -6,7 +6,7 @@ import { useApp } from '../../context/App'
 
 // Edit your portfolio projects here
 const PORTFOLIO = [
-    { id: 'p1', name: 'my-website',  lang: 'TypeScript',    desc: 'This OS-style portfolio',        url: '#' },
+    { id: 'p1', name: 'my-website',  lang: 'TypeScript',    desc: 'Myfreelance webiste',        url: 'https://wahndesign.com/' },
     { id: 'p2', name: 'api-server',  lang: 'Python',        desc: 'FastAPI + PostgreSQL backend',   url: '#' },
     { id: 'p3', name: 'mobile-app',  lang: 'React Native',  desc: 'Cross-platform app',             url: '#' },
 ]

@@ -56,13 +56,35 @@ export const AppIcon = ({ name, className = "w-12 h-12 text-primary", iconUrl }:
     const lowerName = name.toLowerCase()
 
     if (lowerName.endsWith('.mdx')) {
-        return <FileText {...iconProps} />
+                          return (
+                <img 
+                    src='https://res.cloudinary.com/dmukukwp6/image/upload/page_classic_0100e05522.png'
+                    alt={name} 
+                    className={`${className} object-contain`} 
+                    draggable={false} 
+                />
+            )
     }
     if (lowerName.endsWith('.mov') || lowerName.endsWith('.mp4') || lowerName.endsWith('.avi') || lowerName.endsWith('.webm')) {
-        return <Film {...iconProps} />
+                  return (
+                <img 
+                    src='https://res.cloudinary.com/dmukukwp6/image/upload/video_classic_beadf43e4b.png'
+                    alt={name} 
+                    className={`${className} object-contain`} 
+                    draggable={false} 
+                />
+            )
     }
     if (lowerName.endsWith('.png') || lowerName.endsWith('.jpg') || lowerName.endsWith('.jpeg') || lowerName.endsWith('.gif') || lowerName.endsWith('.webp')) {
-        return <ImageIcon {...iconProps} />
+                          return (
+                <img 
+                    src='https://res.cloudinary.com/dmukukwp6/image/upload/photobooth_db172dc28e.png'
+                    alt={name} 
+                    className={`${className} object-contain`} 
+                    draggable={false} 
+                />
+            )
+
     }
     if (lowerName.endsWith('.pdf') || lowerName.endsWith('.docx') || lowerName.endsWith('.doc')) {
         return <FileText {...iconProps} />
