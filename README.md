@@ -1,157 +1,392 @@
-# Portfolio Desktop OS
+# 🖥️ Web OS Portfolio
 
-A recruiter-facing portfolio built as a desktop operating system simulation. The goal is to show product thinking, UI architecture, persistence strategy, drag-and-drop interactions, and backend integration in one polished experience.
+[![Next.js](https://img.shields.io/badge/Next.js-16-000000?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
+[![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
 
-## Overview
+### A portfolio designed like a desktop operating system.
 
-This repo is not a standard brochure site. It is an interactive desktop shell with windows, a dock, folders, trash, certifications, media viewers, a contact surface, and a persistent sticky note widget. The project is designed to make technical depth obvious to a recruiter or an automated repo scanner within a few seconds.
+I wanted to build something more interactive than a traditional scrolling portfolio.
 
-### What this demonstrates
+So I built a browser-based desktop environment where projects, certifications, media, and personal information live inside an interactive OS-style interface.
 
-- Multi-window client state management.
-- Clear client/server separation with App Router API routes.
-- Browser persistence using `localStorage` and IndexedDB.
-- Drag-and-drop UX with trash, folder, and window interactions.
-- Recruiter-friendly certificate browsing through a dedicated folder.
-- A contact workflow that forwards submissions to Discord.
+The interesting part isn't just the UI — it's the architecture behind it.
 
-## Architecture
+---
 
-The application is organized into a few explicit layers:
+## 🚀 What You Can Do
 
-1. `app/page.tsx` is the root shell that mounts the desktop, all windows, and the minimized taskbar.
-2. `context/App.tsx` is the shared state and persistence layer.
-3. `components/Desktop/` owns the desktop canvas, dock, drag/drop, launcher actions, wallpaper, and file creation flows.
-4. `components/*Window` components each own their own surface and behavior.
-5. `app/api/*` handles server-side integrations like contact forwarding and certifications data.
+- 🖥️ Interact with a desktop-style environment
+- 📂 Open folders and applications
+- 🪟 Move, minimize, maximize, and restore windows
+- 📝 Use a persistent sticky note
+- 📁 Create and manage files within the browser
+- 🖼️ View images and videos
+- 📄 Open certifications through a custom PDF viewer
+- 📬 Send messages through the contact application
+- 🗑️ Interact with the trash and file system
+- 💾 Persist application state across sessions
 
-```mermaid
-flowchart TD
-	A[app/page.tsx] --> B[Desktop shell]
-	A --> C[Window components]
-	A --> D[Minimized taskbar]
+---
 
-	B --> E[context/App.tsx]
-	C --> E
-	D --> E
+# 🏗️ System Architecture
 
-	E --> F[(localStorage)]
-	E --> G[(IndexedDB)]
-	E --> H[/api/contact]
-	E --> I[/api/certifications]
+The application is structured around a small set of clearly separated layers.
 
-	H --> J[Discord webhook]
-	I --> K[Hardcoded certification records]
+```text
+                         ┌─────────────────────┐
+                         │     app/page.tsx    │
+                         │      App Shell      │
+                         └──────────┬──────────┘
+                                    │
+                                    ▼
+                         ┌─────────────────────┐
+                         │   Desktop Engine    │
+                         │ components/Desktop  │
+                         └──────────┬──────────┘
+                                    │
+                                    ▼
+                         ┌─────────────────────┐
+                         │    Global State     │
+                         │   context/App.tsx   │
+                         └──────┬───────┬──────┘
+                                │       │
+                 ┌──────────────┘       └──────────────┐
+                 ▼                                     ▼
+        ┌─────────────────┐                   ┌─────────────────┐
+        │ Window System   │                   │ Persistence     │
+        │ components/*   │                   │ localStorage    │
+        │                 │                   │ IndexedDB       │
+        └────────┬────────┘                   └─────────────────┘
+                 │
+                 ▼
+        ┌─────────────────┐
+        │   API Layer     │
+        │   app/api/*     │
+        └────────┬────────┘
+                 │
+                 ▼
+        ┌─────────────────┐
+        │ External        │
+        │ Integrations    │
+        │ Discord Webhook │
+        └─────────────────┘
 ```
 
-## Key Systems
+### Architecture Layers
 
-### Desktop Shell
+#### 1. App Shell
 
-- Draggable desktop icons.
-- A Mac-style dock.
-- Wallpaper presets with persistence.
-- A sticky note widget that stays on the desktop and autosaves.
+`app/page.tsx`
 
-### Window Manager
+The entry point of the application.
 
-- Independent windows for resume, editor, projects, folders, trash, media, PDF certificates, and contact.
-- Minimize, maximize, close, and taskbar restore behavior.
-- Separate handling for media and PDF content.
+Responsible for mounting the desktop environment, window layer, and taskbar.
 
-### Content Model
+---
 
-- Resume and user-created docs are stored in `localStorage`.
-- Uploaded images and videos are stored in IndexedDB to avoid quota issues.
-- Certification PDFs are exposed from a backend route and surfaced inside a dedicated folder.
-- Contact submissions are forwarded through an API route to a Discord webhook.
+#### 2. Global State
 
-### Recruiter-Facing Certifications
+`context/App.tsx`
 
-The certifications folder is intentionally first-class:
+Acts as the shared state layer for the desktop.
 
-- It appears by default on the desktop.
-- It opens in a dedicated folder window.
-- Certificates can be PDFs.
-- PDFs can be opened in their own viewer.
-- The folder acts as a curated evidence set for a recruiter.
+It manages things such as:
 
-### Contact Flow
+- Open windows
+- Window state
+- Desktop data
+- User preferences
+- File and folder state
+- Persistence
 
-The contact window contains:
+The goal is to keep state that needs to be shared out of individual UI components.
 
-- an optional email field,
-- a required message field,
-- direct mail and LinkedIn links,
-- a submit action that posts to `/api/contact`,
-- server-side forwarding to Discord via webhook embed.
+---
 
-## Tech Stack
+#### 3. Desktop Engine
 
-- Next.js 16 App Router
-- React 19
-- TypeScript 5
-- Tailwind CSS 4
-- Framer Motion
-- Lucide React
-- Radix UI
-- Lottie React
-- next-cloudinary
+`components/Desktop/`
 
-## Project Structure
+Responsible for the behavior of the desktop itself.
 
-- `app/` - app shell and API routes.
-- `components/Desktop/` - desktop canvas, dock, media storage, drag/drop, and launcher logic.
-- `components/` - windows and reusable app surfaces.
-- `context/App.tsx` - global state, persistence, and window orchestration.
-- `lib/` - shared data such as certifications.
+This includes:
 
-## Scripts
+- Desktop icons
+- Drag and drop
+- Launching applications
+- File interactions
+- Desktop layout
+- Window interactions
+
+---
+
+#### 4. Window System
+
+`components/*Window`
+
+Each application is isolated into its own window component.
+
+Examples include:
+
+- Code Editor
+- File Explorer
+- Media Viewer
+- PDF Viewer
+- Sticky Notes
+- Trash
+
+This keeps individual application logic separate while allowing the global window manager to control their lifecycle.
+
+---
+
+#### 5. API Layer
+
+`app/api/*`
+
+Server-side routes handle functionality that should not run directly in the browser.
+
+For example:
+
+```text
+Contact Form
+     │
+     ▼
+/api/contact
+     │
+     ▼
+Discord Webhook
+```
+
+This keeps the webhook integration away from the client-side application.
+
+---
+
+# 💾 Browser Persistence
+
+One of the design decisions I focused on was choosing the right storage mechanism for different types of data.
+
+### localStorage
+
+Used for lightweight persistent data:
+
+- UI preferences
+- Wallpaper state
+- Folder metadata
+- Document information
+- Sticky notes
+
+### IndexedDB
+
+Used for heavier browser-side data:
+
+- Images
+- Videos
+- Uploaded media blobs
+
+The idea is simple:
+
+```text
+Lightweight data  → localStorage
+Heavy media       → IndexedDB
+```
+
+This avoids putting large media objects into localStorage while keeping frequently accessed application state simple.
+
+---
+
+# 🪟 Window Management
+
+The desktop uses a shared window management system rather than treating each application as an isolated page.
+
+The window manager handles:
+
+- Opening windows
+- Closing windows
+- Minimize / restore
+- Maximize
+- Active window tracking
+- Z-index / focus management
+- Taskbar state
+- Window positioning
+
+Conceptually:
+
+```text
+                Window Manager
+                      │
+       ┌──────────────┼──────────────┐
+       ▼              ▼              ▼
+   Code Editor    File Explorer   Media Viewer
+       │              │              │
+       └──────────────┼──────────────┘
+                      ▼
+                 Shared State
+```
+
+This allows multiple applications to behave consistently without duplicating window-management logic.
+
+---
+
+# ⚙️ Key Engineering Decisions
+
+### Client / Server Separation
+
+Interactive desktop functionality runs on the client while server-side integrations are handled through Next.js API routes.
+
+### Component Isolation
+
+Individual applications are separated into their own components instead of placing the entire desktop inside one large component.
+
+### Centralized State
+
+State that affects multiple parts of the application is managed centrally rather than being duplicated across components.
+
+### Storage by Data Type
+
+Different browser storage technologies are used depending on the size and purpose of the data.
+
+### Extendable Architecture
+
+New applications can be added as independent window components without having to redesign the entire desktop.
+
+---
+
+# 🛠️ Tech Stack
+
+### Framework & Language
+
+![Next.js](https://img.shields.io/badge/Next.js-16-000000?style=for-the-badge&logo=next.js&logoColor=white)
+![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=black)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
+
+### Styling
+
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)
+
+### UI & Animation
+
+![Framer Motion](https://img.shields.io/badge/Framer_Motion-0055FF?style=for-the-badge&logo=framer&logoColor=white)
+![Radix UI](https://img.shields.io/badge/Radix_UI-161618?style=for-the-badge)
+![Lucide](https://img.shields.io/badge/Lucide-Icons-F56565?style=for-the-badge)
+![Lottie](https://img.shields.io/badge/Lottie-00DDB3?style=for-the-badge)
+
+### Media
+
+![Cloudinary](https://img.shields.io/badge/Cloudinary-3448C5?style=for-the-badge&logo=cloudinary&logoColor=white)
+
+---
+
+# 📁 Project Structure
+
+```text
+.
+├── app/
+│   ├── api/
+│   │   ├── contact/
+│   │   └── certifications/
+│   │
+│   └── page.tsx
+│
+├── components/
+│   ├── Desktop/
+│   ├── *Window/
+│   └── ...
+│
+├── context/
+│   └── App.tsx
+│
+├── lib/
+│   └── certifications.ts
+│
+└── public/
+```
+
+The structure keeps application logic, shared state, server-side routes, and UI surfaces separated.
+
+---
+
+# 🚀 Running Locally
+
+Clone the repository:
+
+```bash
+git clone https://github.com/Sahal054/MyWebiste.git
+cd MyWebiste
+```
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+Start the development server:
 
 ```bash
 npm run dev
-npm run build
-npm run start
-npm run lint
 ```
 
-## Local Setup
+Open:
 
-1. Install dependencies.
-2. Run `npm run dev`.
-3. Open `http://localhost:3000`.
-4. Add your actual Discord webhook URL in `app/api/contact/route.ts`.
-5. Replace the placeholder certification PDF records in `lib/certifications.ts` with your real certificate links.
-6. Optionally update the fallback `.mov` URL in `context/App.tsx` and `components/Desktop/index.tsx` if you want custom starter media.
+```text
+http://localhost:3000
+```
 
-## Persistence Strategy
+---
 
-- `localStorage` stores UI preferences, document metadata, folders, trash state, and the sticky note text.
-- IndexedDB stores uploaded media blobs.
-- `/api/certifications` provides the certificate list for the recruiter-facing folder.
-- `/api/contact` forwards the contact form to Discord.
-
-## Why This Repo Is Worth Hiring For
-
-This project shows more than UI polish.
-
-- It demonstrates state modeling for a multi-surface desktop app.
-- It separates client state, browser persistence, and server integrations cleanly.
-- It uses a realistic information architecture for public-facing portfolio content.
-- It treats recruiter needs as a product requirement by making certifications easy to find and inspect.
-
-## Notes
-
-- The webhook URL is intentionally left as a placeholder so you can configure it per environment.
-- Certification PDFs are hardcoded by design so recruiters see a stable, curated set.
-- The repository is structured to be easy to scan by both humans and bots.
-
-## Deployment
-
-Run a production build before deployment:
+# 📦 Production Build
 
 ```bash
 npm run build
+npm run start
 ```
 
-Then deploy the Next.js app as usual. Make sure the contact webhook and any remote asset URLs are configured for production.
+---
+
+# ⚙️ Configuration
+
+Before deploying, configure:
+
+### Contact API
+
+Set the Discord webhook through an environment variable rather than committing it to the repository.
+
+### Certifications
+
+Update:
+
+```text
+lib/certifications.ts
+```
+
+with the certification records you want to display.
+
+---
+
+# 📸 Screenshots
+
+### Desktop
+
+_Add a screenshot of the main desktop here._
+
+### Window Management
+
+_Add a screenshot showing multiple open windows here._
+
+### File Explorer / Applications
+
+_Add another screenshot showing the interactive applications here._
+
+---
+
+# 👨‍💻 About Me
+
+I'm Sahal, a Software Engineer interested in backend systems, APIs, automation, and building reliable software.
+
+I enjoy learning by building things — especially projects where I have to figure out the architecture rather than simply follow a tutorial.
+
+📧 **Email:** sahalmsachu@gmail.com  
+💼 **LinkedIn:** https://linkedin.com/in/Sahal054  
+💻 **GitHub:** https://github.com/Sahal054
