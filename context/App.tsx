@@ -76,6 +76,8 @@ interface AppContextValue {
     restoreFolder: (folderId: string) => void
     deleteFolderPermanently: (folderId: string) => void
     certificationDocs: SavedDoc[]
+    addDocToCertifications: (docId: string) => void
+    removeDocFromCertifications: (docId: string) => void
     isFolderWindowOpen: boolean
     setFolderWindowOpen: (open: boolean) => void
     isFolderWindowMinimized: boolean
@@ -370,6 +372,38 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         })
     }
 
+    const addDocToCertifications = (docId: string) => {
+        setSavedDocs(prev => {
+            const target = prev.find(doc => doc.id === docId)
+            if (!target) return prev
+            setCertificationDocs(current => {
+                if (current.some(doc => doc.id === docId)) return current
+                const updatedCerts = [...current, target]
+                return updatedCerts
+            })
+            const updated = prev.filter(doc => doc.id !== docId)
+            localStorage.setItem(DOCS_KEY, JSON.stringify(updated))
+            return updated
+        })
+    }
+
+    const removeDocFromCertifications = (docId: string) => {
+        setCertificationDocs(prev => {
+            const target = prev.find(doc => doc.id === docId)
+            if (!target) return prev
+            const updated = prev.filter(doc => doc.id !== docId)
+            return updated
+        })
+        setSavedDocs(prev => {
+            const target = certificationDocs.find(doc => doc.id === docId)
+            if (!target) return prev
+            if (prev.some(doc => doc.id === docId)) return prev
+            const updated = [target, ...prev]
+            localStorage.setItem(DOCS_KEY, JSON.stringify(updated))
+            return updated
+        })
+    }
+
     const openPdfWindow = (docId: string) => {
         const windowId = `pdf-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
         setPdfWindows(prev => [...prev, { windowId, docId, minimized: false }])
@@ -456,6 +490,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
                 restoreFolder,
                 deleteFolderPermanently,
                 certificationDocs,
+                addDocToCertifications,
+                removeDocFromCertifications,
                 isFolderWindowOpen,
                 setFolderWindowOpen,
                 isFolderWindowMinimized,

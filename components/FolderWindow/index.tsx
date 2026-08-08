@@ -19,6 +19,7 @@ export default function FolderWindow() {
         activeFolderWindowId, setActiveFolderWindowId,
         userFolders, certificationDocs, savedDocs,
         removeDocFromFolder,
+        removeDocFromCertifications,
         setNewDocOpen, setNewDocMinimized, setOpenSavedDocId,
         setMediaWindowOpen, setActiveMediaDocId,
         openPdfWindow,
@@ -143,17 +144,29 @@ export default function FolderWindow() {
                                 <div className="grid grid-cols-[repeat(auto-fill,minmax(88px,1fr))] gap-4">
                                     {folderDocs.map(doc => {
                                         const Icon = fileIcon(doc.filename)
+                                        const isPdfFile = doc.filename.toLowerCase().endsWith('.pdf')
                                         return (
                                             <div key={doc.id} className="group flex flex-col items-center gap-1.5">
                                                 <div className="relative w-16 h-16 flex items-center justify-center bg-gray-100 dark:bg-white/5 rounded-xl border border-gray-200 dark:border-white/10 group-hover:border-gray-400 dark:group-hover:border-white/30 transition-all">
                                                     <button
                                                         type="button"
-                                                        onClick={() => openItem(doc.id)}
+                                                        onClick={() => { if (!isPdfFile) openItem(doc.id) }}
+                                                        onDoubleClick={() => { if (isPdfFile) openItem(doc.id) }}
                                                         className="absolute inset-0 flex items-center justify-center"
                                                     >
                                                         <Icon className="w-8 h-8 text-gray-500 dark:text-gray-400" strokeWidth={1.5} />
                                                     </button>
-                                                    {folder.id !== CERTIFICATIONS_FOLDER_ID && (
+                                                    {folder.id === CERTIFICATIONS_FOLDER_ID ? (
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => removeDocFromCertifications(doc.id)}
+                                                            title="Remove from Certifications"
+                                                            onPointerDown={e => e.stopPropagation()}
+                                                            className="absolute top-1 right-1 p-1 bg-black/60 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+                                                        >
+                                                            <FolderMinus className="w-5 h-5 text-white" strokeWidth={2} />
+                                                        </button>
+                                                    ) : (
                                                         <button
                                                             type="button"
                                                             onClick={() => removeDocFromFolder(folder.id, doc.id)}

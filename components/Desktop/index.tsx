@@ -148,6 +148,7 @@ export default function Desktop() {
         openPdfWindow,
         activeFolderWindowId,
         deleteFolder,
+        addDocToCertifications,
     } = useApp()
     const [showWallpaperPicker, setShowWallpaperPicker] = useState(false)
     const [newFolderPrompt, setNewFolderPrompt] = useState(false)
@@ -298,7 +299,7 @@ export default function Desktop() {
                                 key={index}
                                 className="relative w-24 h-24"
                                 id={app.label === 'Trash' ? 'trash-desktop' : undefined}
-                                data-folder-id={app.label === 'Projects' ? 'projects' : undefined}
+                                data-folder-id={app.label === 'Projects' ? 'projects' : app.label === CERTIFICATIONS_FOLDER_NAME ? CERTIFICATIONS_FOLDER_ID : undefined}
                             >
                                 <DraggableDesktopIcon app={app} constraintsRef={constraintsRef} />
                             </div>
@@ -311,6 +312,7 @@ export default function Desktop() {
                                     onDropOnTrash={moveToTrash}
                                     onDropOnFolder={(docId, folderId) => {
                                         if (folderId === 'projects') addToProjectFolder(docId)
+                                        else if (folderId === CERTIFICATIONS_FOLDER_ID) addDocToCertifications(docId)
                                         else addDocToFolder(folderId, docId)
                                     }}
                                 />
