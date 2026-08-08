@@ -88,12 +88,17 @@ interface AppContextValue {
     setMediaWindowMinimized: (min: boolean) => void
     activeMediaDocId: string | null
     setActiveMediaDocId: (id: string | null) => void
-    isPdfWindowOpen: boolean
-    setPdfWindowOpen: (open: boolean) => void
-    isPdfWindowMinimized: boolean
-    setPdfWindowMinimized: (min: boolean) => void
-    activePdfDocId: string | null
-    setActivePdfDocId: (id: string | null) => void
+    pdfWindows: PdfWindowState[]
+    openPdfWindow: (docId: string) => string
+    closePdfWindow: (windowId: string) => void
+    minimizePdfWindow: (windowId: string, minimized: boolean) => void
+    restorePdfWindow: (windowId: string) => void
+}
+
+export interface PdfWindowState {
+    windowId: string
+    docId: string
+    minimized: boolean
 }
 
 const AppContext = createContext<AppContextValue | undefined>(undefined)
@@ -134,9 +139,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     const [isMediaWindowOpen, setMediaWindowOpen] = useState(false)
     const [isMediaWindowMinimized, setMediaWindowMinimized] = useState(false)
     const [activeMediaDocId, setActiveMediaDocId] = useState<string | null>(null)
-    const [isPdfWindowOpen, setPdfWindowOpen] = useState(false)
-    const [isPdfWindowMinimized, setPdfWindowMinimized] = useState(false)
-    const [activePdfDocId, setActivePdfDocId] = useState<string | null>(null)
+    const [pdfWindows, setPdfWindows] = useState<PdfWindowState[]>([])
 
 
     useEffect(() => {
@@ -367,6 +370,24 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         })
     }
 
+    const openPdfWindow = (docId: string) => {
+        const windowId = `pdf-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
+        setPdfWindows(prev => [...prev, { windowId, docId, minimized: false }])
+        return windowId
+    }
+
+    const closePdfWindow = (windowId: string) => {
+        setPdfWindows(prev => prev.filter(window => window.windowId !== windowId))
+    }
+
+    const minimizePdfWindow = (windowId: string, minimized: boolean) => {
+        setPdfWindows(prev => prev.map(window => window.windowId === windowId ? { ...window, minimized } : window))
+    }
+
+    const restorePdfWindow = (windowId: string) => {
+        minimizePdfWindow(windowId, false)
+    }
+
     const deleteDoc = (id: string) => {
         setSavedDocs(prev => {
             const target = prev.find(d => d.id === id)
@@ -447,12 +468,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
                 setMediaWindowMinimized,
                 activeMediaDocId,
                 setActiveMediaDocId,
-                isPdfWindowOpen,
-                setPdfWindowOpen,
-                isPdfWindowMinimized,
-                setPdfWindowMinimized,
-                activePdfDocId,
-                setActivePdfDocId,
+                pdfWindows,
+                openPdfWindow,
+                closePdfWindow,
+                minimizePdfWindow,
+                restorePdfWindow,
             }}
         >
             {children}

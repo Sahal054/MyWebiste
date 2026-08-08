@@ -21,7 +21,7 @@ export default function FolderWindow() {
         removeDocFromFolder,
         setNewDocOpen, setNewDocMinimized, setOpenSavedDocId,
         setMediaWindowOpen, setActiveMediaDocId,
-        setPdfWindowOpen, setPdfWindowMinimized, setActivePdfDocId,
+        openPdfWindow,
     } = useApp()
     const dragControls = useDragControls()
     const [isMaximized, setIsMaximized] = useState(false)
@@ -54,9 +54,7 @@ export default function FolderWindow() {
             return
         }
         if (isPdf(target.filename)) {
-            setActivePdfDocId(target.id)
-            setPdfWindowMinimized(false)
-            setPdfWindowOpen(true)
+            openPdfWindow(target.id)
             return
         }
         if (folder?.id === CERTIFICATIONS_FOLDER_ID) return

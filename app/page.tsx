@@ -11,24 +11,42 @@ import MediaWindow from '../components/MediaWindow'
 import PdfWindow from '../components/PdfWindow'
 import { useApp } from '../context/App'
 import { motion, AnimatePresence } from 'framer-motion'
+import { CERTIFICATIONS_FOLDER_ID, CERTIFICATIONS_FOLDER_NAME } from '../lib/certifications'
 
 // Minimized pill strip — sits above the dock for all minimized windows
 function MinimizedTaskbar() {
     const {
         isDocOpen, isDocMinimized, setDocMinimized,
         isNewDocOpen, isNewDocMinimized, setNewDocMinimized,
+        isProjectsOpen, isProjectsMinimized, setProjectsMinimized,
         isFolderWindowOpen, isFolderWindowMinimized, setFolderWindowMinimized,
         activeFolderWindowId, userFolders,
         isTrashOpen, isTrashMinimized, setTrashMinimized, setTrashOpen,
         isMediaWindowOpen, isMediaWindowMinimized, setMediaWindowMinimized,
         activeMediaDocId, savedDocs,
-        isPdfWindowOpen, isPdfWindowMinimized, setPdfWindowMinimized,
-        activePdfDocId, certificationDocs,
+        pdfWindows, certificationDocs, restorePdfWindow,
     } = useApp()
 
-    const activeFolder = userFolders.find(folder => folder.id === activeFolderWindowId)
+    const activeFolder = activeFolderWindowId === CERTIFICATIONS_FOLDER_ID
+        ? { id: CERTIFICATIONS_FOLDER_ID, name: CERTIFICATIONS_FOLDER_NAME }
+        : userFolders.find(folder => folder.id === activeFolderWindowId)
     const activeMediaDoc = savedDocs.find(doc => doc.id === activeMediaDocId)
-    const activePdfDoc = [...savedDocs, ...certificationDocs].find(doc => doc.id === activePdfDocId)
+    const pdfDocs = [...savedDocs, ...certificationDocs]
+
+    const pdfPills = pdfWindows
+        .filter(window => window.minimized)
+        .map((window, index, array) => {
+            const doc = pdfDocs.find(item => item.id === window.docId)
+            if (!doc) return null
+            const duplicates = array.filter(item => item.docId === window.docId).length
+            return {
+                key: window.windowId,
+                label: duplicates > 1 ? `${doc.filename} ${array.filter(item => item.docId === window.docId).indexOf(window) + 1}` : doc.filename,
+                color: 'bg-indigo-400',
+                onClick: () => restorePdfWindow(window.windowId),
+            }
+        })
+        .filter(Boolean) as { key: string; label: string; color: string; onClick: () => void }[]
 
     const pills = [
         isDocOpen && isDocMinimized && {
@@ -42,6 +60,12 @@ function MinimizedTaskbar() {
             label: 'New Doc',
             color: 'bg-blue-400',
             onClick: () => setNewDocMinimized(false),
+        },
+        isProjectsOpen && isProjectsMinimized && {
+            key: 'projects',
+            label: 'Projects',
+            color: 'bg-emerald-400',
+            onClick: () => setProjectsMinimized(false),
         },
         isFolderWindowOpen && isFolderWindowMinimized && activeFolder && {
             key: 'folder',
@@ -61,12 +85,7 @@ function MinimizedTaskbar() {
             color: 'bg-purple-400',
             onClick: () => setMediaWindowMinimized(false),
         },
-        isPdfWindowOpen && isPdfWindowMinimized && activePdfDoc && {
-            key: 'pdf',
-            label: activePdfDoc.filename,
-            color: 'bg-indigo-400',
-            onClick: () => setPdfWindowMinimized(false),
-        },
+        ...pdfPills,
     ].filter(Boolean) as { key: string; label: string; color: string; onClick: () => void }[]
 
     return (

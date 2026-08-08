@@ -28,7 +28,7 @@ function fileIcon(filename: string) {
 }
 
 export default function ProjectWindow() {
-    const { isProjectsOpen, setProjectsOpen, savedDocs, projectFolderItems, removeFromProjectFolder } = useApp()
+    const { isProjectsOpen, setProjectsOpen, isProjectsMinimized, setProjectsMinimized, savedDocs, projectFolderItems, removeFromProjectFolder } = useApp()
     const dragControls = useDragControls()
     const [isMaximized, setIsMaximized] = useState(false)
     const W = 760, H = 500
@@ -36,7 +36,7 @@ export default function ProjectWindow() {
 
     return (
         <AnimatePresence>
-            {isProjectsOpen && (
+            {isProjectsOpen && !isProjectsMinimized && (
                 <motion.div
                     drag={!isMaximized}
                     dragControls={dragControls}
@@ -60,13 +60,14 @@ export default function ProjectWindow() {
                         <div className="flex items-center gap-1.5 group/lights">
                             <button
                                 onPointerDown={e => e.stopPropagation()}
-                                onClick={() => setProjectsOpen(false)}
+                                onClick={() => { setProjectsMinimized(false); setProjectsOpen(false) }}
                                 className="w-3.5 h-3.5 rounded-full bg-[#ff5f57] border border-[#e0443e] flex items-center justify-center hover:opacity-90"
                             >
                                 <X className="w-2 h-2 opacity-0 group-hover/lights:opacity-100 text-[#4d0000]" strokeWidth={3} />
                             </button>
                             <button
                                 onPointerDown={e => e.stopPropagation()}
+                                onClick={() => setProjectsMinimized(true)}
                                 className="w-3.5 h-3.5 rounded-full bg-[#ffbd2e] border border-[#e0a21c]"
                             />
                             <button

@@ -140,12 +140,12 @@ export default function Desktop() {
         setNewDocOpen, setNewDocMinimized, setOpenSavedDocId,
         savedDocs, moveToTrash, addSavedDoc, addMediaDoc,
         isTrashOpen, setTrashOpen, setTrashMinimized,
-        setProjectsOpen,
+        setProjectsOpen, setProjectsMinimized,
         projectFolderItems, addToProjectFolder,
         userFolders, createFolder, addDocToFolder,
         setActiveFolderWindowId, setFolderWindowOpen, setFolderWindowMinimized,
         setMediaWindowOpen, setMediaWindowMinimized, setActiveMediaDocId,
-        setPdfWindowOpen, setPdfWindowMinimized, setActivePdfDocId,
+        openPdfWindow,
         activeFolderWindowId,
         deleteFolder,
     } = useApp()
@@ -169,9 +169,7 @@ export default function Desktop() {
             return
         }
         if (isPdfFilename(doc.filename)) {
-            setActivePdfDocId(doc.id)
-            setPdfWindowMinimized(false)
-            setPdfWindowOpen(true)
+            openPdfWindow(doc.id)
             return
         }
         setNewDocMinimized(false)
@@ -189,7 +187,7 @@ export default function Desktop() {
     const desktopApps: AppItem[] = [
         { label: 'Resume',  iconUrl:'https://res.cloudinary.com/dmukukwp6/image/upload/typewriter_classic_3e6454d7f6.png',    Icon: null, onClick: () => setDocOpen(true) },
         { label: CERTIFICATIONS_FOLDER_NAME, Icon: null, iconUrl:'https://res.cloudinary.com/dmukukwp6/image/upload/folder_classic_d2fdf96f82.png', onClick: () => { setActiveFolderWindowId(CERTIFICATIONS_FOLDER_ID); setFolderWindowOpen(true); setFolderWindowMinimized(false) } },
-        { label: 'Projects',Icon: null, iconUrl:'https://res.cloudinary.com/dmukukwp6/image/upload/document_bb8267664e.png', onClick: () => setProjectsOpen(true) },
+        { label: 'Projects',Icon: null, iconUrl:'https://res.cloudinary.com/dmukukwp6/image/upload/document_bb8267664e.png', onClick: () => { setProjectsMinimized(false); setProjectsOpen(true) } },
         { label: 'Spreadsheet', Icon: null, onClick: () => router.push('/experience') },
         { label: 'Envelope',    Icon: null, iconUrl: 'https://res.cloudinary.com/dmukukwp6/image/upload/contact_4af3eed18f.png', onClick: () => router.push('/contact') },
         { label: 'Server Stats', Icon: null, iconUrl:'https://res.cloudinary.com/dmukukwp6/image/upload/data_warehouse_classic_224c4dcd25.png', onClick: () => setNotificationsOpen(true) },
@@ -465,12 +463,12 @@ export default function Desktop() {
                     >
                         <h3 className="text-sm font-bold uppercase tracking-widest mb-2 dark:text-white">Add Media</h3>
                         <p className="text-xs text-gray-500 dark:text-gray-400 mb-4">
-                            Pick an image or video from your device. It will be saved as a desktop item.
+                            Pick an image, video, or PDF from your device. It will be saved as a desktop item.
                         </p>
                         <input
                             ref={mediaInputRef}
                             type="file"
-                            accept="image/*,video/*"
+                            accept="image/*,video/*,application/pdf"
                             className="hidden"
                             onChange={async e => {
                                 const file = e.target.files?.[0]
