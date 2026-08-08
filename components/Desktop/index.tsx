@@ -9,6 +9,7 @@ import { useApp } from '../../context/App'
 import ContextMenu, { ContextMenuItemProps } from '../RadixUI/ContextMenu'
 import { Check } from 'lucide-react'
 import { storeMediaFile } from './mediaStorage'
+import { CERTIFICATIONS_FOLDER_ID, CERTIFICATIONS_FOLDER_NAME } from '../../lib/certifications'
 
 // ── Wallpaper presets ─────────────────────────────────────────────────────────
 type GardenConfig = {
@@ -144,6 +145,7 @@ export default function Desktop() {
         userFolders, createFolder, addDocToFolder,
         setActiveFolderWindowId, setFolderWindowOpen, setFolderWindowMinimized,
         setMediaWindowOpen, setMediaWindowMinimized, setActiveMediaDocId,
+        setPdfWindowOpen, setPdfWindowMinimized, setActivePdfDocId,
         activeFolderWindowId,
         deleteFolder,
     } = useApp()
@@ -155,6 +157,7 @@ export default function Desktop() {
     const [addDeviceMediaPrompt, setAddDeviceMediaPrompt] = useState(false)
 
     const isMediaFilename = (name: string) => ['mov', 'mp4', 'avi', 'webm', 'png', 'jpg', 'jpeg', 'gif', 'webp'].includes(name.toLowerCase().split('.').pop() ?? '')
+    const isPdfFilename = (name: string) => name.toLowerCase().endsWith('.pdf')
 
     const openSavedItem = (docId: string) => {
         const doc = savedDocs.find(d => d.id === docId)
@@ -163,6 +166,12 @@ export default function Desktop() {
             setActiveMediaDocId(doc.id)
             setMediaWindowMinimized(false)
             setMediaWindowOpen(true)
+            return
+        }
+        if (isPdfFilename(doc.filename)) {
+            setActivePdfDocId(doc.id)
+            setPdfWindowMinimized(false)
+            setPdfWindowOpen(true)
             return
         }
         setNewDocMinimized(false)
@@ -179,6 +188,7 @@ export default function Desktop() {
 
     const desktopApps: AppItem[] = [
         { label: 'Resume',  iconUrl:'https://res.cloudinary.com/dmukukwp6/image/upload/typewriter_classic_3e6454d7f6.png',    Icon: null, onClick: () => setDocOpen(true) },
+        { label: CERTIFICATIONS_FOLDER_NAME, Icon: null, iconUrl:'https://res.cloudinary.com/dmukukwp6/image/upload/folder_classic_d2fdf96f82.png', onClick: () => { setActiveFolderWindowId(CERTIFICATIONS_FOLDER_ID); setFolderWindowOpen(true); setFolderWindowMinimized(false) } },
         { label: 'Projects',Icon: null, iconUrl:'https://res.cloudinary.com/dmukukwp6/image/upload/document_bb8267664e.png', onClick: () => setProjectsOpen(true) },
         { label: 'Spreadsheet', Icon: null, onClick: () => router.push('/experience') },
         { label: 'Envelope',    Icon: null, iconUrl: 'https://res.cloudinary.com/dmukukwp6/image/upload/contact_4af3eed18f.png', onClick: () => router.push('/contact') },

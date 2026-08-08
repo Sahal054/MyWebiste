@@ -8,6 +8,7 @@ import ProjectWindow from '@/components/ProjectsWindow'
 import TrashWindow from '../components/TrashWindow'
 import FolderWindow from '../components/FolderWindow'
 import MediaWindow from '../components/MediaWindow'
+import PdfWindow from '../components/PdfWindow'
 import { useApp } from '../context/App'
 import { motion, AnimatePresence } from 'framer-motion'
 
@@ -21,10 +22,13 @@ function MinimizedTaskbar() {
         isTrashOpen, isTrashMinimized, setTrashMinimized, setTrashOpen,
         isMediaWindowOpen, isMediaWindowMinimized, setMediaWindowMinimized,
         activeMediaDocId, savedDocs,
+        isPdfWindowOpen, isPdfWindowMinimized, setPdfWindowMinimized,
+        activePdfDocId, certificationDocs,
     } = useApp()
 
     const activeFolder = userFolders.find(folder => folder.id === activeFolderWindowId)
     const activeMediaDoc = savedDocs.find(doc => doc.id === activeMediaDocId)
+    const activePdfDoc = [...savedDocs, ...certificationDocs].find(doc => doc.id === activePdfDocId)
 
     const pills = [
         isDocOpen && isDocMinimized && {
@@ -56,6 +60,12 @@ function MinimizedTaskbar() {
             label: activeMediaDoc.filename,
             color: 'bg-purple-400',
             onClick: () => setMediaWindowMinimized(false),
+        },
+        isPdfWindowOpen && isPdfWindowMinimized && activePdfDoc && {
+            key: 'pdf',
+            label: activePdfDoc.filename,
+            color: 'bg-indigo-400',
+            onClick: () => setPdfWindowMinimized(false),
         },
     ].filter(Boolean) as { key: string; label: string; color: string; onClick: () => void }[]
 
@@ -96,6 +106,7 @@ export default function Home() {
             <TrashWindow />
             <FolderWindow />
             <MediaWindow />
+            <PdfWindow />
             <MinimizedTaskbar />
         </main>
     )

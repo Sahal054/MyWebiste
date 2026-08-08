@@ -3,6 +3,7 @@ import React, { useState } from 'react'
 import { motion, AnimatePresence, useDragControls } from 'framer-motion'
 import { X, Maximize2, Minimize2, FileText, Film, FolderMinus, Image as ImageIcon } from 'lucide-react'
 import { useApp } from '../../context/App'
+import { CERTIFICATIONS_FOLDER_ID, CERTIFICATIONS_FOLDER_NAME } from '../../lib/certifications'
 
 function fileIcon(filename: string) {
     const ext = filename.toLowerCase().split('.').pop() ?? ''
@@ -16,19 +17,25 @@ export default function FolderWindow() {
         isFolderWindowOpen, setFolderWindowOpen,
         isFolderWindowMinimized, setFolderWindowMinimized,
         activeFolderWindowId, setActiveFolderWindowId,
-        userFolders, savedDocs,
+        userFolders, certificationDocs, savedDocs,
         removeDocFromFolder,
         setNewDocOpen, setNewDocMinimized, setOpenSavedDocId,
         setMediaWindowOpen, setActiveMediaDocId,
+        setPdfWindowOpen, setPdfWindowMinimized, setActivePdfDocId,
     } = useApp()
     const dragControls = useDragControls()
     const [isMaximized, setIsMaximized] = useState(false)
     const W = 620, H = 420
 
-    const folder = userFolders.find(f => f.id === activeFolderWindowId)
-    const folderDocs = savedDocs.filter(d => folder?.items.includes(d.id))
+    const folder = activeFolderWindowId === CERTIFICATIONS_FOLDER_ID
+        ? { id: CERTIFICATIONS_FOLDER_ID, name: CERTIFICATIONS_FOLDER_NAME, items: certificationDocs.map(doc => doc.id) }
+        : userFolders.find(f => f.id === activeFolderWindowId)
+    const folderDocs = folder?.id === CERTIFICATIONS_FOLDER_ID
+        ? certificationDocs
+        : savedDocs.filter(d => folder?.items.includes(d.id))
     const isVideo = (filename: string) => ['mov', 'mp4', 'avi', 'webm'].includes(filename.toLowerCase().split('.').pop() ?? '')
     const isImage = (filename: string) => ['png', 'jpg', 'jpeg', 'gif', 'webp'].includes(filename.toLowerCase().split('.').pop() ?? '')
+    const isPdf = (filename: string) => filename.toLowerCase().endsWith('.pdf')
 
     const handleClose = () => {
         setFolderWindowOpen(false)
@@ -38,14 +45,23 @@ export default function FolderWindow() {
 
     const openItem = (docId: string) => {
         const doc = savedDocs.find(d => d.id === docId)
-        if (!doc) return
-        if (isVideo(doc.filename) || isImage(doc.filename)) {
-            setActiveMediaDocId(doc.id)
+        const certificationDoc = certificationDocs.find(d => d.id === docId)
+        const target = doc ?? certificationDoc
+        if (!target) return
+        if (isVideo(target.filename) || isImage(target.filename)) {
+            setActiveMediaDocId(target.id)
             setMediaWindowOpen(true)
             return
         }
+        if (isPdf(target.filename)) {
+            setActivePdfDocId(target.id)
+            setPdfWindowMinimized(false)
+            setPdfWindowOpen(true)
+            return
+        }
+        if (folder?.id === CERTIFICATIONS_FOLDER_ID) return
         setNewDocMinimized(false)
-        setOpenSavedDocId(doc.id)
+        setOpenSavedDocId(target.id)
         setNewDocOpen(true)
     }
 
@@ -139,15 +155,17 @@ export default function FolderWindow() {
                                                     >
                                                         <Icon className="w-8 h-8 text-gray-500 dark:text-gray-400" strokeWidth={1.5} />
                                                     </button>
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => removeDocFromFolder(folder.id, doc.id)}
-                                                        title="Remove from folder"
-                                                        onPointerDown={e => e.stopPropagation()}
-                                                        className="absolute top-1 right-1 p-1 bg-black/60 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
-                                                    >
-                                                        <FolderMinus className="w-5 h-5 text-white" strokeWidth={2} />
-                                                    </button>
+                                                    {folder.id !== CERTIFICATIONS_FOLDER_ID && (
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => removeDocFromFolder(folder.id, doc.id)}
+                                                            title="Remove from folder"
+                                                            onPointerDown={e => e.stopPropagation()}
+                                                            className="absolute top-1 right-1 p-1 bg-black/60 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+                                                        >
+                                                            <FolderMinus className="w-5 h-5 text-white" strokeWidth={2} />
+                                                        </button>
+                                                    )}
                                                 </div>
                                                 <span className="text-[10px] text-gray-600 dark:text-gray-400 text-center leading-tight max-w-full truncate px-1">
                                                     {doc.filename}

@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react'
 import { deleteMediaFile, clearMediaFiles } from '../components/Desktop/mediaStorage'
+import { CERTIFICATION_RECORDS } from '../lib/certifications'
 
 export interface UserFolder {
     id: string
@@ -74,6 +75,7 @@ interface AppContextValue {
     deleteFolder: (folderId: string) => void
     restoreFolder: (folderId: string) => void
     deleteFolderPermanently: (folderId: string) => void
+    certificationDocs: SavedDoc[]
     isFolderWindowOpen: boolean
     setFolderWindowOpen: (open: boolean) => void
     isFolderWindowMinimized: boolean
@@ -86,6 +88,12 @@ interface AppContextValue {
     setMediaWindowMinimized: (min: boolean) => void
     activeMediaDocId: string | null
     setActiveMediaDocId: (id: string | null) => void
+    isPdfWindowOpen: boolean
+    setPdfWindowOpen: (open: boolean) => void
+    isPdfWindowMinimized: boolean
+    setPdfWindowMinimized: (min: boolean) => void
+    activePdfDocId: string | null
+    setActivePdfDocId: (id: string | null) => void
 }
 
 const AppContext = createContext<AppContextValue | undefined>(undefined)
@@ -112,12 +120,23 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     const [isHoveringTrash, setIsHoveringTrash] = useState(false)
     const [projectFolderItems, setProjectFolderItems] = useState<string[]>([])
     const [userFolders, setUserFolders] = useState<UserFolder[]>([])
+    const [certificationDocs, setCertificationDocs] = useState<SavedDoc[]>(
+        CERTIFICATION_RECORDS.map(record => ({
+            id: record.id,
+            filename: record.filename,
+            content: record.url,
+            createdAt: record.createdAt,
+        }))
+    )
     const [isFolderWindowOpen, setFolderWindowOpen] = useState(false)
     const [isFolderWindowMinimized, setFolderWindowMinimized] = useState(false)
     const [activeFolderWindowId, setActiveFolderWindowId] = useState<string | null>(null)
     const [isMediaWindowOpen, setMediaWindowOpen] = useState(false)
     const [isMediaWindowMinimized, setMediaWindowMinimized] = useState(false)
     const [activeMediaDocId, setActiveMediaDocId] = useState<string | null>(null)
+    const [isPdfWindowOpen, setPdfWindowOpen] = useState(false)
+    const [isPdfWindowMinimized, setPdfWindowMinimized] = useState(false)
+    const [activePdfDocId, setActivePdfDocId] = useState<string | null>(null)
 
 
     useEffect(() => {
@@ -155,6 +174,19 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
             const uf = localStorage.getItem(FOLDERS_KEY)
             if (uf) setUserFolders(JSON.parse(uf))
         } catch {}
+
+        void fetch('/api/certifications')
+            .then(res => res.ok ? res.json() : null)
+            .then(data => {
+                if (!data?.docs) return
+                setCertificationDocs(data.docs.map((doc: typeof CERTIFICATION_RECORDS[number]) => ({
+                    id: doc.id,
+                    filename: doc.filename,
+                    content: doc.url,
+                    createdAt: doc.createdAt,
+                })))
+            })
+            .catch(() => {})
     }, [])
 
     useEffect(() => {
@@ -402,6 +434,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
                 deleteFolder,
                 restoreFolder,
                 deleteFolderPermanently,
+                certificationDocs,
                 isFolderWindowOpen,
                 setFolderWindowOpen,
                 isFolderWindowMinimized,
@@ -414,6 +447,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
                 setMediaWindowMinimized,
                 activeMediaDocId,
                 setActiveMediaDocId,
+                isPdfWindowOpen,
+                setPdfWindowOpen,
+                isPdfWindowMinimized,
+                setPdfWindowMinimized,
+                activePdfDocId,
+                setActivePdfDocId,
             }}
         >
             {children}
