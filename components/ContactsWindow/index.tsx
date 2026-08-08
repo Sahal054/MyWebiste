@@ -1,28 +1,64 @@
 "use client";
 
-import React, { useState } from 'react'
+import React, { useState, useCallback, useEffect } from 'react'
 import { motion, AnimatePresence, useDragControls } from 'framer-motion'
-import { X, Maximize2, Mail, Link2, Send } from 'lucide-react'
+import { X, Maximize2, Minus, Mail, Link2, Send } from 'lucide-react'
 import { useApp } from '../../context/App'
 
 const CONTACT_EMAIL = 'you@example.com'
 const LINKEDIN_URL = 'https://www.linkedin.com/in/your-linkedin-handle/'
+const MIN_W = 420
+const MIN_H = 300
 
 export default function ContactWindow() {
-    const { isContactOpen, setContactOpen } = useApp()
+    // 1. Pull in the new minimize states
+    const { isContactOpen, setContactOpen, isContactMinimized, setContactMinimized } = useApp()
     const dragControls = useDragControls()
     const [isMaximized, setIsMaximized] = useState(false)
+    const [isMobile, setIsMobile] = useState(false)
+    
+    // Resize state (starts at 640x560)
+    const [size, setSize] = useState({ w: 640, h: 560 })
+
     const [email, setEmail] = useState('')
     const [message, setMessage] = useState('')
     const [isLoading, setIsLoading] = useState(false)
     const [successMessage, setSuccessMessage] = useState<string | null>(null)
     const [errorMessage, setErrorMessage] = useState<string | null>(null)
-    const W = 640, H = 560
+
+    useEffect(() => {
+        const check = () => setIsMobile(window.innerWidth < 768)
+        check()
+        window.addEventListener('resize', check)
+        return () => window.removeEventListener('resize', check)
+    }, [])
 
     const close = () => {
         setContactOpen(false)
         setIsMaximized(false)
+        setContactMinimized(false)
     }
+
+    // 2. Add the resizing logic (identical to DocEditorWindow)
+    const startResize = useCallback((
+        e: React.PointerEvent,
+        edges: { right?: boolean; bottom?: boolean }
+    ) => {
+        e.preventDefault()
+        e.stopPropagation()
+        const sx = e.clientX, sy = e.clientY
+        const sw = size.w, sh = size.h
+        const onMove = (ev: PointerEvent) => setSize(prev => ({
+            w: edges.right ? Math.max(MIN_W, sw + ev.clientX - sx) : prev.w,
+            h: edges.bottom ? Math.max(MIN_H, sh + ev.clientY - sy) : prev.h,
+        }))
+        const onUp = () => {
+            window.removeEventListener('pointermove', onMove)
+            window.removeEventListener('pointerup', onUp)
+        }
+        window.addEventListener('pointermove', onMove)
+        window.addEventListener('pointerup', onUp)
+    }, [size])
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
@@ -55,11 +91,15 @@ export default function ContactWindow() {
         }
     }
 
+    // 3. Only visible if open AND not minimized
+    const isVisible = isContactOpen && !isContactMinimized
+    const isFloating = !isMobile && !isMaximized
+
     return (
         <AnimatePresence>
-            {isContactOpen && (
+            {isVisible && (
                 <motion.div
-                    drag={!isMaximized}
+                    drag={isFloating}
                     dragControls={dragControls}
                     dragListener={false}
                     dragMomentum={false}
@@ -67,17 +107,24 @@ export default function ContactWindow() {
                     animate={{ scale: 1, opacity: 1, y: 0 }}
                     exit={{ scale: 0.95, opacity: 0, y: 20 }}
                     transition={{ type: 'spring', stiffness: 320, damping: 28 }}
-                    className="fixed z-[47] flex flex-col overflow-hidden select-none rounded-xl"
-                    style={isMaximized ? { inset: '1rem' } : { top: '12vh', left: '50%', transform: 'translateX(-50%)', width: W, height: H }}
+                    className={`fixed z-[47] flex flex-col overflow-hidden select-none ${isMobile ? 'rounded-none' : 'rounded-xl'}`}
+                    style={
+                        isMobile 
+                            ? { inset: 0 } 
+                            : isMaximized 
+                                ? { inset: '1rem' } 
+                                : { top: '12vh', left: '50%', transform: 'translateX(-50%)', width: size.w, height: size.h }
+                    }
                 >
                     <div className="absolute inset-0 rounded-xl border-2 border-black/60 dark:border-white/20 pointer-events-none z-10" />
                     <div className="absolute inset-0 rounded-xl shadow-[0_20px_60px_rgba(0,0,0,0.45)] pointer-events-none" />
 
                     <div
-                        className={`relative flex items-center justify-between px-3 h-9 bg-[#e8e6e2] dark:bg-[#2a2d3a] border-b border-black/20 dark:border-white/10 flex-shrink-0 ${!isMaximized ? 'cursor-grab active:cursor-grabbing' : ''}`}
-                        onPointerDown={!isMaximized ? e => dragControls.start(e) : undefined}
+                        className={`relative flex items-center justify-between px-3 h-9 bg-[#e8e6e2] dark:bg-[#2a2d3a] border-b border-black/20 dark:border-white/10 flex-shrink-0 ${isFloating ? 'cursor-grab active:cursor-grabbing' : ''}`}
+                        onPointerDown={isFloating ? e => dragControls.start(e) : undefined}
                     >
                         <div className="flex items-center gap-1.5 group/lights">
+                            {/* RED: Close */}
                             <button
                                 onPointerDown={e => e.stopPropagation()}
                                 onClick={close}
@@ -85,6 +132,16 @@ export default function ContactWindow() {
                             >
                                 <X className="w-2 h-2 opacity-0 group-hover/lights:opacity-100 text-[#4d0000]" strokeWidth={3} />
                             </button>
+                            {/* YELLOW: Minimize */}
+                            <button 
+                                onPointerDown={e => e.stopPropagation()} 
+                                onClick={() => setContactMinimized(true)}
+                                className="w-3.5 h-3.5 rounded-full bg-[#ffbd2e] border border-[#e0a21c] flex items-center justify-center hover:opacity-90 active:opacity-70" 
+                                aria-label="Minimize"
+                            >
+                                <Minus className="w-2 h-2 opacity-0 group-hover/lights:opacity-100 text-[#5a3800]" strokeWidth={3} />
+                            </button>
+                            {/* GREEN: Maximize */}
                             <button
                                 onPointerDown={e => e.stopPropagation()}
                                 onClick={() => setIsMaximized(m => !m)}
@@ -140,13 +197,13 @@ export default function ContactWindow() {
                                 </div>
                             </section>
 
-                            <section className="rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 p-4">
+                            <section className="rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 p-4 flex flex-col">
                                 <div className="mb-4">
                                     <p className="text-xs font-bold uppercase tracking-[0.2em] text-gray-500 dark:text-gray-400">Leave a review</p>
                                     <h2 className="mt-1 text-xl font-bold text-gray-900 dark:text-gray-100">Share feedback</h2>
                                 </div>
 
-                                <form className="flex h-full flex-col gap-3" onSubmit={handleSubmit}>
+                                <form className="flex flex-col gap-3 flex-1" onSubmit={handleSubmit}>
                                     <label className="flex flex-col gap-1.5 text-sm font-medium text-gray-700 dark:text-gray-200">
                                         Email
                                         <input
@@ -165,7 +222,7 @@ export default function ContactWindow() {
                                             value={message}
                                             onChange={e => setMessage(e.target.value)}
                                             placeholder="Leave a review about the page or share a message."
-                                            className="min-h-40 flex-1 resize-none rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#1b1e2a] px-3 py-2 text-sm text-gray-900 dark:text-gray-100 outline-none focus:border-black dark:focus:border-white"
+                                            className="min-h-[120px] flex-1 resize-none rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#1b1e2a] px-3 py-2 text-sm text-gray-900 dark:text-gray-100 outline-none focus:border-black dark:focus:border-white"
                                         />
                                     </label>
 
@@ -183,7 +240,7 @@ export default function ContactWindow() {
                                     <button
                                         type="submit"
                                         disabled={isLoading}
-                                        className="inline-flex items-center justify-center gap-2 rounded-xl bg-black px-4 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-white dark:text-black"
+                                        className="inline-flex mt-auto items-center justify-center gap-2 rounded-xl bg-black px-4 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-white dark:text-black"
                                     >
                                         <Send className="h-4 w-4" />
                                         {isLoading ? 'Sending...' : 'Send message'}
@@ -192,6 +249,23 @@ export default function ContactWindow() {
                             </section>
                         </div>
                     </div>
+
+                    {/* 4. Add the Resize Handles for Desktop */}
+                    {isFloating && (
+                        <>
+                            <div onPointerDown={e => startResize(e, { right: true })}
+                                className="absolute top-0 right-0 w-2 h-full cursor-ew-resize z-20" />
+                            <div onPointerDown={e => startResize(e, { bottom: true })}
+                                className="absolute bottom-0 left-0 w-full h-2 cursor-ns-resize z-20" />
+                            <div onPointerDown={e => startResize(e, { right: true, bottom: true })}
+                                className="absolute bottom-0 right-0 w-4 h-4 cursor-se-resize z-20 flex items-end justify-end p-0.5">
+                                <svg viewBox="0 0 8 8" className="w-2.5 h-2.5 text-gray-400 dark:text-gray-600 opacity-60">
+                                    <line x1="2" y1="8" x2="8" y2="2" stroke="currentColor" strokeWidth="1.5" />
+                                    <line x1="5" y1="8" x2="8" y2="5" stroke="currentColor" strokeWidth="1.5" />
+                                </svg>
+                            </div>
+                        </>
+                    )}
                 </motion.div>
             )}
         </AnimatePresence>

@@ -98,6 +98,8 @@ interface AppContextValue {
     // Contact window
     isContactOpen: boolean
     setContactOpen: (open: boolean) => void
+    isContactMinimized: boolean;
+    setContactMinimized: (minimized: boolean) => void;
 }
 
 export interface PdfWindowState {
@@ -146,6 +148,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     const [isMediaWindowMinimized, setMediaWindowMinimized] = useState(false)
     const [activeMediaDocId, setActiveMediaDocId] = useState<string | null>(null)
     const [pdfWindows, setPdfWindows] = useState<PdfWindowState[]>([])
+    const [isContactMinimized, setContactMinimized] = useState(false);
 
 
     useEffect(() => {
@@ -515,6 +518,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
                 closePdfWindow,
                 minimizePdfWindow,
                 restorePdfWindow,
+                isContactMinimized,
+                setContactMinimized,
             }}
         >
             {children}
