@@ -26,6 +26,7 @@ function MinimizedTaskbar() {
         isMediaWindowOpen, isMediaWindowMinimized, setMediaWindowMinimized,
         activeMediaDocId, savedDocs,
         pdfWindows, certificationDocs, restorePdfWindow,
+        isContactOpen, isContactMinimized, setContactMinimized, setContactOpen,
     } = useApp()
 
     const activeFolder = activeFolderWindowId === CERTIFICATIONS_FOLDER_ID
@@ -85,6 +86,12 @@ function MinimizedTaskbar() {
             label: activeMediaDoc.filename,
             color: 'bg-purple-400',
             onClick: () => setMediaWindowMinimized(false),
+        },
+        isContactOpen && isContactMinimized && {
+            key: 'contact',
+            label: 'Contact',
+            color: 'bg-cyan-400',
+            onClick: () => { setContactMinimized(false); setContactOpen(true) },
         },
         ...pdfPills,
     ].filter(Boolean) as { key: string; label: string; color: string; onClick: () => void }[]

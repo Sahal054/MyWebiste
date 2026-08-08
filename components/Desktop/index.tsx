@@ -4,6 +4,7 @@ import React, { useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import DraggableDesktopIcon from './DraggableDesktopIcon'
 import Dock from './Dock'
+import StickyNote from '../SickyNote'
 import { AppItem } from '../OSIcons/AppIcon'
 import { useApp } from '../../context/App'
 import ContextMenu, { ContextMenuItemProps } from '../RadixUI/ContextMenu'
@@ -150,6 +151,7 @@ export default function Desktop() {
         deleteFolder,
         addDocToCertifications,
         setContactOpen,
+        setContactMinimized,
     } = useApp()
     const [showWallpaperPicker, setShowWallpaperPicker] = useState(false)
     const [newFolderPrompt, setNewFolderPrompt] = useState(false)
@@ -191,7 +193,7 @@ export default function Desktop() {
         { label: CERTIFICATIONS_FOLDER_NAME, Icon: null, iconUrl:'https://res.cloudinary.com/dmukukwp6/image/upload/folder_classic_d2fdf96f82.png', onClick: () => { setActiveFolderWindowId(CERTIFICATIONS_FOLDER_ID); setFolderWindowOpen(true); setFolderWindowMinimized(false) } },
         { label: 'Projects',Icon: null, iconUrl:'https://res.cloudinary.com/dmukukwp6/image/upload/document_bb8267664e.png', onClick: () => { setProjectsMinimized(false); setProjectsOpen(true) } },
         { label: 'Spreadsheet', Icon: null, onClick: () => router.push('/experience') },
-        { label: 'Envelope',    Icon: null, iconUrl: 'https://res.cloudinary.com/dmukukwp6/image/upload/contact_4af3eed18f.png', onClick: () => setContactOpen(true) },
+        { label: 'Envelope',    Icon: null, iconUrl: 'https://res.cloudinary.com/dmukukwp6/image/upload/contact_4af3eed18f.png', onClick: () => { setContactMinimized(false); setContactOpen(true) } },
         { label: 'Server Stats', Icon: null, iconUrl:'https://res.cloudinary.com/dmukukwp6/image/upload/data_warehouse_classic_224c4dcd25.png', onClick: () => setNotificationsOpen(true) },
         { label: 'Trash', Icon: null, iconUrl: 'https://res.cloudinary.com/dmukukwp6/image/upload/trash_classic_20ed394a8d.png', onClick: () => { setTrashMinimized(false); setTrashOpen(true) } },
         
@@ -205,7 +207,7 @@ export default function Desktop() {
             onClick: () => { setNewDocMinimized(false); setOpenSavedDocId(null); setNewDocOpen(true) },
         },
         { label: 'Notebook', Icon: null, onClick: () => router.push('/projects') },
-        { label: 'Envelope', Icon: null, iconUrl: 'https://res.cloudinary.com/dmukukwp6/image/upload/envelope_classic_8ccd5e8abc.png', onClick: () => setContactOpen(true) },
+        { label: 'Envelope', Icon: null, iconUrl: 'https://res.cloudinary.com/dmukukwp6/image/upload/envelope_classic_8ccd5e8abc.png', onClick: () => { setContactMinimized(false); setContactOpen(true) } },
         { label: 'Trash',    Icon: null,  iconUrl: 'https://res.cloudinary.com/dmukukwp6/image/upload/trash_classic_20ed394a8d.png', onClick: () => { setTrashMinimized(false); setTrashOpen(true) }},
     ]
 
@@ -294,6 +296,7 @@ export default function Desktop() {
                         </div>
                     )}
                     {/* --- END WALLPAPER LAYOUT --- */}
+                    <StickyNote />
                     <div className="p-6 flex flex-col flex-wrap gap-6 h-full content-start">
                         {desktopApps.map((app, index) => (
                             <div

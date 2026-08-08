@@ -10,7 +10,7 @@ interface DockProps {
 
 // Which app labels have a managed "open" window in the OS
 function useOpenApps() {
-    const { isNewDocOpen , isContactOpen,setContactMinimized} = useApp()
+    const { isNewDocOpen, isContactOpen } = useApp()
     return {
         'New Doc': isNewDocOpen,
         'Envelope': isContactOpen,
