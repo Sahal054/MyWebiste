@@ -9,6 +9,7 @@ import TrashWindow from '../components/TrashWindow'
 import FolderWindow from '../components/FolderWindow'
 import MediaWindow from '../components/MediaWindow'
 import PdfWindow from '../components/PdfWindow'
+import ContactWindow from '../components/ContactsWindow'
 import { useApp } from '../context/App'
 import { motion, AnimatePresence } from 'framer-motion'
 import { CERTIFICATIONS_FOLDER_ID, CERTIFICATIONS_FOLDER_NAME } from '../lib/certifications'
@@ -126,6 +127,7 @@ export default function Home() {
             <FolderWindow />
             <MediaWindow />
             <PdfWindow />
+            <ContactWindow />
             <MinimizedTaskbar />
         </main>
     )

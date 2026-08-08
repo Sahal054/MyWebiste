@@ -95,6 +95,9 @@ interface AppContextValue {
     closePdfWindow: (windowId: string) => void
     minimizePdfWindow: (windowId: string, minimized: boolean) => void
     restorePdfWindow: (windowId: string) => void
+    // Contact window
+    isContactOpen: boolean
+    setContactOpen: (open: boolean) => void
 }
 
 export interface PdfWindowState {
@@ -122,6 +125,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     const [savedDocs, setSavedDocs] = useState<SavedDoc[]>([])
     const [isProjectsOpen, setProjectsOpen] = useState(false)
     const [isProjectsMinimized, setProjectsMinimized] = useState(false)
+    const [isContactOpen, setContactOpen] = useState(false)
     const [isTrashOpen, setTrashOpen] = useState(false)
     const [isTrashMinimized, setTrashMinimized] = useState(false)
     const [isHoveringTrash, setIsHoveringTrash] = useState(false)
@@ -468,6 +472,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
                 setProjectsOpen,
                 isProjectsMinimized,
                 setProjectsMinimized,
+                isContactOpen,
+                setContactOpen,
                 clearAllDocs,
                 deleteDoc,
                 moveToTrash,
