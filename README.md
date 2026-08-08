@@ -1,36 +1,157 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Portfolio Desktop OS
 
-## Getting Started
+A recruiter-facing portfolio built as a desktop operating system simulation. The goal is to show product thinking, UI architecture, persistence strategy, drag-and-drop interactions, and backend integration in one polished experience.
 
-First, run the development server:
+## Overview
+
+This repo is not a standard brochure site. It is an interactive desktop shell with windows, a dock, folders, trash, certifications, media viewers, a contact surface, and a persistent sticky note widget. The project is designed to make technical depth obvious to a recruiter or an automated repo scanner within a few seconds.
+
+### What this demonstrates
+
+- Multi-window client state management.
+- Clear client/server separation with App Router API routes.
+- Browser persistence using `localStorage` and IndexedDB.
+- Drag-and-drop UX with trash, folder, and window interactions.
+- Recruiter-friendly certificate browsing through a dedicated folder.
+- A contact workflow that forwards submissions to Discord.
+
+## Architecture
+
+The application is organized into a few explicit layers:
+
+1. `app/page.tsx` is the root shell that mounts the desktop, all windows, and the minimized taskbar.
+2. `context/App.tsx` is the shared state and persistence layer.
+3. `components/Desktop/` owns the desktop canvas, dock, drag/drop, launcher actions, wallpaper, and file creation flows.
+4. `components/*Window` components each own their own surface and behavior.
+5. `app/api/*` handles server-side integrations like contact forwarding and certifications data.
+
+```mermaid
+flowchart TD
+	A[app/page.tsx] --> B[Desktop shell]
+	A --> C[Window components]
+	A --> D[Minimized taskbar]
+
+	B --> E[context/App.tsx]
+	C --> E
+	D --> E
+
+	E --> F[(localStorage)]
+	E --> G[(IndexedDB)]
+	E --> H[/api/contact]
+	E --> I[/api/certifications]
+
+	H --> J[Discord webhook]
+	I --> K[Hardcoded certification records]
+```
+
+## Key Systems
+
+### Desktop Shell
+
+- Draggable desktop icons.
+- A Mac-style dock.
+- Wallpaper presets with persistence.
+- A sticky note widget that stays on the desktop and autosaves.
+
+### Window Manager
+
+- Independent windows for resume, editor, projects, folders, trash, media, PDF certificates, and contact.
+- Minimize, maximize, close, and taskbar restore behavior.
+- Separate handling for media and PDF content.
+
+### Content Model
+
+- Resume and user-created docs are stored in `localStorage`.
+- Uploaded images and videos are stored in IndexedDB to avoid quota issues.
+- Certification PDFs are exposed from a backend route and surfaced inside a dedicated folder.
+- Contact submissions are forwarded through an API route to a Discord webhook.
+
+### Recruiter-Facing Certifications
+
+The certifications folder is intentionally first-class:
+
+- It appears by default on the desktop.
+- It opens in a dedicated folder window.
+- Certificates can be PDFs.
+- PDFs can be opened in their own viewer.
+- The folder acts as a curated evidence set for a recruiter.
+
+### Contact Flow
+
+The contact window contains:
+
+- an optional email field,
+- a required message field,
+- direct mail and LinkedIn links,
+- a submit action that posts to `/api/contact`,
+- server-side forwarding to Discord via webhook embed.
+
+## Tech Stack
+
+- Next.js 16 App Router
+- React 19
+- TypeScript 5
+- Tailwind CSS 4
+- Framer Motion
+- Lucide React
+- Radix UI
+- Lottie React
+- next-cloudinary
+
+## Project Structure
+
+- `app/` - app shell and API routes.
+- `components/Desktop/` - desktop canvas, dock, media storage, drag/drop, and launcher logic.
+- `components/` - windows and reusable app surfaces.
+- `context/App.tsx` - global state, persistence, and window orchestration.
+- `lib/` - shared data such as certifications.
+
+## Scripts
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm run build
+npm run start
+npm run lint
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Local Setup
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. Install dependencies.
+2. Run `npm run dev`.
+3. Open `http://localhost:3000`.
+4. Add your actual Discord webhook URL in `app/api/contact/route.ts`.
+5. Replace the placeholder certification PDF records in `lib/certifications.ts` with your real certificate links.
+6. Optionally update the fallback `.mov` URL in `context/App.tsx` and `components/Desktop/index.tsx` if you want custom starter media.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Persistence Strategy
 
-## Learn More
+- `localStorage` stores UI preferences, document metadata, folders, trash state, and the sticky note text.
+- IndexedDB stores uploaded media blobs.
+- `/api/certifications` provides the certificate list for the recruiter-facing folder.
+- `/api/contact` forwards the contact form to Discord.
 
-To learn more about Next.js, take a look at the following resources:
+## Why This Repo Is Worth Hiring For
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+This project shows more than UI polish.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- It demonstrates state modeling for a multi-surface desktop app.
+- It separates client state, browser persistence, and server integrations cleanly.
+- It uses a realistic information architecture for public-facing portfolio content.
+- It treats recruiter needs as a product requirement by making certifications easy to find and inspect.
 
-## Deploy on Vercel
+## Notes
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- The webhook URL is intentionally left as a placeholder so you can configure it per environment.
+- Certification PDFs are hardcoded by design so recruiters see a stable, curated set.
+- The repository is structured to be easy to scan by both humans and bots.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Deployment
+
+Run a production build before deployment:
+
+```bash
+npm run build
+```
+
+Then deploy the Next.js app as usual. Make sure the contact webhook and any remote asset URLs are configured for production.
