@@ -10,25 +10,79 @@ import {
 } from 'lucide-react'
 import { useApp } from '../../context/App'
 
-const DEFAULT_CONTENT = `<h1 style="font-size:1.75rem;font-weight:800;margin:0 0 4px">Your Name</h1>
-<p style="margin:0 0 16px;opacity:.75"><strong>Full-Stack Developer</strong>&nbsp;·&nbsp;your@email.com&nbsp;·&nbsp;<a href="https://github.com" style="color:#2563eb;text-decoration:underline">github.com/yourusername</a></p>
+const DEFAULT_CONTENT = `<h1 style="font-size:1.75rem;font-weight:800;margin:0 0 4px;text-align:center">SAHAL M</h1>
+<p style="margin:0 0 16px;text-align:center;font-size:0.9rem">
+  Kollam, Kerala&nbsp;·&nbsp;+91 8848307694&nbsp;·&nbsp;sahalmsachu@gmail.com<br/>
+  <a href="https://linkedin.com/in/Sahal054" style="color:#2563eb;text-decoration:underline">linkedin.com/in/Sahal054</a>&nbsp;·&nbsp;<a href="https://github.com/Sahal054" style="color:#2563eb;text-decoration:underline">github.com/Sahal054</a>
+</p>
 <hr style="margin:14px 0;border:none;border-top:2px solid currentColor;opacity:.2"/>
 
-<h2 style="font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin:20px 0 6px">About</h2>
-<p style="margin:0 0 12px">A brief description of who you are, what you build, and why you love it. This document is fully editable — click anywhere and start typing!</p>
+<h2 style="font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin:20px 0 6px">Education</h2>
+<p style="margin:0"><strong>TKM COLLEGE OF ENGINEERING</strong> <span style="float:right;opacity:.75;font-size:.9em">Nov 2021 – April 2025</span></p>
+<p style="margin:0"><em>Bachelor of Technology in Computer Science and Engineering</em> <span style="float:right;opacity:.75;font-size:.9em">Kollam, Kerala</span></p>
+<p style="margin:4px 0 12px;font-size:0.9rem"><strong>Relevant Coursework:</strong> DBMS, Software Engineering, Operating Systems, Algorithms, Artificial Intelligence, Data Structures</p>
 
-<h2 style="font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin:20px 0 6px">Experience</h2>
-<p style="margin:0"><strong>Company Name</strong>&nbsp;&mdash;&nbsp;Senior Engineer&nbsp;&nbsp;<span style="opacity:.5;font-size:.85em">2022 – present</span></p>
-<ul style="margin:6px 0 12px 20px;padding:0;line-height:1.7">
-  <li>Shipped X feature used by N users</li>
-  <li>Reduced build time by 40% through pipeline optimisation</li>
+<h2 style="font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin:20px 0 6px">Work Experience</h2>
+
+<p style="margin:0"><strong>CARESTACK</strong> <span style="float:right;opacity:.75;font-size:.9em">November 2025 – Present</span></p>
+<p style="margin:0"><em>Analyst 1 - Product Operations</em> <span style="float:right;opacity:.75;font-size:.9em">Thiruvananthapuram, Kerala</span></p>
+<ul style="margin:6px 0 16px 20px;padding:0;line-height:1.6;font-size:0.9rem">
+  <li>Developed two .NET migration tools utilizing the Lead Tools library in Microsoft Visual Studio to facilitate high-fidelity conversion of proprietary dental formats (.tig, auto) to standard PNGs via byte processing, ensuring 100% data integrity during transitions.</li>
+  <li>Streamlined onboarding for 30+ enterprise clients by architecting complex SQL workflows for the validation, mapping, and cleansing of patient records into the proprietary PMS, demonstrating strong database fundamentals and secure coding practices.</li>
 </ul>
 
-<h2 style="font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin:20px 0 6px">Skills</h2>
-<p style="margin:0 0 12px">TypeScript&nbsp;·&nbsp;React&nbsp;·&nbsp;Next.js&nbsp;·&nbsp;Node.js&nbsp;·&nbsp;Docker&nbsp;·&nbsp;PostgreSQL&nbsp;·&nbsp;Tailwind CSS</p>
+<p style="margin:0"><strong>WAHN DESIGN | wahndesign.com</strong> <span style="float:right;opacity:.75;font-size:.9em">Oct 2025 – Present</span></p>
+<p style="margin:0"><em>Freelance Web Developer</em> <span style="float:right;opacity:.75;font-size:.9em">Kollam, Kerala</span></p>
+<ul style="margin:6px 0 16px 20px;padding:0;line-height:1.6;font-size:0.9rem">
+  <li>Focused on Web Design & UI/UX by prototyping applications quickly and creating responsive and interactive designs tailored for diverse clients (4 international, 2 domestic) generating 100,000+ in revenue.</li>
+  <li>Managed the full SDLC for high-performance websites, from UI design to back-end integration and cloud deployment.</li>
+</ul>
 
-<h2 style="font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin:20px 0 6px">Education</h2>
-<p style="margin:0"><strong>Your University</strong>&nbsp;·&nbsp;B.Sc. Computer Science&nbsp;·&nbsp;2021</p>`
+<p style="margin:0"><strong>GENPRO RESEARCH (Acquired clinical research technology firm)</strong> <span style="float:right;opacity:.75;font-size:.9em">May 2023 – Aug 2023</span></p>
+<p style="margin:0"><em>Backend Developer Intern</em> <span style="float:right;opacity:.75;font-size:.9em">Thiruvananthapuram, Kerala</span></p>
+<ul style="margin:6px 0 16px 20px;padding:0;line-height:1.6;font-size:0.9rem">
+  <li>Engineered 'envstore,' a FastAPI and Docker-based tool deployed on Linux environments, generating innovative solutions to improve environment management and reduce setup cycles.</li>
+</ul>
+
+<p style="margin:0"><strong>TATA ELXSI</strong> <span style="float:right;opacity:.75;font-size:.9em">July 2024 – Aug 2024</span></p>
+<p style="margin:0"><em>Corporate Quality Intern</em> <span style="float:right;opacity:.75;font-size:.9em">Thiruvananthapuram, Kerala</span></p>
+<ul style="margin:6px 0 16px 20px;padding:0;line-height:1.6;font-size:0.9rem">
+  <li>Built a QA dashboard via Microsoft Power Apps for real-time analytics, tracking 15+ key SDLC metrics for 50+ developers.</li>
+</ul>
+
+<h2 style="font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin:20px 0 6px">University Projects</h2>
+
+<p style="margin:0"><strong>LITTLE LEMON RESTAURANT BOOKING SYSTEM</strong> <span style="float:right;opacity:.75;font-size:.9em">Aug 2025</span></p>
+<ul style="margin:6px 0 12px 20px;padding:0;line-height:1.6;font-size:0.9rem">
+  <li>Build a Django/Python/SQL application handling concurrent users with &lt;200ms response times and 98.5% automated test coverage.</li>
+</ul>
+
+<p style="margin:0"><strong>PRIVACY-PRESERVING BIOMETRIC IDENTIFICATION (Industrial Project)</strong> <span style="float:right;opacity:.75;font-size:.9em">Jan 2024</span></p>
+<ul style="margin:6px 0 12px 20px;padding:0;line-height:1.6;font-size:0.9rem">
+  <li>Architected a secure matching system using Gabor filters and Fully Homomorphic Encryption (FHE) to secure 640-dimensional feature vectors.</li>
+</ul>
+
+<h2 style="font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin:20px 0 6px">Activities</h2>
+
+<p style="margin:0"><strong>Fashion Club TKMCE</strong> <span style="float:right;opacity:.75;font-size:.9em">Aug 2023 – May 2025</span></p>
+<p style="margin:0"><em>Founder & President</em> <span style="float:right;opacity:.75;font-size:.9em">Kollam, Kerala</span></p>
+<ul style="margin:6px 0 12px 20px;padding:0;line-height:1.6;font-size:0.9rem">
+  <li>Established the campus's first fashion organization, raising ₹60,000 in corporate sponsorships and directing 3+ major campus-wide events.</li>
+</ul>
+
+<p style="margin:0"><strong>IEDC TKMCE (Innovation and Entrepreneurship Development Cell)</strong> <span style="float:right;opacity:.75;font-size:.9em">July 2022 – May 2024</span></p>
+<p style="margin:0"><em>Coordinator</em> <span style="float:right;opacity:.75;font-size:.9em">Kollam, Kerala</span></p>
+<ul style="margin:6px 0 12px 20px;padding:0;line-height:1.6;font-size:0.9rem">
+  <li>Led three national-level hackathons with 1,000+ registrations and secured ₹100,000+ in corporate funding to support student-led startups.</li>
+</ul>
+
+<h2 style="font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin:20px 0 6px">Additional</h2>
+<ul style="margin:6px 0 12px 20px;padding:0;line-height:1.6;font-size:0.9rem">
+  <li><strong>Technical Skills:</strong> Python, .NET, C#, SQL (PostgreSQL, MySQL), JavaScript, Django, FastAPI, Docker, Git, React, HTML, CSS, Linux</li>
+  <li><strong>AI/ML Techniques:</strong> RAG, Vector Embeddings, LLMs, Gemini API, AI/ML Productivity Tools</li>
+  <li><strong>Certifications & Training:</strong> CompTIA Learning Linux Command Line (2025), Meta Back-End Developer (2025)</li>
+  <li><strong>Awards:</strong> First Prize, ACM Inter-Collegiate Coding Competition (2023); Honorable Mention, National Model United Nations (2024)</li>
+</ul>`
 
 const MIN_W = 480
 const MIN_H = 320
@@ -66,7 +120,7 @@ export default function DocumentWindow() {
         }
         if (editorRef.current && !initializedRef.current) {
             const saved = localStorage.getItem(STORAGE_KEY)
-            editorRef.current.innerHTML = saved ||DEFAULT_CONTENT //  use editorRef.current.innerHTML = saved || DEFAULT_CONTENT  to load the changes made to resume
+            editorRef.current.innerHTML = DEFAULT_CONTENT //  use editorRef.current.innerHTML = saved || DEFAULT_CONTENT  to load the changes made to resume
             initializedRef.current = true
         }
     }, [isDocOpen])
