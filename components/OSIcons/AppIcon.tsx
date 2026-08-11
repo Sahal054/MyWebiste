@@ -87,7 +87,17 @@ export const AppIcon = ({ name, className = "w-12 h-12 text-primary", iconUrl }:
 
     }
     if (lowerName.endsWith('.pdf') || lowerName.endsWith('.docx') || lowerName.endsWith('.doc')) {
-        return <FileText {...iconProps} />
+        return (
+            <img
+                src='https://res.cloudinary.com/dmukukwp6/image/upload/pdf_classic_069acad91b.png'
+                alt={name}
+                className={`${className}object-contain`}
+                draggable = {false}
+            
+            
+            /> 
+
+        )
     }
 
     // Maps the legacy string names used in Desktop/index.tsx to Lucide React icons

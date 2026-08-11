@@ -36,7 +36,7 @@ export default function StickyNote() {
             className="fixed top-24 right-0 z-40 flex drop-shadow-2xl"
         >
             {/* RETRO WINDOWS 95 PIXEL BUTTON */}
-            <button
+            {/* <button
                 onClick={() => setIsOpen(!isOpen)}
                 // Changed background to #d4d0c8 (Classic Windows 9x Beige)
                 className="absolute -left-10 top-4 w-10 h-10 bg-[#d4d0c8] text-black border-[3px] border-t-white border-l-white border-b-[#808080] border-r-[#808080] flex items-center justify-center active:border-t-[#808080] active:border-l-[#808080] active:border-b-white active:border-r-white"
@@ -45,6 +45,20 @@ export default function StickyNote() {
                 <span className="font-mono text-xl font-bold leading-none mt-[-2px] pointer-events-none select-none">
                     {isOpen ? '>' : '<'}
                 </span>
+            </button> */}
+            <button
+                onClick={() => setIsOpen(!isOpen)}
+                // Removed the retro borders and background, made it transparent with a scale effect on hover/click
+                className="absolute -left-12 top-4 w-12 h-12 bg-[#f5efe0] flex items-center justify-center transition-transform hover:scale-110 active:scale-95 drop-shadow-md"
+                aria-label="Toggle Sticky Note"
+>               
+                <img 
+                    src="https://res.cloudinary.com/dmukukwp6/image/upload/post_it_classic_c0c129d5b5.png" 
+                    alt="Toggle Sticky Note"
+                    // If the sticky note is open, this slightly rotates the icon to give visual feedback
+                    className={`w-full h-full object-contain pointer-events-none transition-transform duration-300 ${isOpen ? '-rotate-12' : 'rotate-0'}`}
+                    draggable={false}
+                />
             </button>
 
             {/* Retro Lined Paper Body */}

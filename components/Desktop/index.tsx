@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState } from 'react'
+import React, { useRef, useState,useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import DraggableDesktopIcon from './DraggableDesktopIcon'
 import Dock from './Dock'
@@ -192,9 +192,8 @@ export default function Desktop() {
         { label: 'Resume',  iconUrl:'https://res.cloudinary.com/dmukukwp6/image/upload/typewriter_classic_3e6454d7f6.png',    Icon: null, onClick: () => setDocOpen(true) },
         { label: CERTIFICATIONS_FOLDER_NAME, Icon: null, iconUrl:'https://res.cloudinary.com/dmukukwp6/image/upload/folder_classic_d2fdf96f82.png', onClick: () => { setActiveFolderWindowId(CERTIFICATIONS_FOLDER_ID); setFolderWindowOpen(true); setFolderWindowMinimized(false) } },
         { label: 'Projects',Icon: null, iconUrl:'https://res.cloudinary.com/dmukukwp6/image/upload/document_bb8267664e.png', onClick: () => { setProjectsMinimized(false); setProjectsOpen(true) } },
-        { label: 'Spreadsheet', Icon: null, onClick: () => router.push('/experience') },
-        { label: 'Envelope',    Icon: null, iconUrl: 'https://res.cloudinary.com/dmukukwp6/image/upload/contact_4af3eed18f.png', onClick: () => { setContactMinimized(false); setContactOpen(true) } },
-        { label: 'Server Stats', Icon: null, iconUrl:'https://res.cloudinary.com/dmukukwp6/image/upload/data_warehouse_classic_224c4dcd25.png', onClick: () => setNotificationsOpen(true) },
+        // { label: 'Spreadsheet', Icon: null, onClick: () => router.push('/experience') },
+        // { label: 'Envelope',    Icon: null, iconUrl: 'https://res.cloudinary.com/dmukukwp6/image/upload/contact_4af3eed18f.png', onClick: () => { setContactMinimized(false); setContactOpen(true) } },
         { label: 'Trash', Icon: null, iconUrl: 'https://res.cloudinary.com/dmukukwp6/image/upload/trash_classic_20ed394a8d.png', onClick: () => { setTrashMinimized(false); setTrashOpen(true) } },
         
     ]
@@ -206,7 +205,7 @@ export default function Desktop() {
             iconUrl:'https://res.cloudinary.com/dmukukwp6/image/upload/doc_classic_7f14381c43.png',
             onClick: () => { setNewDocMinimized(false); setOpenSavedDocId(null); setNewDocOpen(true) },
         },
-        { label: 'Notebook', Icon: null, onClick: () => router.push('/projects') },
+        { label: 'Server Stats', Icon: null, iconUrl:'https://res.cloudinary.com/dmukukwp6/image/upload/data_warehouse_classic_224c4dcd25.png', onClick: () => setNotificationsOpen(true) },
         { label: 'Envelope', Icon: null, iconUrl: 'https://res.cloudinary.com/dmukukwp6/image/upload/envelope_classic_8ccd5e8abc.png', onClick: () => { setContactMinimized(false); setContactOpen(true) } },
         { label: 'Trash',    Icon: null,  iconUrl: 'https://res.cloudinary.com/dmukukwp6/image/upload/trash_classic_20ed394a8d.png', onClick: () => { setTrashMinimized(false); setTrashOpen(true) }},
     ]
@@ -235,6 +234,87 @@ export default function Desktop() {
             isDeletable: true,
             onClick: () => openSavedItem(doc.id),
         }))
+
+
+
+
+
+        useEffect(() => {
+        const hasVisited = localStorage.getItem('has-visited-os')
+        
+      if (!hasVisited) {
+
+
+    const welcomeContent = `
+            <div style="font-family: sans-serif; max-width: 650px; line-height: 1.6;">
+                <h1 style="font-size: 26px; font-weight: bold; margin-bottom: 12px;">👋 Hello there, Welcome to my Desktop OS</h1>
+                <p style="margin-bottom: 24px; font-size: 15px;">
+                 Inspired by the macOS desktop experience, I built this fully interactive desktop environment from scratch using Next.js, React, and Framer Motion. The idea was to experiment with client-side state management, browser persistence, and building a UI that behaves like a real desktop.
+                </p>
+
+                <h3 style="font-size: 18px; font-weight: bold; border-bottom: 1px solid rgba(150,150,150,0.3); padding-bottom: 8px; margin-bottom: 16px;">✨ Things you can do right now:</h3>
+
+
+
+                   <p style="margin-bottom: 8px; font-size: 15px;"><b>🗂️ File System & Drag-and-Drop</b></p>
+                     <ul style="margin-bottom: 24px; padding-left: 20px; font-size: 14px; color: opacity-80;">
+                            <li style="margin-bottom: 8px;"><b>Create & Edit:</b> Click "New Doc" in the dock to open the text editor. Your text auto-saves directly to your browser's <code>localStorage</code>.</li>
+                            <li style="margin-bottom: 8px;"><b>Folders:</b> Right-click the desktop background to create new folders. You can physically drag and drop any document or media file straight into a folder window to organize your desktop.</li>
+                            <li style="margin-bottom: 8px;"><b>The Trash Can:</b> Done with a file? Drag and drop it directly onto the Trash icon (either on the desktop or the dock). It has real collision detection. You can even drag entire folders containing files into the trash to delete them all at once.</li>
+                    </ul>
+                
+                <p style="margin-bottom: 8px; font-size: 15px;"><b>🖼️ Media Handling (IndexedDB)</b></p>
+                     <ul style="margin-bottom: 24px; padding-left: 20px; font-size: 14px; color: opacity-80;">
+                         <li style="margin-bottom: 8px;"><b>Upload Your Own:</b> Right-click the desktop and select "Add Media From Device". You can upload local images, <code>.mp4</code> or <code>.mov</code> videos, and <code>.pdf</code> files. They will generate an icon on the desktop and open in dedicated media viewers.</li>
+            
+                     </ul>
+
+                <ul style="margin-bottom: 32px; padding-left: 20px; font-size: 15px; color: opacity-90; line-height: 1.7;">
+                    <li style="margin-bottom: 8px;"><b> Explore my Projects:</b> Open the Projects folder to dive into my recent work.</li>
+                    <li style="margin-bottom: 8px;"><b> Check my current focus:</b> Glance at the retro Sticky Note in the corner to see exactly what I'm actively working on or learning today.</li>
+                    <li style="margin-bottom: 8px;"><b> View my Certifications:</b> Open the desktop folder to browse my credentials inside a custom-built PDF viewer.</li>
+                    <li style="margin-bottom: 8px;"><b> View live Server Stats:</b> This entire website is actually being hosted on my personal home laptop server! Click the "Server Stats" icon to see live metrics on how the hardware is holding up.</li>
+                    <li style="margin-bottom: 8px;"><b> Leave a Review:</b> Open the Envelope app in the dock to send me a message, ask a question, or leave a review about the site.</li>
+                </ul>
+
+
+
+
+                <h3 style="font-size: 18px; font-weight: bold; border-bottom: 1px solid rgba(150,150,150,0.3); padding-bottom: 8px; margin-bottom: 16px;">⚙️ What's happening under the hood?</h3>
+
+                <p style="margin-bottom: 16px; font-size: 15px;">
+                    <b>Heavy Media Processing:</b> If you upload a video or PNG, standard local storage would crash immediately. To fix this, I made a pipeline using your browser's <code>IndexedDB</code>. It securely processes and stores heavy media blobs entirely on the client side, keeping the whole OS fast.
+                </p>
+
+                <p style="margin-bottom: 16px; font-size: 15px;">
+                    <b>State Physics & Persistence:</b> The drag-and-drop mechanics, window z-indexing, and collision detection (like throwing a folder into the trash) are all managed through complex React state. Plus, whether you write a custom markdown doc or change the wallpaper, it instantly persists to <code>localStorage</code>.
+                </p>
+
+                <p style="margin-bottom: 16px; font-size: 15px;">
+                    <b>Serverless APIs & Hardware:</b> When you submit a review via the Envelope, it hits a Next.js serverless route that triggers a Discord webhook, pinging my phone instantly. All of this is being served and routed directly from my home lab setup.
+                </p>
+
+                <p style="font-style: italic; color: #777; margin-top: 32px; font-size: 15px; text-align: center;">
+                    Go ahead and make yourself at home. Upload a video, change the theme, or just drag this exact file into the trash. Have fun exploring!
+                </p>
+            </div>
+            `
+
+
+
+        
+        // Create the file in their local storage
+        const newDoc = addSavedDoc('home.mdx', welcomeContent)
+        
+        // Pop the window open immediately
+        setOpenSavedDocId(newDoc.id)
+        setNewDocMinimized(false)
+        setNewDocOpen(true)
+
+        // Mark them as a returning visitor so this doesn't happen again
+        localStorage.setItem('has-visited-os', 'true')
+    }
+}, [addSavedDoc, setOpenSavedDocId, setNewDocMinimized, setNewDocOpen])
 
     const activeGardenConfig = WALLPAPERS.find(w => w.value === wallpaper)?.gardenConfig ?? null
 
