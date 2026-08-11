@@ -86,17 +86,41 @@ export default function ServerStatsPanel() {
     return (
         <AnimatePresence>
             {isNotificationsOpen && (
+                
+
+                
+                // <motion.div
+                //     initial={isMobile ? { y: 80, opacity: 0 } : { x: '100%', opacity: 0 }}
+                //     animate={isMobile ? { y: 0, opacity: 1 } : { x: 0, opacity: 1 }}
+                //     exit={isMobile ? { y: 80, opacity: 0 } : { x: '100%', opacity: 0 }}
+                //     transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                //     // FIXED: Added text-gray-900 dark:text-gray-100 right here!
+                //     className={`fixed z-50 flex flex-col bg-white dark:bg-[#1d1f27] text-gray-900 dark:text-gray-100 border-2 border-black dark:border-gray-600 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] rounded-lg overflow-hidden ${
+                //         isMobile
+                //             ? 'bottom-20 left-4 right-4'
+                //             : 'top-4 right-4 w-72'
+                //     }`}
+                // >
+
+
+
+
                 <motion.div
-                    initial={isMobile ? { y: 80, opacity: 0 } : { x: '100%', opacity: 0 }}
-                    animate={isMobile ? { y: 0, opacity: 1 } : { x: 0, opacity: 1 }}
-                    exit={isMobile ? { y: 80, opacity: 0 } : { x: '100%', opacity: 0 }}
-                    transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                    className={`fixed z-50 flex flex-col bg-white dark:bg-[#1d1f27] border-2 border-black dark:border-gray-600 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] rounded-lg overflow-hidden ${
-                        isMobile
-                            ? 'bottom-20 left-4 right-4'
-                            : 'top-4 right-4 w-72'
-                    }`}
-                >
+
+                        drag={!isMobile} 
+                        dragMomentum={false}
+                        // 2. CHANGE ANIMATION TO DROP DOWN INSTEAD OF SLIDE FROM RIGHT
+                        initial={isMobile ? { y: 80, opacity: 0 } : { y: -20, opacity: 0 }}
+                        animate={isMobile ? { y: 0, opacity: 1 } : { y: 0, opacity: 1 }}
+                        exit={isMobile ? { y: 80, opacity: 0 } : { y: -20, opacity: 0 }}
+                        transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                        className={`fixed z-50 flex flex-col bg-white dark:bg-[#1d1f27] text-gray-900 dark:text-gray-100 border-2 border-black dark:border-gray-600 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] rounded-lg overflow-hidden ${
+                            isMobile
+                                ? 'bottom-20 left-4 right-4'
+                                // 3. SHIFT IT 340px FROM THE RIGHT EDGE TO CLEAR THE STICKY NOTE
+                                : 'top-4 right-[340px] w-72 cursor-grab active:cursor-grabbing' 
+                        }`}
+                            >
                     {/* Header */}
                     <div className="flex items-center justify-between px-4 py-3 border-b-2 border-black dark:border-gray-600 bg-gray-50 dark:bg-gray-800">
                         <div className="flex items-center gap-2">
