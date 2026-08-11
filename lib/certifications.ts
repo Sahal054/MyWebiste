@@ -10,15 +10,34 @@ export type CertificationRecord = {
 
 export const CERTIFICATION_RECORDS: CertificationRecord[] = [
     {
-        id: 'cert-react-basics',
-        filename: 'react-basics.pdf',
-        url: 'https://res.cloudinary.com/dmukukwp6/image/upload/v1/sample.pdf',
+        id: 'cert-react-foundations',
+        filename: 'react-foundations.pdf',
+        url: '/certificates/react-foundations.pdf',
         createdAt: 1710000000000,
     },
     {
-        id: 'cert-web-performance',
-        filename: 'web-performance.pdf',
-        url: 'https://res.cloudinary.com/dmukukwp6/image/upload/v1/sample.pdf',
+        id: 'cert-meta-backend',
+        filename: 'Meta-Backend.pdf',
+        url: '/certificates/Meta-Backend.pdf',
         createdAt: 1710000100000,
+    },
+
+    {
+        id: 'cert-Microsoft',
+        filename: 'Microsoft-c.pdf',
+        url: '/certificates/Microsoft-c.pdf',
+        createdAt: 1786487609,
+    },
+   { 
+        id: 'cert-nvidia',
+        filename: 'Nvidia.pdf',
+        url: '/certificates/Nvidia.pdf',
+        createdAt: 1786487633,
+    },
+        {
+        id: 'cert-Udemy-FastApi',
+        filename: 'Udemy-FastApi.pdf',
+        url: '/certificates/Udemy-FastApi.pdf',
+        createdAt: 1786487793,
     },
 ]
