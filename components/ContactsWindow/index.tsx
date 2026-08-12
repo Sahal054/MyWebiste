@@ -2,22 +2,23 @@
 
 import React, { useState, useCallback, useEffect } from 'react'
 import { motion, AnimatePresence, useDragControls } from 'framer-motion'
-import { X, Maximize2, Minus, Mail, Link2, Send } from 'lucide-react'
+// IMPORTED Briefcase ICON HERE
+import { X, Maximize2, Minus, Mail, Link2, Send, Briefcase } from 'lucide-react'
 import { useApp } from '../../context/App'
 
-const CONTACT_EMAIL = 'you@example.com'
-const LINKEDIN_URL = 'https://www.linkedin.com/in/your-linkedin-handle/'
+const CONTACT_EMAIL = 'sahalmsachu@gmail.com'
+const LINKEDIN_URL = 'https://www.linkedin.com/in/sahal054/'
+// ADDED YOUR FREELANCE URL
+const FREELANCE_URL = 'https://wahndesign.com/' 
 const MIN_W = 420
 const MIN_H = 300
 
 export default function ContactWindow() {
-    // 1. Pull in the new minimize states
     const { isContactOpen, setContactOpen, isContactMinimized, setContactMinimized } = useApp()
     const dragControls = useDragControls()
     const [isMaximized, setIsMaximized] = useState(false)
     const [isMobile, setIsMobile] = useState(false)
     
-    // Resize state (starts at 640x560)
     const [size, setSize] = useState({ w: 640, h: 560 })
 
     const [email, setEmail] = useState('')
@@ -39,7 +40,6 @@ export default function ContactWindow() {
         setContactMinimized(false)
     }
 
-    // 2. Add the resizing logic (identical to DocEditorWindow)
     const startResize = useCallback((
         e: React.PointerEvent,
         edges: { right?: boolean; bottom?: boolean }
@@ -91,7 +91,6 @@ export default function ContactWindow() {
         }
     }
 
-    // 3. Only visible if open AND not minimized
     const isVisible = isContactOpen && !isContactMinimized
     const isFloating = !isMobile && !isMaximized
 
@@ -124,7 +123,6 @@ export default function ContactWindow() {
                         onPointerDown={isFloating ? e => dragControls.start(e) : undefined}
                     >
                         <div className="flex items-center gap-1.5 group/lights">
-                            {/* RED: Close */}
                             <button
                                 onPointerDown={e => e.stopPropagation()}
                                 onClick={close}
@@ -132,7 +130,6 @@ export default function ContactWindow() {
                             >
                                 <X className="w-2 h-2 opacity-0 group-hover/lights:opacity-100 text-[#4d0000]" strokeWidth={3} />
                             </button>
-                            {/* YELLOW: Minimize */}
                             <button 
                                 onPointerDown={e => e.stopPropagation()} 
                                 onClick={() => setContactMinimized(true)}
@@ -141,7 +138,6 @@ export default function ContactWindow() {
                             >
                                 <Minus className="w-2 h-2 opacity-0 group-hover/lights:opacity-100 text-[#5a3800]" strokeWidth={3} />
                             </button>
-                            {/* GREEN: Maximize */}
                             <button
                                 onPointerDown={e => e.stopPropagation()}
                                 onClick={() => setIsMaximized(m => !m)}
@@ -160,9 +156,10 @@ export default function ContactWindow() {
                             <section className="rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 p-4 flex flex-col gap-4">
                                 <div>
                                     <p className="text-xs font-bold uppercase tracking-[0.2em] text-gray-500 dark:text-gray-400">Get in touch</p>
-                                    <h2 className="mt-1 text-xl font-bold text-gray-900 dark:text-gray-100">Email and LinkedIn</h2>
+                                    <h2 className="mt-1 text-xl font-bold text-gray-900 dark:text-gray-100">Let's Connect</h2>
+                                    {/* UPDATED DESCRIPTION */}
                                     <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
-                                        Use the links below to reach out directly, or leave a quick review about this page.
+                                        Use the links below to reach out directly, start a new business project, or leave a quick review about this OS.
                                     </p>
                                 </div>
 
@@ -192,6 +189,22 @@ export default function ContactWindow() {
                                         <div>
                                             <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">LinkedIn</p>
                                             <p className="text-xs text-gray-500 dark:text-gray-400">Open my LinkedIn profile</p>
+                                        </div>
+                                    </a>
+
+                                    {/* NEW BUSINESS INQUIRY CARD */}
+                                    <a
+                                        href={FREELANCE_URL}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        className="flex items-center gap-3 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#1b1e2a] px-4 py-3 hover:border-gray-400 dark:hover:border-white/25 transition-colors"
+                                    >
+                                        <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-500/10 text-purple-500">
+                                            <Briefcase className="h-5 w-5" />
+                                        </span>
+                                        <div>
+                                            <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">Need a Website?</p>
+                                            <p className="text-xs text-gray-500 dark:text-gray-400">Link to my Freelance Website</p>
                                         </div>
                                     </a>
                                 </div>
@@ -250,7 +263,6 @@ export default function ContactWindow() {
                         </div>
                     </div>
 
-                    {/* 4. Add the Resize Handles for Desktop */}
                     {isFloating && (
                         <>
                             <div onPointerDown={e => startResize(e, { right: true })}
