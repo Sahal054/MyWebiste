@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from 'react'
 import { motion, AnimatePresence, useDragControls } from 'framer-motion'
-import { X, Maximize2, FileText, Film, RotateCcw, Trash2, Image as ImageIcon, Folder } from 'lucide-react'
+import { X, Minus,Maximize2, FileText, Film, RotateCcw, Trash2, Image as ImageIcon, Folder } from 'lucide-react'
 import { useApp } from '../../context/App'
 
 function fileIcon(filename: string) {
@@ -51,11 +51,15 @@ export default function TrashWindow() {
                             >
                                 <X className="w-2 h-2 opacity-0 group-hover/lights:opacity-100 text-[#4d0000]" strokeWidth={3} />
                             </button>
+
                             <button
                                 onPointerDown={e => e.stopPropagation()}
                                 onClick={() => setTrashMinimized(true)}
-                                className="w-3.5 h-3.5 rounded-full bg-[#ffbd2e] border border-[#e0a21c]"
-                            />
+                                className="w-3.5 h-3.5 rounded-full bg-[#ffbd2e] border border-[#e0a21c] flex items-center justify-center hover:opacity-90 active:opacity-70"
+                                aria-label="Minimize"
+                            >
+                                <Minus className="w-2 h-2 opacity-0 group-hover/lights:opacity-100 text-[#5a3800]" strokeWidth={3} />
+                            </button>
                             <button
                                 onPointerDown={e => e.stopPropagation()}
                                 onClick={() => setIsMaximized(m => !m)}

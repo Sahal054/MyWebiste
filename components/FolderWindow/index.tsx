@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from 'react'
 import { motion, AnimatePresence, useDragControls } from 'framer-motion'
-import { X, Maximize2, Minimize2, FileText, Film, FolderMinus, Image as ImageIcon } from 'lucide-react'
+import { X, Minus,Maximize2, Minimize2, FileText, Film, FolderMinus, Image as ImageIcon } from 'lucide-react'
 import { useApp } from '../../context/App'
 import { CERTIFICATIONS_FOLDER_ID, CERTIFICATIONS_FOLDER_NAME } from '../../lib/certifications'
 
@@ -96,12 +96,13 @@ export default function FolderWindow() {
                             >
                                 <X className="w-2 h-2 opacity-0 group-hover/lights:opacity-100 text-[#4d0000]" strokeWidth={3} />
                             </button>
-                            <button
+                           <button
                                 onPointerDown={e => e.stopPropagation()}
                                 onClick={() => setFolderWindowMinimized(true)}
-                                className="w-3.5 h-3.5 rounded-full bg-[#ffbd2e] border border-[#e0a21c] flex items-center justify-center hover:opacity-90"
+                                className="w-3.5 h-3.5 rounded-full bg-[#ffbd2e] border border-[#e0a21c] flex items-center justify-center hover:opacity-90 active:opacity-70"
+                                aria-label="Minimize"
                             >
-                                <Minimize2 className="w-1.5 h-1.5 opacity-0 group-hover/lights:opacity-100 text-[#5a3800]" strokeWidth={3} />
+                                <Minus className="w-2 h-2 opacity-0 group-hover/lights:opacity-100 text-[#5a3800]" strokeWidth={3} />
                             </button>
                             <button
                                 onPointerDown={e => e.stopPropagation()}

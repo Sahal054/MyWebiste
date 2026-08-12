@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react'
 import { motion, AnimatePresence, useDragControls } from 'framer-motion'
-import { X, Maximize2, Minimize2 } from 'lucide-react'
+import { X, Maximize2, Minus } from 'lucide-react'
 import { useApp } from '../../context/App'
 import { loadMediaObjectUrl } from '../Desktop/mediaStorage'
 
@@ -84,13 +84,14 @@ function PdfWindowCard({ windowId, docId }: { windowId: string; docId: string })
                     >
                         <X className="w-2 h-2 opacity-0 group-hover/lights:opacity-100 text-[#4d0000]" strokeWidth={3} />
                     </button>
-                    <button
-                        onPointerDown={e => e.stopPropagation()}
-                        onClick={() => minimizePdfWindow(windowId, true)}
-                        className="w-3.5 h-3.5 rounded-full bg-[#ffbd2e] border border-[#e0a21c] flex items-center justify-center hover:opacity-90"
-                    >
-                        <Minimize2 className="w-1.5 h-1.5 opacity-0 group-hover/lights:opacity-100 text-[#5a3800]" strokeWidth={3} />
-                    </button>
+                           <button
+                                onPointerDown={e => e.stopPropagation()}
+                                onClick={() => minimizePdfWindow(windowId,true)}
+                                className="w-3.5 h-3.5 rounded-full bg-[#ffbd2e] border border-[#e0a21c] flex items-center justify-center hover:opacity-90 active:opacity-70"
+                                aria-label="Minimize"
+                            >
+                                <Minus className="w-2 h-2 opacity-0 group-hover/lights:opacity-100 text-[#5a3800]" strokeWidth={3} />
+                            </button>
                     <button
                         onPointerDown={e => e.stopPropagation()}
                         onClick={() => setIsMaximized(m => !m)}
