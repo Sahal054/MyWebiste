@@ -46,8 +46,8 @@ const WALLPAPERS: {
     {
         id: 'slate',
         name: 'Slate Blue',
-        value: '#2d3250',
-        thumb: null,
+        value: 'https://res.cloudinary.com/dyyfvzis2/image/upload/v1786571773/wp2660154-windows-95-wallpaper-hd_ufwq12.jpg',
+        thumb: 'https://res.cloudinary.com/dyyfvzis2/image/upload/v1786571773/wp2660154-windows-95-wallpaper-hd_ufwq12.jpg',
         isUrl: false,
         color: '#2d3250',
     },
@@ -159,6 +159,7 @@ export default function Desktop() {
     const [addFilePrompt, setAddFilePrompt] = useState(false)
     const [newFileName, setNewFileName] = useState('')
     const [addDeviceMediaPrompt, setAddDeviceMediaPrompt] = useState(false)
+    const [resetKey, setResetKey] = useState(0)
 
     const isMediaFilename = (name: string) => ['mov', 'mp4', 'avi', 'webm', 'png', 'jpg', 'jpeg', 'gif', 'webp'].includes(name.toLowerCase().split('.').pop() ?? '')
     const isPdfFilename = (name: string) => name.toLowerCase().endsWith('.pdf')
@@ -211,10 +212,16 @@ export default function Desktop() {
     ]
 
     const contextMenuItems: ContextMenuItemProps[] = [
-        {
-            type: 'item',
-            label: darkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode',
-            onClick: toggleDarkMode,
+        // {
+        //     type: 'item',
+        //     label: darkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode',
+        //     onClick: toggleDarkMode,
+        // },
+
+        { 
+            type: 'item', 
+            label: 'Reset icons', 
+            onClick: () => setResetKey(prev => prev + 1) 
         },
         { type: 'separator' },
         { type: 'item', label: 'Change Wallpaper', onClick: () => setShowWallpaperPicker(true) },
@@ -317,7 +324,7 @@ export default function Desktop() {
                     )}
                     {/* --- END WALLPAPER LAYOUT --- */}
                     <StickyNote />
-                    <div className="p-6 flex flex-col flex-wrap gap-6 h-full content-start">
+                    <div key={resetKey} className="p-6 flex flex-col flex-wrap gap-6 h-full content-start">
                         {desktopApps.map((app, index) => (
                             <div
                                 key={index}
@@ -444,12 +451,15 @@ export default function Desktop() {
                             onChange={e => setNewFileName(e.target.value)}
                             onKeyDown={e => {
                                 if (e.key === 'Enter' && newFileName.trim()) {
-                                    addSavedDoc(newFileName.trim(), '')
+                                    // FIX: Grab the correct media default URL when pressing Enter
+                                    const ext = newFileName.trim().toLowerCase().split('.').pop() ?? ''
+                                    const content = MEDIA_DEFAULTS[ext] ?? ''
+                                    addSavedDoc(newFileName.trim(), content)
                                     setAddFilePrompt(false)
                                 }
                                 if (e.key === 'Escape') setAddFilePrompt(false)
                             }}
-                            placeholder="photo.png, video.mov, notes…"
+                            placeholder="photo.png, video.mov, notes"
                             autoFocus
                             className="w-full border-2 border-black dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-gray-50 dark:bg-[#2a2d3a] dark:text-white focus:outline-none focus:border-blue-500 mb-3"
                         />

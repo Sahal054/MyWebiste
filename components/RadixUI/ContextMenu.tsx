@@ -2,7 +2,6 @@
 
 import * as React from 'react'
 import { ContextMenu as RadixContextMenu } from 'radix-ui'
-import KeyboardShortcut from "components/KeyboardShortcut"
 
 export interface ContextMenuItemProps {
     type: 'item' | 'separator'
@@ -21,19 +20,28 @@ export interface ContextMenuProps {
 
 const ContextMenu = ({ children, menuItems, className }: ContextMenuProps) => {
     const TriggerClasses = className || ''
-    const ContentClasses = 'bg-primary min-w-[220px] rounded-md p-[5px] shadow-[0px_10px_38px_-10px_rgba(22,_23,_24,_0.35),_0px_10px_20px_-15px_rgba(22,_23,_24,_0.2)] will-change-[transform,opacity]'
-    const ItemClasses = 'group relative flex h-[25px] select-none items-center rounded-[3px] px-2.5 text-[13px] leading-none text-primary outline-none data-[disabled]:pointer-events-none data-[highlighted]:bg-input-bg data-[disabled]:text-muted data-[highlighted]:text-primary data-[highlighted]:bg-accent'
-    const SeparatorClasses = 'm-[5px] h-px bg-border'
+    
+    // PostHog Dark Theme Content Wrapper
+    const ContentClasses = 'min-w-[220px] bg-[#1d1f27] text-[#e2e2e4] border border-white/10 rounded-xl p-1.5 shadow-[0_10px_40px_rgba(0,0,0,0.5)] overflow-hidden font-medium text-[13px] z-[100] animate-in fade-in zoom-in-95 duration-100'
+    
+    // PostHog Dark Theme Item Wrapper
+    const ItemClasses = 'group relative flex h-[32px] select-none items-center justify-between rounded-lg px-3 text-[13px] leading-none text-[#e2e2e4] outline-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50 data-[highlighted]:bg-white/10 transition-colors cursor-pointer'
+    
+    // Subtle Dark Theme Separator
+    const SeparatorClasses = 'm-[5px] h-px bg-white/10'
 
     return (
         <RadixContextMenu.Root>
             <RadixContextMenu.Trigger className={TriggerClasses}>{children}</RadixContextMenu.Trigger>
+
             <RadixContextMenu.Portal>
-                <RadixContextMenu.Content className={ContentClasses} data-scheme="primary">
+                {/* Removed data-scheme="primary" so your light mode settings don't override the dark menu */}
+                <RadixContextMenu.Content className={ContentClasses}>
                     {menuItems.map((item, index) => {
                         if (item.type === 'separator') {
                             return <RadixContextMenu.Separator key={index} className={SeparatorClasses} />
                         }
+
                         return (
                             <RadixContextMenu.Item
                                 key={index}
@@ -41,25 +49,29 @@ const ContextMenu = ({ children, menuItems, className }: ContextMenuProps) => {
                                 disabled={item.disabled}
                                 onSelect={(e) => {
                                     item.onClick?.()
+                                    
+                                    // Preserved your original Escape event hack!
+                                    setTimeout(() => {
+                                        const escapeEvent = new KeyboardEvent('keydown', {
+                                            key: 'Escape',
+                                            bubbles: true,
+                                        })
+                                        document.dispatchEvent(escapeEvent)
+                                    }, 0)
                                 }}
                             >
-                                <div
-                                    onClick={(e) => {
-                                        setTimeout(() => {
-                                            const escapeEvent = new KeyboardEvent('keydown', {
-                                                key: 'Escape',
-                                                bubbles: true,
-                                            })
-                                            document.dispatchEvent(escapeEvent)
-                                        }, 0)
-                                    }}
-                                    className="w-full flex justify-between items-center gap-1"
-                                >
-                                    <span>{item.children || item.label}</span>
-                                    <span>
-                                        {item.shortcut && <KeyboardShortcut text={item.shortcut.join(' ')} size="sm" />}
-                                    </span>
-                                </div>
+                                <span>{item.children || item.label}</span>
+                                
+                                {/* Custom Dark Mode Shortcut Boxes */}
+                                {item.shortcut && (
+                                    <div className="flex gap-1">
+                                        {item.shortcut.map((key, i) => (
+                                            <span key={i} className="flex items-center justify-center min-w-[20px] h-5 px-1 rounded-md bg-white/5 border border-white/10 text-gray-400 text-[11px] font-mono leading-none pt-0.5">
+                                                {key}
+                                            </span>
+                                        ))}
+                                    </div>
+                                )}
                             </RadixContextMenu.Item>
                         )
                     })}
