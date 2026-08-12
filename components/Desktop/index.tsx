@@ -24,7 +24,7 @@ const WALLPAPERS: {
 }[] = [
     {
         id: 'sandy',
-        name: 'Sandy Cream',
+        name: 'Default',
         value: 'https://res.cloudinary.com/dyyfvzis2/image/upload/v1784807608/BgImageLight_xrzkez.png',
         thumb: 'https://res.cloudinary.com/dmukukwp6/image/upload/keyboard_garden_bg_light_03a349af5c.png',
         isUrl: false,
@@ -38,8 +38,8 @@ const WALLPAPERS: {
     {
         id: 'night',
         name: 'Night',
-        value: '#1a1c23',
-        thumb: null,
+        value: 'https://res.cloudinary.com/dyyfvzis2/image/upload/v1786567632/wp2660135-windows-95-wallpaper-hd_wzzsvd.jpg',
+        thumb: 'https://res.cloudinary.com/dyyfvzis2/image/upload/v1786567632/wp2660135-windows-95-wallpaper-hd_wzzsvd.jpg',
         isUrl: false,
         color: '#1a1c23',
     },
@@ -59,7 +59,7 @@ const MEDIA_DEFAULTS: Record<string, string> = {
     'jpeg': 'https://res.cloudinary.com/dyyfvzis2/image/upload/v1784988973/BgImageLight-removebgreal_tipb9u.png',
     'gif': 'https://res.cloudinary.com/dyyfvzis2/image/upload/v1784988973/BgImageLight-removebgreal_tipb9u.png',
     'webp': 'https://res.cloudinary.com/dyyfvzis2/image/upload/v1784988973/BgImageLight-removebgreal_tipb9u.png',
-    'mov': 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4',
+    'mov': 'https://res.cloudinary.com/dyyfvzis2/video/upload/v1786568222/vlipsy-talk-show-laughing-hysterically-Uc0JpkND_nyt3va.mp4',
     'mp4': 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4',
     'avi': 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4',
     'webm': 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4',
@@ -239,82 +239,22 @@ export default function Desktop() {
 
 
 
-        useEffect(() => {
+    useEffect(() => {
         const hasVisited = localStorage.getItem('has-visited-os')
-        
-      if (!hasVisited) {
-
-
-    const welcomeContent = `
-            <div style="font-family: sans-serif; max-width: 650px; line-height: 1.6;">
-                <h1 style="font-size: 26px; font-weight: bold; margin-bottom: 12px;">👋 Hello there, Welcome to my Desktop OS</h1>
-                <p style="margin-bottom: 24px; font-size: 15px;">
-                 Inspired by the macOS desktop experience, I built this fully interactive desktop environment from scratch using Next.js, React, and Framer Motion. The idea was to experiment with client-side state management, browser persistence, and building a UI that behaves like a real desktop.
-                </p>
-
-                <h3 style="font-size: 18px; font-weight: bold; border-bottom: 1px solid rgba(150,150,150,0.3); padding-bottom: 8px; margin-bottom: 16px;">✨ Things you can do right now:</h3>
-
-
-
-                   <p style="margin-bottom: 8px; font-size: 15px;"><b>🗂️ File System & Drag-and-Drop</b></p>
-                     <ul style="margin-bottom: 24px; padding-left: 20px; font-size: 14px; color: opacity-80;">
-                            <li style="margin-bottom: 8px;"><b>Create & Edit:</b> Click "New Doc" in the dock to open the text editor. Your text auto-saves directly to your browser's <code>localStorage</code>.</li>
-                            <li style="margin-bottom: 8px;"><b>Folders:</b> Right-click the desktop background to create new folders. You can physically drag and drop any document or media file straight into a folder window to organize your desktop.</li>
-                            <li style="margin-bottom: 8px;"><b>The Trash Can:</b> Done with a file? Drag and drop it directly onto the Trash icon (either on the desktop or the dock). It has real collision detection. You can even drag entire folders containing files into the trash to delete them all at once.</li>
-                    </ul>
-                
-                <p style="margin-bottom: 8px; font-size: 15px;"><b>🖼️ Media Handling (IndexedDB)</b></p>
-                     <ul style="margin-bottom: 24px; padding-left: 20px; font-size: 14px; color: opacity-80;">
-                         <li style="margin-bottom: 8px;"><b>Upload Your Own:</b> Right-click the desktop and select "Add Media From Device". You can upload local images, <code>.mp4</code> or <code>.mov</code> videos, and <code>.pdf</code> files. They will generate an icon on the desktop and open in dedicated media viewers.</li>
+               
+        if (!hasVisited) {
+            // Wait for App.tsx to populate the savedDocs, then find home.mdx
+            const homeDoc = savedDocs.find(d => d.filename === 'home.mdx')
             
-                     </ul>
-
-                <ul style="margin-bottom: 32px; padding-left: 20px; font-size: 15px; color: opacity-90; line-height: 1.7;">
-                    <li style="margin-bottom: 8px;"><b> Explore my Projects:</b> Open the Projects folder to dive into my recent work.</li>
-                    <li style="margin-bottom: 8px;"><b> Check my current focus:</b> Glance at the retro Sticky Note in the corner to see exactly what I'm actively working on or learning today.</li>
-                    <li style="margin-bottom: 8px;"><b> View my Certifications:</b> Open the desktop folder to browse my credentials inside a custom-built PDF viewer.</li>
-                    <li style="margin-bottom: 8px;"><b> View live Server Stats:</b> This entire website is actually being hosted on my personal home laptop server! Click the "Server Stats" icon to see live metrics on how the hardware is holding up.</li>
-                    <li style="margin-bottom: 8px;"><b> Leave a Review:</b> Open the Envelope app in the dock to send me a message, ask a question, or leave a review about the site.</li>
-                </ul>
-
-
-
-
-                <h3 style="font-size: 18px; font-weight: bold; border-bottom: 1px solid rgba(150,150,150,0.3); padding-bottom: 8px; margin-bottom: 16px;">⚙️ What's happening under the hood?</h3>
-
-                <p style="margin-bottom: 16px; font-size: 15px;">
-                    <b>Heavy Media Processing:</b> If you upload a video or PNG, standard local storage would crash immediately. To fix this, I made a pipeline using your browser's <code>IndexedDB</code>. It securely processes and stores heavy media blobs entirely on the client side, keeping the whole OS fast.
-                </p>
-
-                <p style="margin-bottom: 16px; font-size: 15px;">
-                    <b>State Physics & Persistence:</b> The drag-and-drop mechanics, window z-indexing, and collision detection (like throwing a folder into the trash) are all managed through complex React state. Plus, whether you write a custom markdown doc or change the wallpaper, it instantly persists to <code>localStorage</code>.
-                </p>
-
-                <p style="margin-bottom: 16px; font-size: 15px;">
-                    <b>Serverless APIs & Hardware:</b> When you submit a review via the Envelope, it hits a Next.js serverless route that triggers a Discord webhook, pinging my phone instantly. All of this is being served and routed directly from my home lab setup.
-                </p>
-
-                <p style="font-style: italic; color: #777; margin-top: 32px; font-size: 15px; text-align: center;">
-                    Go ahead and make yourself at home. Upload a video, change the theme, or just drag this exact file into the trash. Have fun exploring!
-                </p>
-            </div>
-            `
-
-
-
-        
-        // Create the file in their local storage
-        const newDoc = addSavedDoc('home.mdx', welcomeContent)
-        
-        // Pop the window open immediately
-        setOpenSavedDocId(newDoc.id)
-        setNewDocMinimized(false)
-        setNewDocOpen(true)
-
-        // Mark them as a returning visitor so this doesn't happen again
-        localStorage.setItem('has-visited-os', 'true')
-    }
-}, [addSavedDoc, setOpenSavedDocId, setNewDocMinimized, setNewDocOpen])
+            if (homeDoc) {
+                setOpenSavedDocId(homeDoc.id)
+                setNewDocMinimized(false)
+                setNewDocOpen(true)
+                // Mark them as a returning visitor so this doesn't happen again
+                localStorage.setItem('has-visited-os', 'true')
+            }
+        }
+    }, [savedDocs, setOpenSavedDocId, setNewDocMinimized, setNewDocOpen])
 
     const activeGardenConfig = WALLPAPERS.find(w => w.value === wallpaper)?.gardenConfig ?? null
 

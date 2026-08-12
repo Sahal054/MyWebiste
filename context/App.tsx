@@ -113,8 +113,50 @@ const AppContext = createContext<AppContextValue | undefined>(undefined)
 const SANDY_CREAM_URL = 'https://res.cloudinary.com/dyyfvzis2/image/upload/v1784807608/BgImageLight_xrzkez.png'
 const FOLDERS_KEY = 'user-folders'
 const DOCS_KEY = 'user-docs'
-const DEFAULT_MOV_URL = 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4'
+const DEFAULT_MOV_URL = 'https://res.cloudinary.com/dyyfvzis2/video/upload/v1786567457/vlipsy-south-park-briefcases-explode-7hp31LuO_aojxz3.mp4'
+// FIX: Corrected "cloudinarsy" to "cloudinary"
+const DEFAULT_IMG_URL = 'https://res.cloudinary.com/dyyfvzis2/image/upload/v1786567626/G2wT8rBXsAANZ6u_rvnn6w.jpg'
 
+const WELCOME_CONTENT = `
+<div style="font-family: sans-serif; max-width: 650px; line-height: 1.6;">
+    <h1 style="font-size: 26px; font-weight: bold; margin-bottom: 12px;">👋 Hello there, Welcome to my Desktop OS</h1>
+    <p style="margin-bottom: 24px; font-size: 15px;">
+     Inspired by the macOS desktop experience, I built this fully interactive desktop environment from scratch using Next.js, React, and Framer Motion. The idea was to experiment with client-side state management, browser persistence, and building a UI that behaves like a real desktop.
+    </p>
+    <h3 style="font-size: 18px; font-weight: bold; border-bottom: 1px solid rgba(150,150,150,0.3); padding-bottom: 8px; margin-bottom: 16px;">✨ Things you can do right now:</h3>
+       <p style="margin-bottom: 8px; font-size: 15px;"><b>📁 File System & Drag-and-Drop</b></p>
+         <ul style="margin-bottom: 24px; padding-left: 20px; font-size: 14px; color: opacity-80;">
+                <li style="margin-bottom: 8px;"><b>Create & Edit:</b> Click "New Doc" in the dock to open the text editor. Your text auto-saves directly to your browser's <code>localStorage</code>.</li>
+                <li style="margin-bottom: 8px;"><b>Folders:</b> Right-click the desktop background to create new folders. You can physically drag and drop any document or media file straight into a folder window to organize your desktop.</li>
+                <li style="margin-bottom: 8px;"><b>The Trash Can:</b> Done with a file? Drag and drop it directly onto the Trash icon (either on the desktop or the dock). It has real collision detection. You can even drag entire folders containing files into the trash to delete them all at once.</li>
+        </ul>
+
+     <p style="margin-bottom: 8px; font-size: 15px;"><b>🖼️ Media Handling (IndexedDB)</b></p>
+         <ul style="margin-bottom: 24px; padding-left: 20px; font-size: 14px; color: opacity-80;">
+             <li style="margin-bottom: 8px;"><b>Upload Your Own:</b> Right-click the desktop and select "Add Media From Device". You can upload local images, <code>.mp4</code> or <code>.mov</code> videos, and <code>.pdf</code> files. They will generate an icon on the desktop and open in dedicated media viewers.</li>
+                      </ul>
+    <ul style="margin-bottom: 32px; padding-left: 20px; font-size: 15px; color: opacity-90; line-height: 1.7;">
+        <li style="margin-bottom: 8px;"><b>📂 Explore my Projects:</b> Open the Projects folder to dive into my recent work.</li>
+        <li style="margin-bottom: 8px;"><b>📌 Check my current focus:</b> Glance at the retro Sticky Note in the corner to see exactly what I'm actively working on or learning today.</li>
+        <li style="margin-bottom: 8px;"><b>📜 View my Certifications:</b> Open the desktop folder to browse my credentials inside a custom-built PDF viewer.</li>
+        <li style="margin-bottom: 8px;"><b>📊 View live Server Stats:</b> This entire website is actually being hosted on my personal home laptop server! Click the "Server Stats" icon to see live metrics on how the hardware is holding up.</li>
+        <li style="margin-bottom: 8px;"><b>✉️ Leave a Review:</b> Open the Envelope app in the dock to send me a message, ask a question, or leave a review about the site.</li>
+    </ul>
+    <h3 style="font-size: 18px; font-weight: bold; border-bottom: 1px solid rgba(150,150,150,0.3); padding-bottom: 8px; margin-bottom: 16px;">🛠️ What's happening under the hood?</h3>
+    <p style="margin-bottom: 16px; font-size: 15px;">
+        <b>Heavy Media Processing:</b> If you upload a video or PNG, standard local storage would crash immediately. To fix this, I made a pipeline using your browser's <code>IndexedDB</code>. It securely processes and stores heavy media blobs entirely on the client side, keeping the whole OS fast.
+    </p>
+    <p style="margin-bottom: 16px; font-size: 15px;">
+        <b>State Physics & Persistence:</b> The drag-and-drop mechanics, window z-indexing, and collision detection (like throwing a folder into the trash) are all managed through complex React state. Plus, whether you write a custom markdown doc or change the wallpaper, it instantly persists to <code>localStorage</code>.
+    </p>
+    <p style="margin-bottom: 16px; font-size: 15px;">
+        <b>Serverless APIs & Hardware:</b> When you submit a review via the Envelope, it hits a Next.js serverless route that triggers a Discord webhook, pinging my phone instantly. All of this is being served and routed directly from my home lab setup.
+    </p>
+    <p style="font-style: italic; color: #777; margin-top: 32px; font-size: 15px; text-align: center;">
+        Go ahead and make yourself at home. Upload a video, change the theme, or just drag this exact file into the trash. Have fun exploring!
+    </p>
+</div>
+`
 export function AppProvider({ children }: { children: React.ReactNode }) {
     const [isNotificationsOpen, setNotificationsOpen] = useState(false)
     const [darkMode, setDarkMode] = useState(false)
@@ -161,32 +203,38 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
             if (raw) {
                 const parsedDocs = JSON.parse(raw) as SavedDoc[]
                 setSavedDocs(parsedDocs)
-                if (parsedDocs.length === 0) {
-                    const defaultMov = {
-                        id: 'doc-default-mov',
-                        filename: 'demo.mov',
-                        content: DEFAULT_MOV_URL,
-                        createdAt: Date.now(),
-                    }
-                    setSavedDocs([defaultMov])
-                    localStorage.setItem(DOCS_KEY, JSON.stringify([defaultMov]))
-                }
             } else {
-                const defaultMov = {
-                    id: 'doc-default-mov',
+                // IT'S A NEW VISITOR - Generate all 3 files in one clean sweep!
+                const homeDoc: SavedDoc = {
+                    id: `doc-home-${Date.now()}`,
+                    filename: 'home.mdx',
+                    content: WELCOME_CONTENT,
+                    createdAt: Date.now(),
+                }
+                const movDoc: SavedDoc = {
+                    id: `doc-mov-${Date.now()}`,
                     filename: 'demo.mov',
                     content: DEFAULT_MOV_URL,
                     createdAt: Date.now(),
                 }
-                setSavedDocs([defaultMov])
-                localStorage.setItem(DOCS_KEY, JSON.stringify([defaultMov]))
+                const imgDoc: SavedDoc = {
+                    id: `doc-img-${Date.now()}`,
+                    filename: 'painting.jpg',
+                    content: DEFAULT_IMG_URL,
+                    createdAt: Date.now(),
+                }
+
+                // Bundle them together and save exactly once
+                const initialDocs = [imgDoc, movDoc, homeDoc]
+                setSavedDocs(initialDocs)
+                localStorage.setItem(DOCS_KEY, JSON.stringify(initialDocs))
             }
+
             const pf = localStorage.getItem('project-folder')
             if (pf) setProjectFolderItems(JSON.parse(pf))
             const uf = localStorage.getItem(FOLDERS_KEY)
             if (uf) setUserFolders(JSON.parse(uf))
-        } catch {}
-
+        } catch {}  
         void fetch('/api/certifications')
             .then(res => res.ok ? res.json() : null)
             .then(data => {
@@ -218,7 +266,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
     const addSavedDoc = (filename: string, content: string): SavedDoc => {
         const doc: SavedDoc = {
-            id: `doc-${Date.now()}`,
+            id: `doc-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`,
             filename: filename.includes('.') ? filename : `${filename}.mdx`,
             content,
             createdAt: Date.now(),
@@ -233,7 +281,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
     const addMediaDoc = (filename: string, storageKey: string, mimeType: string): SavedDoc => {
         const doc: SavedDoc = {
-            id: `doc-${Date.now()}`,
+            id: `doc-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`,
             filename,
             content: '',
             createdAt: Date.now(),

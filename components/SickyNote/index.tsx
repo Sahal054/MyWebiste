@@ -71,7 +71,7 @@ export default function StickyNote() {
                     <Task>Build a custom AI Transformer model from scratch (focusing on self-attention mechanisms).</Task>
                     <Task>Architect a high-performance ETL data pipeline API using Python.</Task>
                     <Task checked>Daily LeetCode grind (optimizing algorithmic efficiency).</Task>
-                    <Task>Manage repository hosting for Wahn Design freelance projects.</Task>
+                    <Task>A Functional Terminal Emulator for this Website.</Task>
                     
                     <div className="min-h-[28px] leading-[28px]"><br/></div>
                     
