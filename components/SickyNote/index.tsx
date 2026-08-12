@@ -35,27 +35,14 @@ export default function StickyNote() {
             transition={{ type: 'spring', stiffness: 300, damping: 30 }}
             className="fixed top-24 right-0 z-40 flex drop-shadow-2xl"
         >
-            {/* RETRO WINDOWS 95 PIXEL BUTTON */}
-            {/* <button
-                onClick={() => setIsOpen(!isOpen)}
-                // Changed background to #d4d0c8 (Classic Windows 9x Beige)
-                className="absolute -left-10 top-4 w-10 h-10 bg-[#d4d0c8] text-black border-[3px] border-t-white border-l-white border-b-[#808080] border-r-[#808080] flex items-center justify-center active:border-t-[#808080] active:border-l-[#808080] active:border-b-white active:border-r-white"
-                aria-label="Toggle Sticky Note"
-            >
-                <span className="font-mono text-xl font-bold leading-none mt-[-2px] pointer-events-none select-none">
-                    {isOpen ? '>' : '<'}
-                </span>
-            </button> */}
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                // Removed the retro borders and background, made it transparent with a scale effect on hover/click
                 className="absolute -left-12 top-4 w-12 h-12 bg-[#f5efe0] flex items-center justify-center transition-transform hover:scale-110 active:scale-95 drop-shadow-md"
                 aria-label="Toggle Sticky Note"
->               
+            >               
                 <img 
                     src="https://res.cloudinary.com/dmukukwp6/image/upload/post_it_classic_c0c129d5b5.png" 
                     alt="Toggle Sticky Note"
-                    // If the sticky note is open, this slightly rotates the icon to give visual feedback
                     className={`w-full h-full object-contain pointer-events-none transition-transform duration-300 ${isOpen ? '-rotate-12' : 'rotate-0'}`}
                     draggable={false}
                 />
@@ -77,21 +64,21 @@ export default function StickyNote() {
                 {/* STATIC VIEW MODE */}
                 <div className="w-full h-full text-[15px] font-mono text-gray-800 pl-[45px] pr-4 pt-[35px] overflow-y-auto [&::-webkit-scrollbar]:hidden">
                     
-                    <div className="min-h-[28px] leading-[28px]">📌 Current Focus & To-Dos</div>
+                    <div className="min-h-[28px] leading-[28px] font-bold">📌 Current Focus</div>
                     <div className="min-h-[28px] leading-[28px]"><br/></div>
                     
-                    <div className="min-h-[28px] leading-[28px]">Infrastructure</div>
-                    <Task>Containerize Next.js portfolio.</Task>
-                    <Task>Optimize Portainer stack & monitor Jellyfin instance.</Task>
-                    <div className="min-h-[28px] leading-[28px]"><br/></div>
-                    
-                    <div className="min-h-[28px] leading-[28px]">Active Development</div>
-                    <Task checked>Refine Python ModelRouter script for dynamic LLM routing.</Task>
-                    <Task checked>Streamline CareStack database onboarding workflows.</Task>
+                    <div className="min-h-[28px] leading-[28px] font-bold text-gray-600">Active Development</div>
+                    <Task>Build a custom AI Transformer model from scratch (focusing on self-attention mechanisms).</Task>
+                    <Task>Architect a high-performance ETL data pipeline API using Python.</Task>
+                    <Task checked>Daily LeetCode grind (optimizing algorithmic efficiency).</Task>
                     <Task>Manage repository hosting for Wahn Design freelance projects.</Task>
+                    
                     <div className="min-h-[28px] leading-[28px]"><br/></div>
                     
-                    <Strikethrough>Old deleted task example</Strikethrough>
+                    <div className="min-h-[28px] leading-[28px] font-bold text-gray-600">Completed</div>
+                    <Strikethrough>Build interactive desktop OS portfolio using Next.js.</Strikethrough>
+                    <Strikethrough>Containerize portfolio with Docker.</Strikethrough>
+                    <Strikethrough>Deploy Next.js stack to home server network.</Strikethrough>
 
                 </div>
             </div>
