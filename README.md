@@ -1,4 +1,4 @@
-# 🖥️ Web OS Portfolio
+# Web OS Portfolio
 
 [![Next.js](https://img.shields.io/badge/Next.js-16-000000?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
 [![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
@@ -15,22 +15,22 @@ The interesting part isn't just the UI — it's the architecture behind it.
 
 ---
 
-## 🚀 What You Can Do
+## What You Can Do
 
-- 🖥️ Interact with a desktop-style environment
-- 📂 Open folders and applications
-- 🪟 Move, minimize, maximize, and restore windows
-- 📝 Use a persistent sticky note
-- 📁 Create and manage files within the browser
-- 🖼️ View images and videos
-- 📄 Open certifications through a custom PDF viewer
-- 📬 Send messages through the contact application
-- 🗑️ Interact with the trash and file system
-- 💾 Persist application state across sessions
+- Interact with a desktop-style environment
+-  Open folders and applications
+-  Move, minimize, maximize, and restore windows
+-  Use a persistent sticky note
+-  Create and manage files within the browser
+-  View images and videos
+-  Open certifications through a custom PDF viewer
+-  Send messages through the contact application
+-  Interact with the trash and file system
+-  Persist application state across sessions
 
 ---
 
-# 🏗️ System Architecture
+# System Architecture
 
 The application is structured around a small set of clearly separated layers.
 
@@ -196,7 +196,7 @@ This avoids putting large media objects into localStorage while keeping frequent
 
 ---
 
-# 🪟 Window Management
+#  Window Management
 
 The desktop uses a shared window management system rather than treating each application as an isolated page.
 
@@ -229,7 +229,7 @@ This allows multiple applications to behave consistently without duplicating win
 
 ---
 
-# ⚙️ Key Engineering Decisions
+# Key Engineering Decisions
 
 ### Client / Server Separation
 
@@ -253,7 +253,7 @@ New applications can be added as independent window components without having to
 
 ---
 
-# 🛠️ Tech Stack
+#  Tech Stack
 
 ### Framework & Language
 
@@ -278,7 +278,7 @@ New applications can be added as independent window components without having to
 
 ---
 
-# 📁 Project Structure
+#  Project Structure
 
 ```text
 .
@@ -307,7 +307,7 @@ The structure keeps application logic, shared state, server-side routes, and UI 
 
 ---
 
-# 🚀 Running Locally
+# Running Locally
 
 Clone the repository:
 
@@ -336,7 +336,7 @@ http://localhost:3000
 
 ---
 
-# 📦 Production Build
+#  Production Build
 
 ```bash
 npm run build
@@ -345,7 +345,7 @@ npm run start
 
 ---
 
-# ⚙️ Configuration
+#  Configuration
 
 Before deploying, configure:
 
@@ -365,19 +365,23 @@ with the certification records you want to display.
 
 ---
 
-# 📸 Screenshots
+#Screenshots
 
 ### Desktop
 
-_Add a screenshot of the main desktop here._
+<img width="1920" height="927" alt="image" src="https://github.com/user-attachments/assets/d652e94c-765b-483e-add4-335dd42b1685" />
+
 
 ### Window Management
 
-_Add a screenshot showing multiple open windows here._
+<img width="1920" height="927" alt="image" src="https://github.com/user-attachments/assets/3a6066ae-650f-483f-9d41-2d6ddcf240b4" />
+
+
 
 ### File Explorer / Applications
 
-_Add another screenshot showing the interactive applications here._
+<img width="1920" height="927" alt="image" src="https://github.com/user-attachments/assets/45e6f11c-1a39-4454-9d78-0981625d30d6" />
+
 
 ---
 
