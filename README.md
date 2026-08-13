@@ -163,7 +163,7 @@ This keeps the webhook integration away from the client-side application.
 
 ---
 
-# 💾 Browser Persistence
+#  Browser Persistence
 
 One of the design decisions I focused on was choosing the right storage mechanism for different types of data.
 
@@ -369,7 +369,8 @@ with the certification records you want to display.
 
 ### Desktop
 
-<img width="1920" height="927" alt="image" src="https://github.com/user-attachments/assets/d652e94c-765b-483e-add4-335dd42b1685" />
+<img width="1920" height="927" alt="image" src="https://github.com/user-attachments/assets/85bfc4af-7246-4d48-871c-41e645fd5dd3" />
+
 
 
 ### Window Management
