@@ -365,7 +365,7 @@ with the certification records you want to display.
 
 ---
 
-#Screenshots
+# Screenshots
 
 ### Desktop
 
