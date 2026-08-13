@@ -1,4 +1,4 @@
-FROM node:18-alpine AS base
+FROM node:20-alpine AS base
 
 # Enable pnpm via Corepack
 RUN corepack enable && corepack prepare pnpm@latest --activate
@@ -9,14 +9,14 @@ WORKDIR /app
 COPY package.json pnpm-lock.yaml* ./
 
 # Install dependencies
-RUN pnpm install
+RUN pnpm install --frozen-lockfile
 
 # Copy source code and build
 COPY . .
 RUN pnpm run build
 
 # Production runner stage (keeps the image lightweight)
-FROM node:18-alpine AS runner
+FROM node:20-alpine AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
