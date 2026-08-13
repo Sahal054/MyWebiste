@@ -1,6 +1,5 @@
 "use client";
-
-import React,{ useRef }  from 'react'
+import React, { useRef, useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { AppIcon, AppItem } from '../OSIcons/AppIcon'
 import { useApp } from '../../context/App'
@@ -39,7 +38,7 @@ const checkTrashIntersection = (info: any) => {
         return isOver(dockTrash) || isOver(desktopTrash) || isOver(trashWindow);
     };
 
-    // NEW: Fires continuously while dragging
+    // Fires continuously while dragging
     const handleDrag = (event: any, info: any) => {
         if (!app.isDeletable) return;
         
@@ -51,6 +50,15 @@ const checkTrashIntersection = (info: any) => {
             setIsHoveringTrash(isIntersecting);
         }
     };
+
+    const [isMobile, setIsMobile] = useState(false)
+
+    useEffect(() => {
+        const check = () => setIsMobile(window.innerWidth < 768)
+        check()
+        window.addEventListener('resize', check)
+        return () => window.removeEventListener('resize', check)
+    }, [])
 
     // Checks if the mouse coordinates intersect with the Trash icon
     const handleDragEnd = (event: any, info: any) => {
@@ -88,9 +96,10 @@ const checkTrashIntersection = (info: any) => {
             dragConstraints={constraintsRef}
             dragElastic={0.1}
             dragMomentum={false}
-            onDrag={handleDrag}       // NEW: Track drag in real time
+            onDrag={handleDrag}       //    Track drag in real time
             onDragEnd={handleDragEnd}
-            onDoubleClick={app.onClick}
+            onDoubleClick={!isMobile ? app.onClick : undefined}
+            onTap={isMobile ? () => app.onClick?.() : undefined}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             whileDrag={{ zIndex: 50, scale: 1.05 }}

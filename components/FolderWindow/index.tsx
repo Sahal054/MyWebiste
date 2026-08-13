@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from 'react'
+import React, { useState , useEffect} from 'react'
 import { motion, AnimatePresence, useDragControls } from 'framer-motion'
 import { X, Minus,Maximize2, Minimize2, FileText, Film, FolderMinus, Image as ImageIcon } from 'lucide-react'
 import { useApp } from '../../context/App'
@@ -24,6 +24,15 @@ export default function FolderWindow() {
         setMediaWindowOpen, setActiveMediaDocId,
         openPdfWindow,
     } = useApp()
+    const [isMobile, setIsMobile] = useState(false)
+
+    // Detect mobile viewport
+    useEffect(() => {
+        const check = () => setIsMobile(window.innerWidth < 768)
+        check()
+        window.addEventListener('resize', check)
+        return () => window.removeEventListener('resize', check)
+    }, [])
     const dragControls = useDragControls()
     const [isMaximized, setIsMaximized] = useState(false)
     const W = 620, H = 420
@@ -65,20 +74,28 @@ export default function FolderWindow() {
     }
 
     return (
-        <AnimatePresence>
+<AnimatePresence>
             {isFolderWindowOpen && folder && !isFolderWindowMinimized && (
                 <motion.div
-                    drag={!isMaximized}
+                    drag={!isMobile && !isMaximized}
                     dragControls={dragControls}
                     dragListener={false}
                     dragMomentum={false}
-                    initial={{ scale: 0.95, opacity: 0, y: 20 }}
+                    initial={{ scale: 0.95, opacity: 0, y: isMobile ? 40 : 20 }}
                     animate={{ scale: 1, opacity: 1, y: 0 }}
-                    exit={{ scale: 0.95, opacity: 0, y: 20 }}
+                    exit={{ scale: 0.95, opacity: 0, y: isMobile ? 40 : 20 }}
                     transition={{ type: 'spring', stiffness: 320, damping: 28 }}
-                    className="fixed z-[46] flex flex-col overflow-hidden select-none rounded-xl"
+                    className={`fixed z-[46] flex flex-col overflow-hidden select-none ${
+                        isMobile ? 'rounded-none' : 'rounded-xl'
+                    }`}
                     data-folder-window-id={folder.id}
-                    style={isMaximized ? { inset: '1rem' } : { top: '10vh', left: `calc(50% - ${W / 2}px)`, width: W, height: H }}
+                    style={
+                        isMobile
+                            ? { inset: 0 }
+                            : isMaximized
+                                ? { inset: '1rem' }
+                                : { top: '10vh', left: `calc(50% - ${W / 2}px)`, width: W, height: H }
+                    }
                 >
                     <div className="absolute inset-0 rounded-xl border-2 border-black/60 dark:border-white/20 pointer-events-none z-10" />
                     <div className="absolute inset-0 rounded-xl shadow-[0_20px_60px_rgba(0,0,0,0.45)] pointer-events-none" />
@@ -117,12 +134,13 @@ export default function FolderWindow() {
                         </span>
                     </div>
 
-                    {/* Body */}
+                {/* Body - Hide sidebar on mobile so files get full screen space */}
                     <div className="flex flex-1 overflow-hidden bg-white dark:bg-[#1e2130]">
                         {/* Sidebar */}
-                        <div className="w-40 flex-shrink-0 border-r border-gray-200 dark:border-white/10 p-4 flex flex-col gap-3 bg-gray-50 dark:bg-[#191b26]">
+                        <div className={`flex-shrink-0 border-r border-gray-200 dark:border-white/10 p-4 flex flex-col gap-3 bg-gray-50 dark:bg-[#191b26] ${
+                            isMobile ? 'hidden' : 'w-40'
+                        }`}>
                             <div className="flex items-center gap-2">
-                                <span className="text-xl">📁</span>
                                 <span className="font-bold text-sm text-gray-800 dark:text-gray-200 truncate">{folder.name}</span>
                             </div>
                             <p className="text-xs text-gray-500 dark:text-gray-400">

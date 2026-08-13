@@ -33,12 +33,13 @@ export default function StickyNote() {
             initial={{ x: 300 }}
             animate={{ x: isOpen ? 0 : 300 }}
             transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-            className="fixed top-24 right-0 z-40 flex drop-shadow-2xl"
+            className="fixed top-24 right-0 z-40 flex drop-shadow-2xl "
         >
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="absolute -left-12 top-4 w-12 h-12 bg-[#f5efe0] flex items-center justify-center transition-transform hover:scale-110 active:scale-95 drop-shadow-md"
+                className="absolute -left-12 top-4 w-12 h-12 bg-[#f5efe0] flex items-center justify-center transition-transform hover:scale-110 active:scale-95 drop-shadow-md cursor-pointer hover:scale-105 transition-transform"
                 aria-label="Toggle Sticky Note"
+                
             >               
                 <img 
                     src="https://res.cloudinary.com/dmukukwp6/image/upload/post_it_classic_c0c129d5b5.png" 
@@ -62,15 +63,15 @@ export default function StickyNote() {
                 }}
             >
                 {/* STATIC VIEW MODE */}
-                <div className="w-full h-full text-[15px] font-mono text-gray-800 pl-[45px] pr-4 pt-[35px] overflow-y-auto [&::-webkit-scrollbar]:hidden">
+                <div className="w-full h-full text-[15px] font-mono text-gray-800 pl-[45px] pr-4 pt-[35px] overflow-y-auto [&::-webkit-scrollbar]:hidden ">
                     
                     <div className="min-h-[28px] leading-[28px] font-bold">📌 Current Focus</div>
                     <div className="min-h-[28px] leading-[28px]"><br/></div>
                     
-                    <div className="min-h-[28px] leading-[28px] font-bold text-gray-600">Active Development</div>
-                    <Task>Build a custom AI Transformer model from scratch (focusing on self-attention mechanisms).</Task>
+                    <div className="min-h-[28px] leading-[28px] font-bold text-gray-600 ">Active Development</div>
+                    <Task >Build a custom AI Transformer model from scratch (focusing on self-attention mechanisms).</Task>
                     <Task>Architect a high-performance ETL data pipeline API using Python.</Task>
-                    <Task checked>Daily LeetCode grind (optimizing algorithmic efficiency).</Task>
+                    <Task checked >Daily LeetCode grind (optimizing algorithmic efficiency).</Task>
                     <Task>A Functional Terminal Emulator for this Website.</Task>
                     
                     <div className="min-h-[28px] leading-[28px]"><br/></div>

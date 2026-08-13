@@ -21,6 +21,14 @@ export default function MediaWindow() {
     const [resolvedSrc, setResolvedSrc] = useState<string | null>(null)
 
     const doc = savedDocs.find(d => d.id === activeMediaDocId)
+    const [isMobile, setIsMobile] = useState(false)
+
+    useEffect(() => {
+        const check = () => setIsMobile(window.innerWidth < 768)
+        check()
+        window.addEventListener('resize', check)
+        return () => window.removeEventListener('resize', check)
+    }, [])
 
     useEffect(() => {
         let objectUrl: string | null = null
@@ -64,19 +72,27 @@ export default function MediaWindow() {
     const isVideoFile = isVideo(doc.filename)
 
     return (
-        <AnimatePresence>
+            <AnimatePresence>
             {isMediaWindowOpen && !isMediaWindowMinimized && (
                 <motion.div
-                    drag={!isMaximized}
+                    drag={!isMobile && !isMaximized}
                     dragControls={dragControls}
                     dragListener={false}
                     dragMomentum={false}
-                    initial={{ scale: 0.95, opacity: 0, y: 20 }}
+                    initial={{ scale: 0.95, opacity: 0, y: isMobile ? 40 : 20 }}
                     animate={{ scale: 1, opacity: 1, y: 0 }}
-                    exit={{ scale: 0.95, opacity: 0, y: 20 }}
+                    exit={{ scale: 0.95, opacity: 0, y: isMobile ? 40 : 20 }}
                     transition={{ type: 'spring', stiffness: 320, damping: 28 }}
-                    className="fixed z-[44] flex flex-col overflow-hidden select-none rounded-xl"
-                    style={isMaximized ? { inset: '1rem' } : { top: '12vh', left: '50%', transform: 'translateX(-50%)', width: 720, height: 500 }}
+                    className={`fixed z-[44] flex flex-col overflow-hidden select-none ${
+                        isMobile ? 'rounded-none' : 'rounded-xl'
+                    }`}
+                    style={
+                        isMobile
+                            ? { inset: 0 }
+                            : isMaximized
+                                ? { inset: '1rem' }
+                                : { top: '12vh', left: '50%', transform: 'translateX(-50%)', width: 720, height: 500 }
+                    }
                 >
                     <div className="absolute inset-0 rounded-xl border-2 border-black/60 dark:border-white/20 pointer-events-none z-10" />
                     <div className="absolute inset-0 rounded-xl shadow-[0_20px_60px_rgba(0,0,0,0.45)] pointer-events-none" />

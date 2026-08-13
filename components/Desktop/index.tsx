@@ -182,6 +182,26 @@ export default function Desktop() {
         setNewDocOpen(true)
     }
 
+    const [showMobileWarning, setShowMobileWarning] = useState(false)
+
+    useEffect(() => {
+        const checkMobile = () => {
+            // Standard mobile breakpoint is 768px
+            if (window.innerWidth < 768) {
+                setShowMobileWarning(true)
+            } else {
+                setShowMobileWarning(false)
+            }
+        }
+        
+        // Check immediately on mount
+        checkMobile() 
+        
+        // Listen for window resizing
+        window.addEventListener('resize', checkMobile)
+        return () => window.removeEventListener('resize', checkMobile)
+    }, [])
+
     const handleDeviceMediaPick = async (file: File) => {
         const { storageKey, mimeType } = await storeMediaFile(file)
         addMediaDoc(file.name, storageKey, mimeType)
@@ -427,6 +447,28 @@ export default function Desktop() {
                                 className="px-3 py-1.5 text-xs font-bold bg-black text-white dark:bg-white dark:text-black rounded-lg disabled:opacity-40 hover:opacity-80 transition-opacity"
                             >
                                 Create
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Mobile Warning Prompt */}
+            {showMobileWarning && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-md p-4 text-center">
+                    <div className="bg-white dark:bg-[#1e2130] border-2 border-black dark:border-gray-600 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] rounded-xl p-6 max-w-sm w-full">
+                        <h2 className="text-xl font-bold uppercase tracking-widest mb-3 dark:text-white">
+                            Desktop Recommended
+                        </h2>
+                        <p className="text-sm text-gray-700 dark:text-gray-300 mb-6">
+                            This interactive OS portfolio is best experienced on a PC or laptop. The mobile view may be limited.
+                        </p>
+                        <div className="flex gap-3 justify-center">
+                            <button
+                                onClick={() => setShowMobileWarning(false)}
+                                className="px-5 py-2.5 text-sm font-bold bg-black text-white dark:bg-white dark:text-black rounded-lg hover:opacity-80 transition-opacity w-full"
+                            >
+                                Continue anyway
                             </button>
                         </div>
                     </div>
