@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  portfolio-os:
+    build: .
+    container_name: portfolio-os
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    networks:
+      - tunnel_network
+
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: cloudflared-tunnel
+    restart: unless-stopped
+    command: tunnel --no-autoupdate run
+    environment:
+      - TUNNEL_TOKEN=${CLOUDFLARE_TUNNEL_TOKEN}
+    networks:
+      - tunnel_network
+
+networks:
+  tunnel_network:
+    name: tunnel_network

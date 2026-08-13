@@ -24,10 +24,10 @@ const WALLPAPERS: {
 }[] = [
     {
         id: 'sandy',
-        name: 'Default',
+        name: 'Default Garden',
         value: 'https://res.cloudinary.com/dyyfvzis2/image/upload/v1784807608/BgImageLight_xrzkez.png',
         thumb: 'https://res.cloudinary.com/dmukukwp6/image/upload/keyboard_garden_bg_light_03a349af5c.png',
-        isUrl: false,
+        isUrl: false, // 
         color: '#f5efe0',
         gardenConfig: {
             lightTexture: 'https://res.cloudinary.com/dmukukwp6/image/upload/keyboard_garden_bg_light_03a349af5c.png',
@@ -36,19 +36,19 @@ const WALLPAPERS: {
         },
     },
     {
-        id: 'night',
-        name: 'Night',
+        id: 'xp',
+        name: 'Windows XP',
         value: 'https://res.cloudinary.com/dyyfvzis2/image/upload/v1786567632/wp2660135-windows-95-wallpaper-hd_wzzsvd.jpg',
         thumb: 'https://res.cloudinary.com/dyyfvzis2/image/upload/v1786567632/wp2660135-windows-95-wallpaper-hd_wzzsvd.jpg',
-        isUrl: false,
+        isUrl: true, // Keep true for the images
         color: '#1a1c23',
     },
     {
-        id: 'slate',
-        name: 'Slate Blue',
+        id: '95',
+        name: 'Vaporwave',
         value: 'https://res.cloudinary.com/dyyfvzis2/image/upload/v1786571773/wp2660154-windows-95-wallpaper-hd_ufwq12.jpg',
         thumb: 'https://res.cloudinary.com/dyyfvzis2/image/upload/v1786571773/wp2660154-windows-95-wallpaper-hd_ufwq12.jpg',
-        isUrl: false,
+        isUrl: true, // Keep true for the images
         color: '#2d3250',
     },
 ]
@@ -222,7 +222,7 @@ export default function Desktop() {
             type: 'item', 
             label: 'Reset icons', 
             onClick: () => setResetKey(prev => prev + 1) 
-        },
+        },                              
         { type: 'separator' },
         { type: 'item', label: 'Change Wallpaper', onClick: () => setShowWallpaperPicker(true) },
         { type: 'separator' },

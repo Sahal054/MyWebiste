@@ -13,9 +13,11 @@ interface DraggableDesktopIconProps {
 }
 
 export default function DraggableDesktopIcon({ app, constraintsRef, onDropOnTrash, onDropOnFolder }: DraggableDesktopIconProps) {
-    const { setIsHoveringTrash } = useApp();
+    const { setIsHoveringTrash,wallpaper } = useApp();
     const isHoveringRef = useRef(false); // Tracks state without forcing re-renders
     const isTrash = app.label === 'Trash'
+    const DEFAULT_WALLPAPER = 'https://res.cloudinary.com/dyyfvzis2/image/upload/v1784807608/BgImageLight_xrzkez.png';
+    const isCustomTheme = wallpaper !== null && wallpaper !== DEFAULT_WALLPAPER;
 
 
     // Helper function to check if cursor is over either trash can
@@ -106,7 +108,13 @@ const checkTrashIntersection = (info: any) => {
                 )}
             </div>
             {/* <span className={`text-xs font-bold text-primary truncate max-w-full text-center select-none border border-transparent ${isPlainImageIcon ? 'bg-transparent px-0 py-0 rounded-none' : 'bg-background/80 px-2 py-0.5 rounded backdrop-blur-sm group-hover:border-primary/20'}`}></span> */}
-            <span className={`text-xs font-bold text-primary truncate max-w-full text-center select-none border border-transparent 'bg-transparent px-0 py-0 rounded-none`}>
+            {/* <span className={`text-xs font-bold text-primary truncate max-w-full text-center select-none border border-transparent 'bg-transparent px-0 py-0 rounded-none`}> */}
+            <span 
+                className={`text-[11px] font-bold tracking-wide truncate max-w-full text-center select-none px-1 ${
+                    isCustomTheme ? 'text-white' : 'text-primary'
+                }`}
+                style={isCustomTheme ? { textShadow: '0px 1px 3px rgba(0,0,0,0.8), 0px 1px 1px rgba(0,0,0,0.8)' } : {}}
+            >
                 {app.label}
             </span>
         </motion.div>
