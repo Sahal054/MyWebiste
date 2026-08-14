@@ -29,7 +29,7 @@ export const metadata: Metadata = {
   authors: [{ name: "Sahal M" }],
   openGraph: {
     title: "Sahal M | Interactive OS Portfolio",
-    description: "Explore the custom desktop OS-themed portfolio of Sahal Muhammed Zakkeer.",
+    description: "Explore the custom desktop OS-themed portfolio of Sahal M.",
     url: "https://sahalm.page",
     siteName: "Sahal's OS Portfolio",
     type: "website",
