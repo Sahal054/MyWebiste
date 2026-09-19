@@ -9,9 +9,11 @@
 
 ## Local Configuration
 
-Copy `.env.example` to `.env.local` and set `DISCORD_WEBHOOK_URL` to a newly generated Discord webhook URL. Do not commit `.env.local` or expose the webhook URL in client-side code.
+For local development, copy `.env.example` to `.env.local` and set `DISCORD_WEBHOOK_URL` to a newly generated Discord webhook URL. For Docker deployment, create `.env.discord` with the same variable. Do not commit either file or expose the webhook URL in client-side code.
 
-For Docker deployments, provide `DISCORD_WEBHOOK_URL` in the host environment or a root `.env` file before running `docker compose up --build`.
+Docker Compose loads `.env.discord` into the `portfolio-os` container automatically when you run `docker compose up --build`.
+
+Contact submissions are rate-limited server-side to 3 accepted messages per client IP every 10 minutes. The Discord webhook URL is never sent to the browser.
 
 I wanted to build something more interactive than a traditional scrolling portfolio.
 

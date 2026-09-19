@@ -1,5 +1,31 @@
 import { NextResponse } from 'next/server'
 
+const RATE_LIMIT_MAX = 3
+const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000
+const submissionsByClient = new Map<string, number[]>()
+
+function getClientKey(request: Request): string {
+    const forwardedFor = request.headers.get('x-forwarded-for')
+    if (forwardedFor) return forwardedFor.split(',')[0].trim()
+    return request.headers.get('x-real-ip') ?? 'unknown'
+}
+
+function getRateLimitState(clientKey: string): { allowed: boolean; retryAfterSeconds: number } {
+    const now = Date.now()
+    const recentSubmissions = (submissionsByClient.get(clientKey) ?? [])
+        .filter(timestamp => now - timestamp < RATE_LIMIT_WINDOW_MS)
+
+    if (recentSubmissions.length >= RATE_LIMIT_MAX) {
+        const retryAfterSeconds = Math.ceil((recentSubmissions[0] + RATE_LIMIT_WINDOW_MS - now) / 1000)
+        submissionsByClient.set(clientKey, recentSubmissions)
+        return { allowed: false, retryAfterSeconds }
+    }
+
+    recentSubmissions.push(now)
+    submissionsByClient.set(clientKey, recentSubmissions)
+    return { allowed: true, retryAfterSeconds: 0 }
+}
+
 export async function POST(request: Request) {
     try {
         const discordWebhookUrl = process.env.DISCORD_WEBHOOK_URL
@@ -14,6 +40,17 @@ export async function POST(request: Request) {
 
         if (!message) {
             return NextResponse.json({ error: 'Message is required.' }, { status: 400 })
+        }
+
+        const rateLimit = getRateLimitState(getClientKey(request))
+        if (!rateLimit.allowed) {
+            return NextResponse.json(
+                { error: 'Too many messages. Please try again later.' },
+                {
+                    status: 429,
+                    headers: { 'Retry-After': String(rateLimit.retryAfterSeconds) },
+                }
+            )
         }
 
 
