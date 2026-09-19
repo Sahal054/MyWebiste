@@ -15,6 +15,8 @@ Docker Compose loads `.env.discord` into the `portfolio-os` container automatica
 
 Contact submissions are rate-limited server-side to 3 accepted messages per client IP every 10 minutes. The Discord webhook URL is never sent to the browser.
 
+If a webhook is ever exposed, revoke it immediately and follow the history-cleanup steps in [SECURITY.md](SECURITY.md). A new environment variable alone does not invalidate a previously leaked webhook.
+
 I wanted to build something more interactive than a traditional scrolling portfolio.
 
 So I built a browser-based desktop environment where projects, certifications, media, and personal information live inside an interactive OS-style interface.
