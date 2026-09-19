@@ -7,6 +7,12 @@
 
 ### A portfolio designed like a desktop operating system.
 
+## Local Configuration
+
+Copy `.env.example` to `.env.local` and set `DISCORD_WEBHOOK_URL` to a newly generated Discord webhook URL. Do not commit `.env.local` or expose the webhook URL in client-side code.
+
+For Docker deployments, provide `DISCORD_WEBHOOK_URL` in the host environment or a root `.env` file before running `docker compose up --build`.
+
 I wanted to build something more interactive than a traditional scrolling portfolio.
 
 So I built a browser-based desktop environment where projects, certifications, media, and personal information live inside an interactive OS-style interface.

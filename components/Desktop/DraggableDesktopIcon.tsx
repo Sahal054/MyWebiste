@@ -1,6 +1,6 @@
 "use client";
 import React, { useRef, useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
+import { motion, PanInfo } from 'framer-motion'
 import { AppIcon, AppItem } from '../OSIcons/AppIcon'
 import { useApp } from '../../context/App'
 
@@ -14,35 +14,41 @@ interface DraggableDesktopIconProps {
 export default function DraggableDesktopIcon({ app, constraintsRef, onDropOnTrash, onDropOnFolder }: DraggableDesktopIconProps) {
     const { setIsHoveringTrash,wallpaper } = useApp();
     const isHoveringRef = useRef(false); // Tracks state without forcing re-renders
-    const isTrash = app.label === 'Trash'
     const DEFAULT_WALLPAPER = 'https://res.cloudinary.com/dyyfvzis2/image/upload/v1784807608/BgImageLight_xrzkez.png';
     const isCustomTheme = wallpaper !== null && wallpaper !== DEFAULT_WALLPAPER;
 
 
-    // Helper function to check if cursor is over either trash can
-const checkTrashIntersection = (info: any) => {
+    const getDraggedRect = (event: unknown): DOMRect | null => {
+        const target = (event as { currentTarget?: EventTarget | null }).currentTarget
+        return target instanceof HTMLElement ? target.getBoundingClientRect() : null
+    }
+
+    // Treat a drop as a hit when the dragged icon overlaps a trash target.
+    const checkTrashIntersection = (event: unknown, info: PanInfo) => {
         const dockTrash = document.getElementById('trash-dock');
         const desktopTrash = document.getElementById('trash-desktop');
-    const trashWindow = document.getElementById('trash-window');
+        const trashWindow = document.getElementById('trash-window');
+        const draggedRect = getDraggedRect(event)
 
         const isOver = (el: HTMLElement | null) => {
             if (!el) return false;
             const rect = el.getBoundingClientRect();
-            // Expanded hit area by 10px to make dropping easier
-            return (
-                info.point.x >= (rect.left - 10) && info.point.x <= (rect.right + 10) &&
-                info.point.y >= (rect.top - 10) && info.point.y <= (rect.bottom + 10)
-            );
+            if (draggedRect) {
+                return draggedRect.left < rect.right && draggedRect.right > rect.left &&
+                    draggedRect.top < rect.bottom && draggedRect.bottom > rect.top
+            }
+            return info.point.x >= rect.left && info.point.x <= rect.right &&
+                info.point.y >= rect.top && info.point.y <= rect.bottom
         };
 
         return isOver(dockTrash) || isOver(desktopTrash) || isOver(trashWindow);
     };
 
     // Fires continuously while dragging
-    const handleDrag = (event: any, info: any) => {
+    const handleDrag = (event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
         if (!app.isDeletable) return;
         
-        const isIntersecting = checkTrashIntersection(info);
+        const isIntersecting = checkTrashIntersection(event, info);
         
         // Only update the global context if the state actually changes
         if (isIntersecting !== isHoveringRef.current) {
@@ -61,13 +67,13 @@ const checkTrashIntersection = (info: any) => {
     }, [])
 
     // Checks if the mouse coordinates intersect with the Trash icon
-    const handleDragEnd = (event: any, info: any) => {
+    const handleDragEnd = (event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
         isHoveringRef.current = false
         setIsHoveringTrash(false)
 
         if (!app.isDeletable || !app.id) return
 
-        if (checkTrashIntersection(info) && onDropOnTrash) {
+        if (checkTrashIntersection(event, info) && onDropOnTrash) {
             onDropOnTrash(app.id)
             return
         }
@@ -76,9 +82,13 @@ const checkTrashIntersection = (info: any) => {
         if (onDropOnFolder) {
             const folderEls = document.querySelectorAll('[data-folder-id], [data-folder-window-id]')
             for (const el of Array.from(folderEls)) {
-                const r = el.getBoundingClientRect()
-                const hit = info.point.x >= r.left - 10 && info.point.x <= r.right + 10 &&
-                            info.point.y >= r.top - 10 && info.point.y <= r.bottom + 10
+                                const draggedRect = getDraggedRect(event)
+                                const r = el.getBoundingClientRect()
+                                const hit = draggedRect
+                                        ? draggedRect.left < r.right && draggedRect.right > r.left &&
+                                            draggedRect.top < r.bottom && draggedRect.bottom > r.top
+                                        : info.point.x >= r.left && info.point.x <= r.right &&
+                                            info.point.y >= r.top && info.point.y <= r.bottom
                 if (hit) {
                     const folderId = el.getAttribute('data-folder-id') ?? el.getAttribute('data-folder-window-id')
                     if (folderId) onDropOnFolder(app.id, folderId)
@@ -96,6 +106,7 @@ const checkTrashIntersection = (info: any) => {
             dragConstraints={constraintsRef}
             dragElastic={0.1}
             dragMomentum={false}
+            dragSnapToOrigin
             onDrag={handleDrag}       //    Track drag in real time
             onDragEnd={handleDragEnd}
             onDoubleClick={!isMobile ? app.onClick : undefined}
