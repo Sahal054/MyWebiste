@@ -308,18 +308,17 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     }
 
     const updateFolderTrashState = (folderId: string, trashed: boolean) => {
-        const folder = userFolders.find(f => f.id === folderId)
-        if (!folder) return
-
         setUserFolders(prev => {
+            const folder = prev.find(f => f.id === folderId)
+            if (!folder) return prev
             const updated = prev.map(f => f.id === folderId ? { ...f, trashed } : f)
             localStorage.setItem(FOLDERS_KEY, JSON.stringify(updated))
-            return updated
-        })
 
-        setSavedDocs(prev => {
-            const updated = prev.map(d => folder.items.includes(d.id) ? { ...d, trashed } : d)
-            localStorage.setItem(DOCS_KEY, JSON.stringify(updated))
+            setSavedDocs(docs => {
+                const updatedDocs = docs.map(d => folder.items.includes(d.id) ? { ...d, trashed } : d)
+                localStorage.setItem(DOCS_KEY, JSON.stringify(updatedDocs))
+                return updatedDocs
+            })
             return updated
         })
     }
@@ -328,6 +327,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         setSavedDocs(prev => {
             const updated = prev.map(d => d.id === id ? { ...d, trashed: true } : d)
             localStorage.setItem(DOCS_KEY, JSON.stringify(updated))
+            return updated
+        })
+        setUserFolders(prev => {
+            const updated = prev.map(folder => folder.id === id ? { ...folder, trashed: true } : folder)
+            localStorage.setItem(FOLDERS_KEY, JSON.stringify(updated))
             return updated
         })
     }

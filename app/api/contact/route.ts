@@ -1,9 +1,13 @@
 import { NextResponse } from 'next/server'
 
-const DISCORD_WEBHOOK_URL = 'https://discordapp.com/api/webhooks/1535763940834021459/wVCFocV9R1yl7W9ml6RQrItvsmG-oqqfhsh2HQA9bitUfassZfXlJa9cBi6jQWEeyZ1T'
-
 export async function POST(request: Request) {
     try {
+        const discordWebhookUrl = process.env.DISCORD_WEBHOOK_URL
+        if (!discordWebhookUrl) {
+            console.error('DISCORD_WEBHOOK_URL is not configured.')
+            return NextResponse.json({ error: 'Contact service is not configured.' }, { status: 503 })
+        }
+
         const body = await request.json()
         const email = typeof body?.email === 'string' ? body.email.trim() : ''
         const message = typeof body?.message === 'string' ? body.message.trim() : ''
@@ -39,7 +43,7 @@ export async function POST(request: Request) {
             ],
         }
 
-        const response = await fetch(DISCORD_WEBHOOK_URL, {
+        const response = await fetch(discordWebhookUrl, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

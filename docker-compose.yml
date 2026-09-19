@@ -5,6 +5,8 @@ services:
     restart: unless-stopped
     ports:
       - "3000:3000"
+    environment:
+      DISCORD_WEBHOOK_URL: ${DISCORD_WEBHOOK_URL}
     networks:
       - tunnel_network
 

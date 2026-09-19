@@ -344,10 +344,18 @@ export default function Desktop() {
                     )}
                     {/* --- END WALLPAPER LAYOUT --- */}
                     <StickyNote />
-                    <div key={resetKey} className="p-6 flex flex-col flex-wrap gap-6 h-full content-start">
-                        {desktopApps.map((app, index) => (
+                    <div
+                        key={resetKey}
+                        className="p-6 grid h-full content-start gap-6 overflow-x-auto overflow-y-hidden"
+                        style={{
+                            gridAutoFlow: 'column',
+                            gridTemplateRows: 'repeat(auto-fill, 96px)',
+                            gridAutoColumns: '96px',
+                        }}
+                    >
+                        {desktopApps.map(app => (
                             <div
-                                key={index}
+                                key={app.id ?? app.label}
                                 className="relative w-24 h-24"
                                 id={app.label === 'Trash' ? 'trash-desktop' : undefined}
                                 data-folder-id={app.label === 'Projects' ? 'projects' : app.label === CERTIFICATIONS_FOLDER_NAME ? CERTIFICATIONS_FOLDER_ID : undefined}
@@ -355,8 +363,8 @@ export default function Desktop() {
                                 <DraggableDesktopIcon app={app} constraintsRef={constraintsRef} />
                             </div>
                         ))}
-                        {savedDocApps.map((app, index) => (
-                            <div key={`saved-${index}`} className="relative w-24 h-24">
+                        {savedDocApps.map(app => (
+                            <div key={`saved-${app.id}`} className="relative w-24 h-24">
                                 <DraggableDesktopIcon
                                     app={app}
                                     constraintsRef={constraintsRef}

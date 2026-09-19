@@ -82,7 +82,7 @@ export default function TrashWindow() {
                             <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
                                 Drag desktop files here to remove them. Restore or delete permanently.
                             </p>
-                            {trashed.length > 0 && (
+                            {trashed.length + trashedFolders.length > 0 && (
                                 <button
                                     onClick={emptyTrash}
                                     className="mt-auto px-3 py-1.5 bg-red-500 hover:bg-red-600 text-white text-xs font-bold rounded-lg transition-colors"
