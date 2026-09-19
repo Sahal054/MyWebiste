@@ -12,8 +12,8 @@ import { useApp } from '../../context/App'
 
 const DEFAULT_CONTENT = `<h1 style="font-size:1.75rem;font-weight:800;margin:0 0 4px;text-align:center">SAHAL M</h1>
 <p style="margin:0 0 16px;text-align:center;font-size:0.9rem">
-  Kollam, Kerala&nbsp;·&nbsp;+91 8848307694&nbsp;·&nbsp;sahalmsachu@gmail.com<br/>
-  <a href="https://linkedin.com/in/Sahal054" style="color:#2563eb;text-decoration:underline">linkedin.com/in/Sahal054</a>&nbsp;·&nbsp;<a href="https://github.com/Sahal054" style="color:#2563eb;text-decoration:underline">github.com/Sahal054</a>
+  Kollam, Kerala&nbsp;·&nbsp;<a href="https://sahalm.page" style="color:#2563eb;text-decoration:underline">sahalm.page</a>&nbsp;·&nbsp;+91 8848307694&nbsp;·&nbsp;sahalmsachu@gmail.com<br/>
+  <a href="https://linkedin.com/in/sahal054" style="color:#2563eb;text-decoration:underline">linkedin.com/in/sahal054</a>
 </p>
 <hr style="margin:14px 0;border:none;border-top:2px solid currentColor;opacity:.2"/>
 
@@ -24,24 +24,11 @@ const DEFAULT_CONTENT = `<h1 style="font-size:1.75rem;font-weight:800;margin:0 0
 
 <h2 style="font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin:20px 0 6px">Work Experience</h2>
 
-<p style="margin:0"><strong>CARESTACK</strong> <span style="float:right;opacity:.75;font-size:.9em">November 2025 – Present</span></p>
+<p style="margin:0"><strong>CARESTACK (Product SaaS)</strong> <span style="float:right;opacity:.75;font-size:.9em">November 2025 – July 2026</span></p>
 <p style="margin:0"><em>Analyst 1 - Product Operations</em> <span style="float:right;opacity:.75;font-size:.9em">Thiruvananthapuram, Kerala</span></p>
 <ul style="margin:6px 0 16px 20px;padding:0;line-height:1.6;font-size:0.9rem">
   <li>Developed two .NET migration tools utilizing the Lead Tools library in Microsoft Visual Studio to facilitate high-fidelity conversion of proprietary dental formats (.tig, auto) to standard PNGs via byte processing, ensuring 100% data integrity during transitions.</li>
   <li>Streamlined onboarding for 30+ enterprise clients by architecting complex SQL workflows for the validation, mapping, and cleansing of patient records into the proprietary PMS, demonstrating strong database fundamentals and secure coding practices.</li>
-</ul>
-
-<p style="margin:0"><strong>WAHN DESIGN | wahndesign.com</strong> <span style="float:right;opacity:.75;font-size:.9em">Oct 2025 – Present</span></p>
-<p style="margin:0"><em>Freelance Web Developer</em> <span style="float:right;opacity:.75;font-size:.9em">Kollam, Kerala</span></p>
-<ul style="margin:6px 0 16px 20px;padding:0;line-height:1.6;font-size:0.9rem">
-  <li>Focused on Web Design & UI/UX by prototyping applications quickly and creating responsive and interactive designs tailored for diverse clients (4 international, 2 domestic) generating 100,000+ in revenue.</li>
-  <li>Managed the full SDLC for high-performance websites, from UI design to back-end integration and cloud deployment.</li>
-</ul>
-
-<p style="margin:0"><strong>GENPRO RESEARCH (Acquired clinical research technology firm)</strong> <span style="float:right;opacity:.75;font-size:.9em">May 2023 – Aug 2023</span></p>
-<p style="margin:0"><em>Backend Developer Intern</em> <span style="float:right;opacity:.75;font-size:.9em">Thiruvananthapuram, Kerala</span></p>
-<ul style="margin:6px 0 16px 20px;padding:0;line-height:1.6;font-size:0.9rem">
-  <li>Engineered 'envstore,' a FastAPI and Docker-based tool deployed on Linux environments, generating innovative solutions to improve environment management and reduce setup cycles.</li>
 </ul>
 
 <p style="margin:0"><strong>TATA ELXSI</strong> <span style="float:right;opacity:.75;font-size:.9em">July 2024 – Aug 2024</span></p>
@@ -50,16 +37,27 @@ const DEFAULT_CONTENT = `<h1 style="font-size:1.75rem;font-weight:800;margin:0 0
   <li>Built a QA dashboard via Microsoft Power Apps for real-time analytics, tracking 15+ key SDLC metrics for 50+ developers.</li>
 </ul>
 
-<h2 style="font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin:20px 0 6px">University Projects</h2>
-
-<p style="margin:0"><strong>LITTLE LEMON RESTAURANT BOOKING SYSTEM</strong> <span style="float:right;opacity:.75;font-size:.9em">Aug 2025</span></p>
-<ul style="margin:6px 0 12px 20px;padding:0;line-height:1.6;font-size:0.9rem">
-  <li>Build a Django/Python/SQL application handling concurrent users with &lt;200ms response times and 98.5% automated test coverage.</li>
+<p style="margin:0"><strong>GENPRO RESEARCH (Acquired clinical research technology firm)</strong> <span style="float:right;opacity:.75;font-size:.9em">May 2023 – Aug 2023</span></p>
+<p style="margin:0"><em>Backend Developer Intern</em> <span style="float:right;opacity:.75;font-size:.9em">Thiruvananthapuram, Kerala</span></p>
+<ul style="margin:6px 0 16px 20px;padding:0;line-height:1.6;font-size:0.9rem">
+  <li>Engineered 'envstore,' a FastAPI and Docker-based tool deployed on Linux environments, generating innovative solutions to improve environment management and reduce setup cycles.</li>
 </ul>
 
-<p style="margin:0"><strong>PRIVACY-PRESERVING BIOMETRIC IDENTIFICATION (Industrial Project)</strong> <span style="float:right;opacity:.75;font-size:.9em">Jan 2024</span></p>
+<h2 style="font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin:20px 0 6px">Projects</h2>
+
+<p style="margin:0"><strong>TRAVELLING SALESMAN</strong> <span style="float:right;opacity:.75;font-size:.9em"><a href="https://github.com/Sahal054/Travel" style="color:#2563eb;text-decoration:underline">github.com/Sahal054/Travel app</a></span></p>
+<ul style="margin:6px 0 16px 20px;padding:0;line-height:1.6;font-size:0.9rem">
+  <li>Built a comprehensive FastAPI web application utilizing Docker, PostgreSQL, and the Gemini API that routes models to narrow down a location from any video or social media post.</li>
+</ul>
+
+<p style="margin:0"><strong>WAHN DESIGN | <a href="https://wahndesign.com" style="color:#2563eb;text-decoration:underline">wahndesign.com</a></strong> <span style="float:right;opacity:.75;font-size:.9em">Freelancing</span></p>
+<ul style="margin:6px 0 16px 20px;padding:0;line-height:1.6;font-size:0.9rem">
+  <li>Managed full SDLC for 6 responsive web applications (4 international, 2 domestic); generated 100,000+ in revenue.</li>
+</ul>
+
+<p style="margin:0"><strong>RESTAURANT BOOKING SYSTEM</strong> <span style="float:right;opacity:.75;font-size:.9em"><a href="https://github.com/Sahal054/Little-lemon-capstone-project" style="color:#2563eb;text-decoration:underline">github.com/Sahal054/Little-lemon-capstone-project</a></span></p>
 <ul style="margin:6px 0 12px 20px;padding:0;line-height:1.6;font-size:0.9rem">
-  <li>Architected a secure matching system using Gabor filters and Fully Homomorphic Encryption (FHE) to secure 640-dimensional feature vectors.</li>
+  <li>Build a Django/Python/SQL application handling concurrent users with &lt;200ms response times and 98.5% automated test coverage.</li>
 </ul>
 
 <h2 style="font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin:20px 0 6px">Activities</h2>
@@ -79,6 +77,7 @@ const DEFAULT_CONTENT = `<h1 style="font-size:1.75rem;font-weight:800;margin:0 0
 <h2 style="font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin:20px 0 6px">Additional</h2>
 <ul style="margin:6px 0 12px 20px;padding:0;line-height:1.6;font-size:0.9rem">
   <li><strong>Technical Skills:</strong> Python, .NET, C#, SQL (PostgreSQL, MySQL), JavaScript, Django, FastAPI, Docker, Git, React, HTML, CSS, Linux</li>
+  <li><strong>AI Tools:</strong> claude, ChatGPT, Gemini, GitHub Copilot, Cursor</li>
   <li><strong>AI/ML Techniques:</strong> RAG, Vector Embeddings, LLMs, Gemini API, AI/ML Productivity Tools</li>
   <li><strong>Certifications & Training:</strong> CompTIA Learning Linux Command Line (2025), Meta Back-End Developer (2025)</li>
   <li><strong>Awards:</strong> First Prize, ACM Inter-Collegiate Coding Competition (2023); Honorable Mention, National Model United Nations (2024)</li>

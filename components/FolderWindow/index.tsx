@@ -163,14 +163,12 @@ export default function FolderWindow() {
                                 <div className="grid grid-cols-[repeat(auto-fill,minmax(88px,1fr))] gap-4">
                                     {folderDocs.map(doc => {
                                         const Icon = fileIcon(doc.filename)
-                                        const isPdfFile = doc.filename.toLowerCase().endsWith('.pdf')
                                         return (
                                             <div key={doc.id} className="group flex flex-col items-center gap-1.5">
                                                 <div className="relative w-16 h-16 flex items-center justify-center bg-gray-100 dark:bg-white/5 rounded-xl border border-gray-200 dark:border-white/10 group-hover:border-gray-400 dark:group-hover:border-white/30 transition-all">
                                                     <button
                                                         type="button"
-                                                        onClick={() => { if (!isPdfFile) openItem(doc.id) }}
-                                                        onDoubleClick={() => { if (isPdfFile) openItem(doc.id) }}
+                                                        onClick={() => openItem(doc.id)}
                                                         className="absolute inset-0 flex items-center justify-center"
                                                     >
                                                         <Icon className="w-8 h-8 text-gray-500 dark:text-gray-400" strokeWidth={1.5} />
