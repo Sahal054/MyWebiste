@@ -39,7 +39,7 @@ export default function NotificationsPanel() {
                     animate={{ x: 0, opacity: 1 }}
                     exit={{ x: '100%', opacity: 0 }}
                     transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                    className="fixed top-4 right-4 w-80 h-[calc(100vh-2rem)] z-50 flex flex-col bg-background border-2 border-primary shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] rounded-lg overflow-hidden"
+                    className="fixed inset-2 z-50 flex flex-col overflow-hidden rounded-lg border-2 border-primary bg-background shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] md:inset-auto md:right-4 md:top-4 md:h-[calc(100dvh-2rem)] md:w-80"
                     data-scheme="primary"
                     data-app="Notifications"
                 >

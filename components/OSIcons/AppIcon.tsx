@@ -16,10 +16,7 @@ import {
     BookOpen,
     GraduationCap,
     Trash2,
-    HelpCircle,
-    Film,
     Server,
-    Image as ImageIcon,
 } from 'lucide-react'
 
 // Represents an interactive desktop application or link
@@ -33,6 +30,7 @@ export interface AppItem {
     // Properties for drag-and-drop / trash
     id?: string; 
     isDeletable?: boolean; 
+    isFolder?: boolean;
     
     // Property for custom Cloudinary images
     iconUrl?: string; 

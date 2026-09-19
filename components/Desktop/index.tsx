@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useRef, useState,useEffect } from 'react'
-import { useRouter } from 'next/navigation'
 import DraggableDesktopIcon from './DraggableDesktopIcon'
 import Dock from './Dock'
 import StickyNote from '../SickyNote'
@@ -134,13 +133,12 @@ function WallpaperPicker({
 export default function Desktop() {
     const constraintsRef = useRef<HTMLDivElement>(null)
     const mediaInputRef = useRef<HTMLInputElement>(null)
-    const router = useRouter()
     const {
-        setNotificationsOpen, toggleDarkMode, darkMode, wallpaper, setWallpaper,
+        setNotificationsOpen, wallpaper, setWallpaper,
         setDocOpen,
         setNewDocOpen, setNewDocMinimized, setOpenSavedDocId,
         savedDocs, moveToTrash, addSavedDoc, addMediaDoc,
-        isTrashOpen, setTrashOpen, setTrashMinimized,
+        setTrashOpen, setTrashMinimized,
         setProjectsOpen, setProjectsMinimized,
         projectFolderItems, addToProjectFolder,
         userFolders, createFolder, addDocToFolder,
@@ -160,6 +158,17 @@ export default function Desktop() {
     const [newFileName, setNewFileName] = useState('')
     const [addDeviceMediaPrompt, setAddDeviceMediaPrompt] = useState(false)
     const [resetKey, setResetKey] = useState(0)
+    const backgroundTapsRef = useRef<number[]>([])
+
+    const handleBackgroundTap = (event: React.MouseEvent<HTMLDivElement>) => {
+        if (event.target !== event.currentTarget) return
+        const now = Date.now()
+        backgroundTapsRef.current = [...backgroundTapsRef.current.filter(tap => now - tap < 650), now]
+        if (backgroundTapsRef.current.length >= 3) {
+            backgroundTapsRef.current = []
+            setShowWallpaperPicker(true)
+        }
+    }
 
     const isMediaFilename = (name: string) => ['mov', 'mp4', 'avi', 'webm', 'png', 'jpg', 'jpeg', 'gif', 'webp'].includes(name.toLowerCase().split('.').pop() ?? '')
     const isPdfFilename = (name: string) => name.toLowerCase().endsWith('.pdf')
@@ -187,7 +196,7 @@ export default function Desktop() {
     useEffect(() => {
         const checkMobile = () => {
             // Standard mobile breakpoint is 768px
-            if (window.innerWidth < 768) {
+            if (window.innerWidth < 640) {
                 setShowMobileWarning(true)
             } else {
                 setShowMobileWarning(false)
@@ -211,8 +220,8 @@ export default function Desktop() {
 
     const desktopApps: AppItem[] = [
         { label: 'Resume',  iconUrl:'https://res.cloudinary.com/dmukukwp6/image/upload/typewriter_classic_3e6454d7f6.png',    Icon: null, onClick: () => setDocOpen(true) },
-        { label: CERTIFICATIONS_FOLDER_NAME, Icon: null, iconUrl:'https://res.cloudinary.com/dmukukwp6/image/upload/folder_classic_d2fdf96f82.png', onClick: () => { setActiveFolderWindowId(CERTIFICATIONS_FOLDER_ID); setFolderWindowOpen(true); setFolderWindowMinimized(false) } },
-        { label: 'Projects',Icon: null, iconUrl:'https://res.cloudinary.com/dmukukwp6/image/upload/document_bb8267664e.png', onClick: () => { setProjectsMinimized(false); setProjectsOpen(true) } },
+        { label: CERTIFICATIONS_FOLDER_NAME, Icon: null, isFolder: true, iconUrl:'https://res.cloudinary.com/dmukukwp6/image/upload/folder_classic_d2fdf96f82.png', onClick: () => { setActiveFolderWindowId(CERTIFICATIONS_FOLDER_ID); setFolderWindowOpen(true); setFolderWindowMinimized(false) } },
+        { label: 'Projects',Icon: null, isFolder: true, iconUrl:'https://res.cloudinary.com/dmukukwp6/image/upload/document_bb8267664e.png', onClick: () => { setProjectsMinimized(false); setProjectsOpen(true) } },
         // { label: 'Spreadsheet', Icon: null, onClick: () => router.push('/experience') },
         // { label: 'Envelope',    Icon: null, iconUrl: 'https://res.cloudinary.com/dmukukwp6/image/upload/contact_4af3eed18f.png', onClick: () => { setContactMinimized(false); setContactOpen(true) } },
         { label: 'Trash', Icon: null, iconUrl: 'https://res.cloudinary.com/dmukukwp6/image/upload/trash_classic_20ed394a8d.png', onClick: () => { setTrashMinimized(false); setTrashOpen(true) } },
@@ -297,9 +306,10 @@ export default function Desktop() {
             <ContextMenu menuItems={contextMenuItems} className="w-full h-full">
                 <div
                     ref={constraintsRef}
-                    className="relative w-full h-screen overflow-hidden"
+                    className="relative h-[100dvh] min-h-[100svh] w-full overflow-hidden"
                     style={bgStyle}
                     data-scheme="primary"
+                    onClick={handleBackgroundTap}
                 >
                     {/* --- POSTHOG STYLE WALLPAPER LAYOUT --- */}
                     {activeGardenConfig && (
@@ -346,7 +356,7 @@ export default function Desktop() {
                     <StickyNote />
                     <div
                         key={resetKey}
-                        className="p-6 grid h-full content-start gap-6 overflow-x-auto overflow-y-hidden"
+                        className="grid h-full content-start gap-4 overflow-x-auto overflow-y-hidden p-3 sm:gap-6 sm:p-6"
                         style={{
                             gridAutoFlow: 'column',
                             gridTemplateRows: 'repeat(auto-fill, 96px)',
@@ -389,6 +399,7 @@ export default function Desktop() {
                                         Icon: null,
                                         id: folder.id,
                                         isDeletable: true,
+                                        isFolder: true,
                                         onClick: () => { setActiveFolderWindowId(folder.id); setFolderWindowOpen(true); setFolderWindowMinimized(false) },
                                     }}
                                     constraintsRef={constraintsRef}

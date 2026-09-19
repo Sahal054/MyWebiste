@@ -24,7 +24,7 @@ export default function MediaWindow() {
     const [isMobile, setIsMobile] = useState(false)
 
     useEffect(() => {
-        const check = () => setIsMobile(window.innerWidth < 768)
+        const check = () => setIsMobile(window.innerWidth < 640)
         check()
         window.addEventListener('resize', check)
         return () => window.removeEventListener('resize', check)
@@ -91,15 +91,15 @@ export default function MediaWindow() {
                             ? { inset: 0 }
                             : isMaximized
                                 ? { inset: '1rem' }
-                                : { top: '12vh', left: '50%', transform: 'translateX(-50%)', width: 720, height: 500 }
+                                : { top: '12vh', left: 0, right: 0, margin: '0 auto', width: 720, maxWidth: 'calc(100vw - 1rem)', height: 500, maxHeight: 'calc(100dvh - 1rem)' }
                     }
                 >
                     <div className="absolute inset-0 rounded-xl border-2 border-black/60 dark:border-white/20 pointer-events-none z-10" />
                     <div className="absolute inset-0 rounded-xl shadow-[0_20px_60px_rgba(0,0,0,0.45)] pointer-events-none" />
 
                     <div
-                        className={`relative flex items-center justify-between px-3 h-9 bg-[#e8e6e2] dark:bg-[#2a2d3a] border-b border-black/20 dark:border-white/10 flex-shrink-0 ${!isMaximized ? 'cursor-grab active:cursor-grabbing' : ''}`}
-                        onPointerDown={!isMaximized ? e => dragControls.start(e) : undefined}
+                        className={`relative flex items-center justify-between px-3 h-9 bg-[#e8e6e2] dark:bg-[#2a2d3a] border-b border-black/20 dark:border-white/10 flex-shrink-0 ${!isMobile && !isMaximized ? 'cursor-grab active:cursor-grabbing' : ''}`}
+                        onPointerDown={!isMobile && !isMaximized ? e => dragControls.start(e) : undefined}
                     >
                         <div className="flex items-center gap-1.5 group/lights">
                             <button
@@ -107,7 +107,7 @@ export default function MediaWindow() {
                                 onClick={close}
                                 className="w-3.5 h-3.5 rounded-full bg-[#ff5f57] border border-[#e0443e] flex items-center justify-center hover:opacity-90"
                             >
-                                <X className="w-2 h-2 opacity-0 group-hover/lights:opacity-100 text-[#4d0000]" strokeWidth={3} />
+                                <X className="w-2 h-2 text-[#4d0000] opacity-100 sm:opacity-0 sm:group-hover/lights:opacity-100" strokeWidth={3} />
                             </button>
                            <button
                                 onPointerDown={e => e.stopPropagation()}
@@ -115,7 +115,7 @@ export default function MediaWindow() {
                                 className="w-3.5 h-3.5 rounded-full bg-[#ffbd2e] border border-[#e0a21c] flex items-center justify-center hover:opacity-90 active:opacity-70"
                                 aria-label="Minimize"
                             >
-                                <Minus className="w-2 h-2 opacity-0 group-hover/lights:opacity-100 text-[#5a3800]" strokeWidth={3} />
+                                <Minus className="w-2 h-2 text-[#5a3800] opacity-100 sm:opacity-0 sm:group-hover/lights:opacity-100" strokeWidth={3} />
                             </button>
                             <button
                                 onPointerDown={e => e.stopPropagation()}
@@ -123,9 +123,9 @@ export default function MediaWindow() {
                                 className="w-3.5 h-3.5 rounded-full bg-[#28c840] border border-[#1aaa2f] flex items-center justify-center hover:opacity-90"
                             >
                                 {isMaximized ? (
-                                    <Minimize2 className="w-1.5 h-1.5 opacity-0 group-hover/lights:opacity-100 text-[#003d00]" strokeWidth={3} />
+                                    <Minimize2 className="w-1.5 h-1.5 text-[#003d00] opacity-100 sm:opacity-0 sm:group-hover/lights:opacity-100" strokeWidth={3} />
                                 ) : (
-                                    <Maximize2 className="w-1.5 h-1.5 opacity-0 group-hover/lights:opacity-100 text-[#003d00]" strokeWidth={3} />
+                                    <Maximize2 className="w-1.5 h-1.5 text-[#003d00] opacity-100 sm:opacity-0 sm:group-hover/lights:opacity-100" strokeWidth={3} />
                                 )}
                             </button>
                         </div>

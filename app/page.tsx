@@ -104,13 +104,13 @@ function MinimizedTaskbar() {
                     animate={{ y: 0, opacity: 1 }}
                     exit={{ y: 60, opacity: 0 }}
                     transition={{ type: 'spring', stiffness: 320, damping: 28 }}
-                    className="fixed bottom-20 left-1/2 -translate-x-1/2 z-40 flex items-center gap-2"
+                    className="fixed bottom-[calc(4.5rem+env(safe-area-inset-bottom))] left-1/2 z-40 flex max-w-[calc(100vw-1rem)] -translate-x-1/2 items-center gap-2 overflow-x-auto px-1 pb-1"
                 >
                     {pills.map(p => (
                         <button
                             key={p.key}
                             onClick={p.onClick}
-                            className="flex items-center gap-2 px-3 py-1.5 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm border-2 border-black/60 dark:border-white/20 rounded-lg shadow-[3px_3px_0px_0px_rgba(0,0,0,0.5)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.5)] transition-all text-sm font-medium text-gray-800 dark:text-gray-100"
+                            className="flex min-h-11 shrink-0 items-center gap-2 rounded-lg border-2 border-black/60 bg-white/90 px-3 py-1.5 text-sm font-medium text-gray-800 shadow-[3px_3px_0px_0px_rgba(0,0,0,0.5)] transition-all hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.5)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 active:shadow-none dark:border-white/20 dark:bg-gray-800/90 dark:text-gray-100"
                         >
                             <span className={`w-2 h-2 rounded-full flex-shrink-0 ${p.color}`} />
                             <span className="text-xs">{p.label}</span>
@@ -124,7 +124,7 @@ function MinimizedTaskbar() {
 
 export default function Home() {
     return (
-        <main className="relative w-screen h-screen overflow-hidden">
+        <main className="relative h-[100dvh] min-h-[100svh] w-screen overflow-hidden">
             <Desktop />
             <ServerStatsPanel />
             <DocumentWindow />

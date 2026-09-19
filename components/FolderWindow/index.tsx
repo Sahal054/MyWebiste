@@ -1,7 +1,7 @@
 "use client";
 import React, { useState , useEffect} from 'react'
 import { motion, AnimatePresence, useDragControls } from 'framer-motion'
-import { X, Minus,Maximize2, Minimize2, FileText, Film, FolderMinus, Image as ImageIcon } from 'lucide-react'
+import { X, Minus,Maximize2, FileText, Film, FolderMinus, Image as ImageIcon } from 'lucide-react'
 import { useApp } from '../../context/App'
 import { CERTIFICATIONS_FOLDER_ID, CERTIFICATIONS_FOLDER_NAME } from '../../lib/certifications'
 
@@ -28,7 +28,7 @@ export default function FolderWindow() {
 
     // Detect mobile viewport
     useEffect(() => {
-        const check = () => setIsMobile(window.innerWidth < 768)
+        const check = () => setIsMobile(window.innerWidth < 640)
         check()
         window.addEventListener('resize', check)
         return () => window.removeEventListener('resize', check)
@@ -94,7 +94,7 @@ export default function FolderWindow() {
                             ? { inset: 0 }
                             : isMaximized
                                 ? { inset: '1rem' }
-                                : { top: '10vh', left: `calc(50% - ${W / 2}px)`, width: W, height: H }
+                                : { top: '10vh', left: 0, right: 0, margin: '0 auto', width: W, maxWidth: 'calc(100vw - 1rem)', height: H, maxHeight: 'calc(100dvh - 1rem)' }
                     }
                 >
                     <div className="absolute inset-0 rounded-xl border-2 border-black/60 dark:border-white/20 pointer-events-none z-10" />
@@ -111,7 +111,7 @@ export default function FolderWindow() {
                                 onClick={handleClose}
                                 className="w-3.5 h-3.5 rounded-full bg-[#ff5f57] border border-[#e0443e] flex items-center justify-center hover:opacity-90"
                             >
-                                <X className="w-2 h-2 opacity-0 group-hover/lights:opacity-100 text-[#4d0000]" strokeWidth={3} />
+                                <X className="w-2 h-2 text-[#4d0000] opacity-100 sm:opacity-0 sm:group-hover/lights:opacity-100" strokeWidth={3} />
                             </button>
                            <button
                                 onPointerDown={e => e.stopPropagation()}
@@ -119,14 +119,14 @@ export default function FolderWindow() {
                                 className="w-3.5 h-3.5 rounded-full bg-[#ffbd2e] border border-[#e0a21c] flex items-center justify-center hover:opacity-90 active:opacity-70"
                                 aria-label="Minimize"
                             >
-                                <Minus className="w-2 h-2 opacity-0 group-hover/lights:opacity-100 text-[#5a3800]" strokeWidth={3} />
+                                <Minus className="w-2 h-2 text-[#5a3800] opacity-100 sm:opacity-0 sm:group-hover/lights:opacity-100" strokeWidth={3} />
                             </button>
                             <button
                                 onPointerDown={e => e.stopPropagation()}
                                 onClick={() => setIsMaximized(m => !m)}
                                 className="w-3.5 h-3.5 rounded-full bg-[#28c840] border border-[#1aaa2f] flex items-center justify-center hover:opacity-90"
                             >
-                                <Maximize2 className="w-1.5 h-1.5 opacity-0 group-hover/lights:opacity-100 text-[#003d00]" strokeWidth={3} />
+                                <Maximize2 className="w-1.5 h-1.5 text-[#003d00] opacity-100 sm:opacity-0 sm:group-hover/lights:opacity-100" strokeWidth={3} />
                             </button>
                         </div>
                         <span className="absolute left-1/2 -translate-x-1/2 text-[13px] font-semibold text-gray-700 dark:text-gray-200">
@@ -179,7 +179,7 @@ export default function FolderWindow() {
                                                             onClick={() => removeDocFromCertifications(doc.id)}
                                                             title="Remove from Certifications"
                                                             onPointerDown={e => e.stopPropagation()}
-                                                            className="absolute top-1 right-1 p-1 bg-black/60 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+                                                            className="absolute right-1 top-1 flex items-center justify-center rounded-lg bg-black/60 p-1 opacity-100 transition-opacity sm:opacity-0 sm:group-hover:opacity-100"
                                                         >
                                                             <FolderMinus className="w-5 h-5 text-white" strokeWidth={2} />
                                                         </button>
@@ -189,7 +189,7 @@ export default function FolderWindow() {
                                                             onClick={() => removeDocFromFolder(folder.id, doc.id)}
                                                             title="Remove from folder"
                                                             onPointerDown={e => e.stopPropagation()}
-                                                            className="absolute top-1 right-1 p-1 bg-black/60 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+                                                            className="absolute right-1 top-1 flex items-center justify-center rounded-lg bg-black/60 p-1 opacity-100 transition-opacity sm:opacity-0 sm:group-hover:opacity-100"
                                                         >
                                                             <FolderMinus className="w-5 h-5 text-white" strokeWidth={2} />
                                                         </button>

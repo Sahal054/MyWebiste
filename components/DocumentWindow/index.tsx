@@ -104,7 +104,7 @@ export default function DocumentWindow() {
 
     // Detect mobile and respond to viewport changes
     useEffect(() => {
-        const check = () => setIsMobile(window.innerWidth < 768)
+        const check = () => setIsMobile(window.innerWidth < 640)
         check()
         window.addEventListener('resize', check)
         return () => window.removeEventListener('resize', check)
@@ -118,7 +118,6 @@ export default function DocumentWindow() {
             return
         }
         if (editorRef.current && !initializedRef.current) {
-            const saved = localStorage.getItem(STORAGE_KEY)
             editorRef.current.innerHTML = DEFAULT_CONTENT //  use editorRef.current.innerHTML = saved || DEFAULT_CONTENT  to load the changes made to resume
             initializedRef.current = true
         }
@@ -209,7 +208,7 @@ export default function DocumentWindow() {
                             ? { inset: 0 }
                             : isMaximized
                                 ? { inset: '1rem' }
-                                : { top: '6vh', left: `calc(50% - ${size.w / 2}px)`, width: size.w, height: size.h }
+                                : { top: '6vh', left: 0, right: 0, margin: '0 auto', width: size.w, maxWidth: 'calc(100vw - 1rem)', height: size.h, maxHeight: 'calc(100dvh - 1rem)' }
                     }
                 >
                     {/* Outer border — always visible against any background */}
@@ -233,7 +232,7 @@ export default function DocumentWindow() {
                                 className="w-3.5 h-3.5 rounded-full bg-[#ff5f57] border border-[#e0443e] flex items-center justify-center transition-opacity hover:opacity-90 active:opacity-70"
                                 aria-label="Close"
                             >
-                                <X className="w-2 h-2 opacity-0 group-hover/lights:opacity-100 text-[#4d0000] transition-opacity" strokeWidth={3} />
+                                <X className="w-2 h-2 text-[#4d0000] opacity-100 transition-opacity sm:opacity-0 sm:group-hover/lights:opacity-100" strokeWidth={3} />
                             </button>
                             {/* Yellow — Minimize */}
                             <button
@@ -242,7 +241,7 @@ export default function DocumentWindow() {
                                 className="w-3.5 h-3.5 rounded-full bg-[#ffbd2e] border border-[#e0a21c] flex items-center justify-center transition-opacity hover:opacity-90 active:opacity-70"
                                 aria-label="Minimize"
                             >
-                                <Minus className="w-2 h-2 opacity-0 group-hover/lights:opacity-100 text-[#5a3800] transition-opacity" strokeWidth={3} />
+                                <Minus className="w-2 h-2 text-[#5a3800] opacity-100 transition-opacity sm:opacity-0 sm:group-hover/lights:opacity-100" strokeWidth={3} />
                             </button>
                             {/* Green — Fullscreen */}
                             <button
@@ -251,7 +250,7 @@ export default function DocumentWindow() {
                                 className="w-3.5 h-3.5 rounded-full bg-[#28c840] border border-[#1aaa2f] flex items-center justify-center transition-opacity hover:opacity-90 active:opacity-70"
                                 aria-label="Fullscreen"
                             >
-                                <Maximize2 className="w-1.5 h-1.5 opacity-0 group-hover/lights:opacity-100 text-[#003d00] transition-opacity" strokeWidth={3} />
+                                <Maximize2 className="w-1.5 h-1.5 text-[#003d00] opacity-100 transition-opacity sm:opacity-0 sm:group-hover/lights:opacity-100" strokeWidth={3} />
                             </button>
                         </div>
 
@@ -286,7 +285,7 @@ export default function DocumentWindow() {
                             { Icon: Undo,       cmd: 'undo',          title: 'Undo' },
                             { Icon: Redo,       cmd: 'redo',          title: 'Redo' },
                         ].map(({ Icon, cmd, title }) => (
-                            <button key={cmd} onMouseDown={e => { e.preventDefault(); exec(cmd) }} title={title}
+                            <button key={cmd} onPointerDown={e => { e.preventDefault(); exec(cmd) }} title={title}
                                 className="p-1.5 rounded hover:bg-gray-100 dark:hover:bg-white/10 transition-colors text-gray-700 dark:text-gray-300">
                                 <Icon className="w-3.5 h-3.5" />
                             </button>
@@ -299,7 +298,7 @@ export default function DocumentWindow() {
                             { Icon: Italic,      cmd: 'italic',        title: 'Italic' },
                             { Icon: Underline,   cmd: 'underline',     title: 'Underline' },
                         ].map(({ Icon, cmd, title }) => (
-                            <button key={cmd} onMouseDown={e => { e.preventDefault(); exec(cmd) }} title={title}
+                            <button key={cmd} onPointerDown={e => { e.preventDefault(); exec(cmd) }} title={title}
                                 className="p-1.5 rounded hover:bg-gray-100 dark:hover:bg-white/10 transition-colors text-gray-700 dark:text-gray-300">
                                 <Icon className="w-3.5 h-3.5" />
                             </button>
@@ -312,7 +311,7 @@ export default function DocumentWindow() {
                             { Icon: AlignCenter, cmd: 'justifyCenter', title: 'Center' },
                             { Icon: AlignRight,  cmd: 'justifyRight',  title: 'Right' },
                         ].map(({ Icon, cmd, title }) => (
-                            <button key={cmd} onMouseDown={e => { e.preventDefault(); exec(cmd) }} title={title}
+                            <button key={cmd} onPointerDown={e => { e.preventDefault(); exec(cmd) }} title={title}
                                 className="p-1.5 rounded hover:bg-gray-100 dark:hover:bg-white/10 transition-colors text-gray-700 dark:text-gray-300">
                                 <Icon className="w-3.5 h-3.5" />
                             </button>

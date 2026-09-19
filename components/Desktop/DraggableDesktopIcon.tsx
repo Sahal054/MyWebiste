@@ -14,8 +14,21 @@ interface DraggableDesktopIconProps {
 export default function DraggableDesktopIcon({ app, constraintsRef, onDropOnTrash, onDropOnFolder }: DraggableDesktopIconProps) {
     const { setIsHoveringTrash,wallpaper } = useApp();
     const isHoveringRef = useRef(false); // Tracks state without forcing re-renders
+    const lastTapRef = useRef(0)
     const DEFAULT_WALLPAPER = 'https://res.cloudinary.com/dyyfvzis2/image/upload/v1784807608/BgImageLight_xrzkez.png';
     const isCustomTheme = wallpaper !== null && wallpaper !== DEFAULT_WALLPAPER;
+    const isPdf = app.label.toLowerCase().endsWith('.pdf')
+    const isFolder = app.isFolder === true
+    const handleMobileDoubleTap = (event: React.PointerEvent<HTMLDivElement>) => {
+        event.preventDefault()
+        const now = Date.now()
+        if (now - lastTapRef.current < 450) {
+            lastTapRef.current = 0
+            app.onClick?.()
+            return
+        }
+        lastTapRef.current = now
+    }
 
 
     const getDraggedRect = (event: unknown): DOMRect | null => {
@@ -60,7 +73,7 @@ export default function DraggableDesktopIcon({ app, constraintsRef, onDropOnTras
     const [isMobile, setIsMobile] = useState(false)
 
     useEffect(() => {
-        const check = () => setIsMobile(window.innerWidth < 768)
+        const check = () => setIsMobile(window.innerWidth < 640)
         check()
         window.addEventListener('resize', check)
         return () => window.removeEventListener('resize', check)
@@ -102,15 +115,16 @@ export default function DraggableDesktopIcon({ app, constraintsRef, onDropOnTras
 
     return (
         <motion.div
-            drag
+            drag={!isMobile}
             dragConstraints={constraintsRef}
             dragElastic={0.1}
             dragMomentum={false}
             dragSnapToOrigin
             onDrag={handleDrag}       //    Track drag in real time
             onDragEnd={handleDragEnd}
-            onDoubleClick={!isMobile ? app.onClick : undefined}
-            onTap={isMobile ? () => app.onClick?.() : undefined}
+            onClick={!isMobile && isPdf && !isFolder ? app.onClick : undefined}
+            onDoubleClick={!isMobile && (isFolder || !isPdf) ? app.onClick : undefined}
+            onPointerUp={isMobile ? handleMobileDoubleTap : undefined}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             whileDrag={{ zIndex: 50, scale: 1.05 }}

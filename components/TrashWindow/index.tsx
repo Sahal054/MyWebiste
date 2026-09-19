@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { motion, AnimatePresence, useDragControls } from 'framer-motion'
 import { X, Minus,Maximize2, FileText, Film, RotateCcw, Trash2, Image as ImageIcon, Folder } from 'lucide-react'
 import { useApp } from '../../context/App'
@@ -15,16 +15,24 @@ export default function TrashWindow() {
     const { isTrashOpen, setTrashOpen, isTrashMinimized, setTrashMinimized, savedDocs, userFolders, restoreDoc, restoreFolder, deleteDoc, deleteFolderPermanently, emptyTrash } = useApp()
     const dragControls = useDragControls()
     const [isMaximized, setIsMaximized] = useState(false)
+    const [isMobile, setIsMobile] = useState(false)
     const W = 700, H = 460
     const trashed = savedDocs.filter(d => d.trashed)
     const trashedFolders = userFolders.filter(f => f.trashed)
+
+    useEffect(() => {
+        const check = () => setIsMobile(window.innerWidth < 640)
+        check()
+        window.addEventListener('resize', check)
+        return () => window.removeEventListener('resize', check)
+    }, [])
 
     return (
         <AnimatePresence>
             {isTrashOpen && !isTrashMinimized && (
                 <motion.div
                     id="trash-window"
-                    drag={!isMaximized}
+                    drag={!isMobile && !isMaximized}
                     dragControls={dragControls}
                     dragListener={false}
                     dragMomentum={false}
@@ -32,8 +40,8 @@ export default function TrashWindow() {
                     animate={{ scale: 1, opacity: 1, y: 0 }}
                     exit={{ scale: 0.95, opacity: 0, y: 20 }}
                     transition={{ type: 'spring', stiffness: 320, damping: 28 }}
-                    className="fixed z-[48] flex flex-col overflow-hidden select-none rounded-xl"
-                    style={isMaximized ? { inset: '1rem' } : { top: '8vh', left: `calc(50% - ${W / 2}px - 20px)`, width: W, height: H }}
+                    className={`fixed z-[48] flex flex-col overflow-hidden select-none ${isMobile ? 'rounded-none' : 'rounded-xl'}`}
+                    style={isMobile ? { inset: 0 } : isMaximized ? { inset: '1rem' } : { top: '8vh', left: 0, right: 0, margin: '0 auto', width: W, maxWidth: 'calc(100vw - 1rem)', height: H, maxHeight: 'calc(100dvh - 1rem)' }}
                 >
                     <div className="absolute inset-0 rounded-xl border-2 border-black/60 dark:border-white/20 pointer-events-none z-10" />
                     <div className="absolute inset-0 rounded-xl shadow-[0_20px_60px_rgba(0,0,0,0.45)] pointer-events-none" />
@@ -41,7 +49,7 @@ export default function TrashWindow() {
                     {/* Title bar */}
                     <div
                         className={`relative flex items-center justify-between px-3 h-9 bg-[#e8e6e2] dark:bg-[#2a2d3a] border-b border-black/20 dark:border-white/10 flex-shrink-0 ${!isMaximized ? 'cursor-grab active:cursor-grabbing' : ''}`}
-                        onPointerDown={!isMaximized ? e => dragControls.start(e) : undefined}
+                        onPointerDown={!isMobile && !isMaximized ? e => dragControls.start(e) : undefined}
                     >
                         <div className="flex items-center gap-1.5 group/lights">
                             <button
@@ -49,7 +57,7 @@ export default function TrashWindow() {
                                 onClick={() => setTrashOpen(false)}
                                 className="w-3.5 h-3.5 rounded-full bg-[#ff5f57] border border-[#e0443e] flex items-center justify-center hover:opacity-90"
                             >
-                                <X className="w-2 h-2 opacity-0 group-hover/lights:opacity-100 text-[#4d0000]" strokeWidth={3} />
+                                <X className="w-2 h-2 text-[#4d0000] opacity-100 sm:opacity-0 sm:group-hover/lights:opacity-100" strokeWidth={3} />
                             </button>
 
                             <button
@@ -58,14 +66,14 @@ export default function TrashWindow() {
                                 className="w-3.5 h-3.5 rounded-full bg-[#ffbd2e] border border-[#e0a21c] flex items-center justify-center hover:opacity-90 active:opacity-70"
                                 aria-label="Minimize"
                             >
-                                <Minus className="w-2 h-2 opacity-0 group-hover/lights:opacity-100 text-[#5a3800]" strokeWidth={3} />
+                                <Minus className="w-2 h-2 text-[#5a3800] opacity-100 sm:opacity-0 sm:group-hover/lights:opacity-100" strokeWidth={3} />
                             </button>
                             <button
                                 onPointerDown={e => e.stopPropagation()}
                                 onClick={() => setIsMaximized(m => !m)}
                                 className="w-3.5 h-3.5 rounded-full bg-[#28c840] border border-[#1aaa2f] flex items-center justify-center hover:opacity-90"
                             >
-                                <Maximize2 className="w-1.5 h-1.5 opacity-0 group-hover/lights:opacity-100 text-[#003d00]" strokeWidth={3} />
+                                <Maximize2 className="w-1.5 h-1.5 text-[#003d00] opacity-100 sm:opacity-0 sm:group-hover/lights:opacity-100" strokeWidth={3} />
                             </button>
                         </div>
                         <span className="absolute left-1/2 -translate-x-1/2 text-[13px] font-semibold text-gray-700 dark:text-gray-200">Trash</span>
@@ -74,7 +82,7 @@ export default function TrashWindow() {
                     {/* Body */}
                     <div className="flex flex-1 overflow-hidden bg-white dark:bg-[#1e2130]">
                         {/* Sidebar */}
-                        <div className="w-44 flex-shrink-0 border-r border-gray-200 dark:border-white/10 p-4 flex flex-col gap-3 bg-gray-50 dark:bg-[#191b26]">
+                        <div className={`w-44 flex-shrink-0 border-r border-gray-200 dark:border-white/10 p-4 flex flex-col gap-3 bg-gray-50 dark:bg-[#191b26] ${isMobile ? 'hidden' : ''}`}>
                             <div className="flex items-center gap-2">
                                 <span className="text-xl">🗑️</span>
                                 <span className="font-bold text-sm text-gray-800 dark:text-gray-200">Trash</span>
@@ -106,7 +114,7 @@ export default function TrashWindow() {
                                         <div key={folder.id} className="group flex flex-col items-center gap-1.5">
                                             <div className="relative w-16 h-16 flex items-center justify-center bg-gray-100 dark:bg-white/5 rounded-xl border border-gray-200 dark:border-white/10 group-hover:border-gray-400 dark:group-hover:border-white/30 transition-all">
                                                 <Folder className="w-8 h-8 text-gray-500 dark:text-gray-400" strokeWidth={1.5} />
-                                                <div className="absolute inset-0 bg-black/60 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1.5">
+                                                <div className="absolute inset-0 flex items-center justify-center gap-1.5 rounded-xl bg-black/60 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                                                     <button
                                                         onClick={() => restoreFolder(folder.id)}
                                                         title="Restore folder"
@@ -132,9 +140,9 @@ export default function TrashWindow() {
                                         const Icon = fileIcon(doc.filename)
                                         return (
                                             <div key={doc.id} className="group flex flex-col items-center gap-1.5">
-                                                <div className="relative w-16 h-16 flex items-center justify-center bg-gray-100 dark:bg-white/5 rounded-xl border border-gray-200 dark:border-white/10 group-hover:border-gray-400 dark:group-hover:border-white/30 transition-all">
+                                                <div className="relative flex h-16 w-16 items-center justify-center rounded-xl border border-gray-200 bg-gray-100 transition-all group-hover:border-gray-400 dark:border-white/10 dark:bg-white/5 dark:group-hover:border-white/30">
                                                     <Icon className="w-8 h-8 text-gray-500 dark:text-gray-400" strokeWidth={1.5} />
-                                                    <div className="absolute inset-0 bg-black/60 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1.5">
+                                                    <div className="absolute inset-0 flex items-center justify-center gap-1.5 rounded-xl bg-black/60 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                                                         <button
                                                             onClick={() => restoreDoc(doc.id)}
                                                             title="Restore"
