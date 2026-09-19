@@ -34,11 +34,13 @@ export default function DocEditorWindow() {
 
     // Keep a stable ref to savedDocs so effects don't re-run on every doc list change
     const savedDocsRef = useRef(savedDocs)
-    savedDocsRef.current = savedDocs
+    useEffect(() => {
+        savedDocsRef.current = savedDocs
+    }, [savedDocs])
 
     // Mobile detection
     useEffect(() => {
-        const check = () => setIsMobile(window.innerWidth < 768)
+        const check = () => setIsMobile(window.innerWidth < 640)
         check()
         window.addEventListener('resize', check)
         return () => window.removeEventListener('resize', check)
@@ -47,7 +49,6 @@ export default function DocEditorWindow() {
     // Load content when the window opens or the target doc changes
     useEffect(() => {
         if (!isNewDocOpen) {
-            setCurrentDocId(null)
             return
         }
         // setTimeout ensures the contenteditable div is mounted
@@ -154,9 +155,13 @@ export default function DocEditorWindow() {
                                 ? { inset: '1rem' }
                                 : {
                                     top: '10vh',
-                                    left: `calc(50% - ${size.w / 2}px + 30px)`,
+                                    left: 0,
+                                    right: 0,
+                                    margin: '0 auto',
                                     width: size.w,
+                                    maxWidth: 'calc(100vw - 1rem)',
                                     height: size.h,
+                                    maxHeight: 'calc(100dvh - 1rem)',
                                 }
                     }
                 >
@@ -175,15 +180,15 @@ export default function DocEditorWindow() {
                         <div className="flex items-center gap-1.5 group/lights">
                             <button onPointerDown={e => e.stopPropagation()} onClick={close}
                                 className="w-3.5 h-3.5 rounded-full bg-[#ff5f57] border border-[#e0443e] flex items-center justify-center hover:opacity-90 active:opacity-70" aria-label="Close">
-                                <X className="w-2 h-2 opacity-0 group-hover/lights:opacity-100 text-[#4d0000]" strokeWidth={3} />
+                                <X className="w-2 h-2 text-[#4d0000] opacity-100 sm:opacity-0 sm:group-hover/lights:opacity-100" strokeWidth={3} />
                             </button>
                             <button onPointerDown={e => e.stopPropagation()} onClick={() => setNewDocMinimized(true)}
                                 className="w-3.5 h-3.5 rounded-full bg-[#ffbd2e] border border-[#e0a21c] flex items-center justify-center hover:opacity-90 active:opacity-70" aria-label="Minimize">
-                                <Minus className="w-2 h-2 opacity-0 group-hover/lights:opacity-100 text-[#5a3800]" strokeWidth={3} />
+                                <Minus className="w-2 h-2 text-[#5a3800] opacity-100 sm:opacity-0 sm:group-hover/lights:opacity-100" strokeWidth={3} />
                             </button>
                             <button onPointerDown={e => e.stopPropagation()} onClick={() => setIsMaximized(m => !m)}
                                 className="w-3.5 h-3.5 rounded-full bg-[#28c840] border border-[#1aaa2f] flex items-center justify-center hover:opacity-90 active:opacity-70" aria-label="Fullscreen">
-                                <Maximize2 className="w-1.5 h-1.5 opacity-0 group-hover/lights:opacity-100 text-[#003d00]" strokeWidth={3} />
+                                <Maximize2 className="w-1.5 h-1.5 text-[#003d00] opacity-100 sm:opacity-0 sm:group-hover/lights:opacity-100" strokeWidth={3} />
                             </button>
                         </div>
 
@@ -225,7 +230,7 @@ export default function DocEditorWindow() {
                             { Icon: Undo,      cmd: 'undo',          title: 'Undo' },
                             { Icon: Redo,      cmd: 'redo',          title: 'Redo' },
                         ] as const).map(({ Icon, cmd, title }) => (
-                            <button key={cmd} onMouseDown={e => { e.preventDefault(); exec(cmd) }} title={title}
+                            <button key={cmd} onPointerDown={e => { e.preventDefault(); exec(cmd) }} title={title}
                                 className="p-1.5 rounded hover:bg-gray-100 dark:hover:bg-white/10 transition-colors text-gray-700 dark:text-gray-300">
                                 <Icon className="w-3.5 h-3.5" />
                             </button>
@@ -236,7 +241,7 @@ export default function DocEditorWindow() {
                             { Icon: Italic,    cmd: 'italic',        title: 'Italic' },
                             { Icon: Underline, cmd: 'underline',     title: 'Underline' },
                         ] as const).map(({ Icon, cmd, title }) => (
-                            <button key={cmd} onMouseDown={e => { e.preventDefault(); exec(cmd) }} title={title}
+                            <button key={cmd} onPointerDown={e => { e.preventDefault(); exec(cmd) }} title={title}
                                 className="p-1.5 rounded hover:bg-gray-100 dark:hover:bg-white/10 transition-colors text-gray-700 dark:text-gray-300">
                                 <Icon className="w-3.5 h-3.5" />
                             </button>
@@ -247,7 +252,7 @@ export default function DocEditorWindow() {
                             { Icon: AlignCenter, cmd: 'justifyCenter', title: 'Align Center' },
                             { Icon: AlignRight,  cmd: 'justifyRight',  title: 'Align Right' },
                         ] as const).map(({ Icon, cmd, title }) => (
-                            <button key={cmd} onMouseDown={e => { e.preventDefault(); exec(cmd) }} title={title}
+                            <button key={cmd} onPointerDown={e => { e.preventDefault(); exec(cmd) }} title={title}
                                 className="p-1.5 rounded hover:bg-gray-100 dark:hover:bg-white/10 transition-colors text-gray-700 dark:text-gray-300">
                                 <Icon className="w-3.5 h-3.5" />
                             </button>
