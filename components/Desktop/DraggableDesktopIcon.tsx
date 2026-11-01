@@ -1,5 +1,5 @@
 "use client";
-import React, { useRef, useState, useEffect } from 'react'
+import React, { useRef, useState, useEffect, useLayoutEffect } from 'react'
 import { motion, PanInfo, useAnimationControls, useMotionValue } from 'framer-motion'
 import { AppIcon, AppItem } from '../OSIcons/AppIcon'
 import { useApp } from '../../context/App'
@@ -12,6 +12,8 @@ interface DraggableDesktopIconProps {
 }
 
 export default function DraggableDesktopIcon({ app, constraintsRef, onDropOnTrash, onDropOnFolder }: DraggableDesktopIconProps) {
+    const iconRef = useRef<HTMLDivElement>(null)
+    const previousSlotPositionRef = useRef<{ left: number; top: number } | null>(null)
     const { setIsHoveringTrash,wallpaper } = useApp();
     const isHoveringRef = useRef(false); // Tracks state without forcing re-renders
     const didDragRef = useRef(false)
@@ -119,6 +121,24 @@ export default function DraggableDesktopIcon({ app, constraintsRef, onDropOnTras
         }
     }, [])
 
+    useLayoutEffect(() => {
+        const icon = iconRef.current
+        if (!icon) return
+
+        const currentSlotPosition = {
+            left: icon.offsetLeft,
+            top: icon.offsetTop,
+        }
+        const previousSlotPosition = previousSlotPositionRef.current
+        if (previousSlotPosition) {
+            const deltaX = currentSlotPosition.left - previousSlotPosition.left
+            const deltaY = currentSlotPosition.top - previousSlotPosition.top
+            if (deltaX !== 0) x.set(x.get() - deltaX)
+            if (deltaY !== 0) y.set(y.get() - deltaY)
+        }
+        previousSlotPositionRef.current = currentSlotPosition
+    })
+
     // Checks if the mouse coordinates intersect with the Trash icon
     const handleDragEnd = (event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
         isHoveringRef.current = false
@@ -209,6 +229,7 @@ export default function DraggableDesktopIcon({ app, constraintsRef, onDropOnTras
 
     return (
         <motion.div
+            ref={iconRef}
             data-desktop-icon-id={app.id ?? app.label}
             data-folder-id={isFolder && app.id ? app.id : undefined}
             id={app.label === 'Trash' ? 'trash-desktop' : undefined}
@@ -218,6 +239,7 @@ export default function DraggableDesktopIcon({ app, constraintsRef, onDropOnTras
             dragMomentum={false}
             animate={controls}
             style={{ x, y }}
+            onPointerDown={() => { didDragRef.current = false }}
             onDragStart={() => { didDragRef.current = true }}
             onDrag={handleDrag}       //    Track drag in real time
             onDragEnd={handleDragEnd}
