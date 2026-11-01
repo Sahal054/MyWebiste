@@ -1,6 +1,6 @@
 "use client";
 import React, { useRef, useState, useEffect } from 'react'
-import { motion, PanInfo } from 'framer-motion'
+import { motion, PanInfo, useAnimationControls, useMotionValue } from 'framer-motion'
 import { AppIcon, AppItem } from '../OSIcons/AppIcon'
 import { useApp } from '../../context/App'
 
@@ -14,7 +14,11 @@ interface DraggableDesktopIconProps {
 export default function DraggableDesktopIcon({ app, constraintsRef, onDropOnTrash, onDropOnFolder }: DraggableDesktopIconProps) {
     const { setIsHoveringTrash,wallpaper } = useApp();
     const isHoveringRef = useRef(false); // Tracks state without forcing re-renders
+    const didDragRef = useRef(false)
     const lastTapRef = useRef(0)
+    const controls = useAnimationControls()
+    const x = useMotionValue(0)
+    const y = useMotionValue(0)
     const DEFAULT_WALLPAPER = 'https://res.cloudinary.com/dyyfvzis2/image/upload/v1784807608/BgImageLight_xrzkez.png';
     const isCustomTheme = wallpaper !== null && wallpaper !== DEFAULT_WALLPAPER;
     const isPdf = app.label.toLowerCase().endsWith('.pdf')
@@ -57,11 +61,42 @@ export default function DraggableDesktopIcon({ app, constraintsRef, onDropOnTras
         return isOver(dockTrash) || isOver(desktopTrash) || isOver(trashWindow);
     };
 
+    const updateDropTargetHighlight = (event: unknown, info: PanInfo, includeFolders = true) => {
+        const draggedRect = getDraggedRect(event)
+        const draggedElement = (event as { currentTarget?: EventTarget | null }).currentTarget
+        const selector = includeFolders
+            ? '[data-folder-id], #trash-desktop, #trash-dock, #trash-window'
+            : '#trash-desktop, #trash-dock, #trash-window'
+        const targets = document.querySelectorAll<HTMLElement>(selector)
+        targets.forEach(target => {
+            if (target === draggedElement) return
+            const rect = target.getBoundingClientRect()
+            const isOver = draggedRect
+                ? draggedRect.left < rect.right && draggedRect.right > rect.left &&
+                    draggedRect.top < rect.bottom && draggedRect.bottom > rect.top
+                : info.point.x >= rect.left && info.point.x <= rect.right &&
+                    info.point.y >= rect.top && info.point.y <= rect.bottom
+            target.classList.toggle(
+                target.id === 'trash-dock' ? 'drop-target-retro-trash' : 'drop-target-retro',
+                isOver,
+            )
+        })
+    }
+
+    const clearDropTargetHighlight = () => {
+        document.querySelectorAll<HTMLElement>('[data-folder-id], #trash-desktop, #trash-dock, #trash-window')
+            .forEach(target => target.classList.remove('drop-target-retro', 'drop-target-retro-trash'))
+    }
+
     // Fires continuously while dragging
     const handleDrag = (event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
-        if (!app.isDeletable) return;
+        if (!app.isDeletable) {
+            clearDropTargetHighlight()
+            return
+        }
         
         const isIntersecting = checkTrashIntersection(event, info);
+        updateDropTargetHighlight(event, info, !isFolder)
         
         // Only update the global context if the state actually changes
         if (isIntersecting !== isHoveringRef.current) {
@@ -76,23 +111,27 @@ export default function DraggableDesktopIcon({ app, constraintsRef, onDropOnTras
         const check = () => setIsMobile(window.innerWidth < 640)
         check()
         window.addEventListener('resize', check)
-        return () => window.removeEventListener('resize', check)
+        window.addEventListener('blur', clearDropTargetHighlight)
+        return () => {
+            window.removeEventListener('resize', check)
+            window.removeEventListener('blur', clearDropTargetHighlight)
+            clearDropTargetHighlight()
+        }
     }, [])
 
     // Checks if the mouse coordinates intersect with the Trash icon
     const handleDragEnd = (event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
         isHoveringRef.current = false
         setIsHoveringTrash(false)
+        clearDropTargetHighlight()
 
-        if (!app.isDeletable || !app.id) return
-
-        if (checkTrashIntersection(event, info) && onDropOnTrash) {
+        if (app.isDeletable && app.id && checkTrashIntersection(event, info) && onDropOnTrash) {
             onDropOnTrash(app.id)
             return
         }
 
         // Folder drop detection — scans folder icons and open folder windows.
-        if (onDropOnFolder) {
+        if (app.id && onDropOnFolder) {
             const folderEls = document.querySelectorAll('[data-folder-id], [data-folder-window-id]')
             for (const el of Array.from(folderEls)) {
                                 const draggedRect = getDraggedRect(event)
@@ -109,20 +148,80 @@ export default function DraggableDesktopIcon({ app, constraintsRef, onDropOnTras
                 }
             }
         }
+
+        const iconId = app.id ?? app.label
+        const draggedElement = document.querySelector(`[data-desktop-icon-id="${CSS.escape(iconId)}"]`)
+        if (!(draggedElement instanceof HTMLElement)) return
+
+        const draggedRect = draggedElement.getBoundingClientRect()
+        const desktopRect = constraintsRef.current?.getBoundingClientRect()
+        if (!desktopRect) return
+
+        const otherRects = Array.from(document.querySelectorAll('[data-desktop-icon-id]'))
+            .filter(element => element !== draggedElement)
+            .map(element => element.getBoundingClientRect())
+        const overlaps = (rect: DOMRect) => otherRects.some(other =>
+            rect.left < other.right &&
+            rect.right > other.left &&
+            rect.top < other.bottom &&
+            rect.bottom > other.top
+        )
+
+        if (!overlaps(draggedRect)) return
+
+        const gap = 8
+        const clampPosition = (position: { left: number; top: number }) => ({
+            left: Math.max(desktopRect.left, Math.min(position.left, desktopRect.right - draggedRect.width)),
+            top: Math.max(desktopRect.top, Math.min(position.top, desktopRect.bottom - draggedRect.height)),
+        })
+        const candidates = otherRects.flatMap(other => [
+            { left: other.right + gap, top: draggedRect.top },
+            { left: other.left - draggedRect.width - gap, top: draggedRect.top },
+            { left: draggedRect.left, top: other.bottom + gap },
+            { left: draggedRect.left, top: other.top - draggedRect.height - gap },
+        ]).map(clampPosition)
+        const candidate = candidates
+            .filter(position => !overlaps(new DOMRect(position.left, position.top, draggedRect.width, draggedRect.height)))
+            .sort((a, b) => {
+                const distanceA = Math.hypot(a.left - draggedRect.left, a.top - draggedRect.top)
+                const distanceB = Math.hypot(b.left - draggedRect.left, b.top - draggedRect.top)
+                return distanceA - distanceB
+            })[0]
+
+        if (candidate) {
+            void controls.start({
+                x: x.get() + candidate.left - draggedRect.left,
+                y: y.get() + candidate.top - draggedRect.top,
+                transition: { type: 'spring', stiffness: 500, damping: 35 },
+            })
+        }
     }
 
+    const handleClick = (event: React.MouseEvent<HTMLDivElement>) => {
+        if (didDragRef.current) {
+            event.preventDefault()
+            didDragRef.current = false
+            return
+        }
+        app.onClick?.()
+    }
 
 
     return (
         <motion.div
+            data-desktop-icon-id={app.id ?? app.label}
+            data-folder-id={isFolder && app.id ? app.id : undefined}
+            id={app.label === 'Trash' ? 'trash-desktop' : undefined}
             drag={!isMobile}
             dragConstraints={constraintsRef}
             dragElastic={0.1}
             dragMomentum={false}
-            dragSnapToOrigin
+            animate={controls}
+            style={{ x, y }}
+            onDragStart={() => { didDragRef.current = true }}
             onDrag={handleDrag}       //    Track drag in real time
             onDragEnd={handleDragEnd}
-            onClick={!isMobile && isPdf && !isFolder ? app.onClick : undefined}
+            onClick={!isMobile && isPdf && !isFolder ? handleClick : undefined}
             onDoubleClick={!isMobile && (isFolder || !isPdf) ? app.onClick : undefined}
             onPointerUp={isMobile ? handleMobileDoubleTap : undefined}
             whileHover={{ scale: 1.05 }}

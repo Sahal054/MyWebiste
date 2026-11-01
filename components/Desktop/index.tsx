@@ -220,8 +220,8 @@ export default function Desktop() {
 
     const desktopApps: AppItem[] = [
         { label: 'Resume',  iconUrl:'https://res.cloudinary.com/dmukukwp6/image/upload/typewriter_classic_3e6454d7f6.png',    Icon: null, onClick: () => setDocOpen(true) },
-        { label: CERTIFICATIONS_FOLDER_NAME, Icon: null, isFolder: true, iconUrl:'https://res.cloudinary.com/dmukukwp6/image/upload/folder_classic_d2fdf96f82.png', onClick: () => { setActiveFolderWindowId(CERTIFICATIONS_FOLDER_ID); setFolderWindowOpen(true); setFolderWindowMinimized(false) } },
-        { label: 'Projects',Icon: null, isFolder: true, iconUrl:'https://res.cloudinary.com/dmukukwp6/image/upload/document_bb8267664e.png', onClick: () => { setProjectsMinimized(false); setProjectsOpen(true) } },
+        { label: CERTIFICATIONS_FOLDER_NAME, id: CERTIFICATIONS_FOLDER_ID, Icon: null, isFolder: true, iconUrl:'https://res.cloudinary.com/dmukukwp6/image/upload/folder_classic_d2fdf96f82.png', onClick: () => { setActiveFolderWindowId(CERTIFICATIONS_FOLDER_ID); setFolderWindowOpen(true); setFolderWindowMinimized(false) } },
+        { label: 'Projects', id: 'projects', Icon: null, isFolder: true, iconUrl:'https://res.cloudinary.com/dmukukwp6/image/upload/document_bb8267664e.png', onClick: () => { setProjectsMinimized(false); setProjectsOpen(true) } },
         // { label: 'Spreadsheet', Icon: null, onClick: () => router.push('/experience') },
         // { label: 'Envelope',    Icon: null, iconUrl: 'https://res.cloudinary.com/dmukukwp6/image/upload/contact_4af3eed18f.png', onClick: () => { setContactMinimized(false); setContactOpen(true) } },
         { label: 'Trash', Icon: null, iconUrl: 'https://res.cloudinary.com/dmukukwp6/image/upload/trash_classic_20ed394a8d.png', onClick: () => { setTrashMinimized(false); setTrashOpen(true) } },
@@ -266,6 +266,7 @@ export default function Desktop() {
         .map(doc => ({
             label: doc.filename,
             Icon: null,
+            iconUrl: doc.filename === 'about-me.mdx' ? '/icons/pixel-developer.svg' : undefined,
             id: doc.id,
             isDeletable: true,
             onClick: () => openSavedItem(doc.id),
@@ -367,8 +368,6 @@ export default function Desktop() {
                             <div
                                 key={app.id ?? app.label}
                                 className="relative w-24 h-24"
-                                id={app.label === 'Trash' ? 'trash-desktop' : undefined}
-                                data-folder-id={app.label === 'Projects' ? 'projects' : app.label === CERTIFICATIONS_FOLDER_NAME ? CERTIFICATIONS_FOLDER_ID : undefined}
                             >
                                 <DraggableDesktopIcon app={app} constraintsRef={constraintsRef} />
                             </div>
@@ -391,7 +390,6 @@ export default function Desktop() {
                             <div
                                 key={folder.id}
                                 className="relative w-24 h-24"
-                                data-folder-id={folder.id}
                             >
                                 <DraggableDesktopIcon
                                     app={{
@@ -400,6 +398,7 @@ export default function Desktop() {
                                         id: folder.id,
                                         isDeletable: true,
                                         isFolder: true,
+                                        iconUrl: 'https://res.cloudinary.com/dmukukwp6/image/upload/folder_classic_d2fdf96f82.png',
                                         onClick: () => { setActiveFolderWindowId(folder.id); setFolderWindowOpen(true); setFolderWindowMinimized(false) },
                                     }}
                                     constraintsRef={constraintsRef}

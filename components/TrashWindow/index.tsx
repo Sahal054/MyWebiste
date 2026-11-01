@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { motion, AnimatePresence, useDragControls } from 'framer-motion'
 import { X, Minus,Maximize2, FileText, Film, RotateCcw, Trash2, Image as ImageIcon, Folder } from 'lucide-react'
 import { useApp } from '../../context/App'
+import { WindowDragBoundary } from '../WindowDragBoundary'
 
 function fileIcon(filename: string) {
     const ext = filename.toLowerCase().split('.').pop() ?? ''
@@ -14,6 +15,7 @@ function fileIcon(filename: string) {
 export default function TrashWindow() {
     const { isTrashOpen, setTrashOpen, isTrashMinimized, setTrashMinimized, savedDocs, userFolders, restoreDoc, restoreFolder, deleteDoc, deleteFolderPermanently, emptyTrash } = useApp()
     const dragControls = useDragControls()
+    const dragBoundaryRef = React.useRef<HTMLDivElement>(null)
     const [isMaximized, setIsMaximized] = useState(false)
     const [isMobile, setIsMobile] = useState(false)
     const W = 700, H = 460
@@ -30,10 +32,13 @@ export default function TrashWindow() {
     return (
         <AnimatePresence>
             {isTrashOpen && !isTrashMinimized && (
+                <>
+                <WindowDragBoundary ref={dragBoundaryRef} />
                 <motion.div
                     id="trash-window"
                     drag={!isMobile && !isMaximized}
                     dragControls={dragControls}
+                    dragConstraints={dragBoundaryRef}
                     dragListener={false}
                     dragMomentum={false}
                     initial={{ scale: 0.95, opacity: 0, y: 20 }}
@@ -170,6 +175,7 @@ export default function TrashWindow() {
                         </div>
                     </div>
                 </motion.div>
+                </>
             )}
         </AnimatePresence>
     )

@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { motion, AnimatePresence, useDragControls } from 'framer-motion'
 import { X,  Minus,Maximize2, ExternalLink, FileText, Film, FolderMinus, Image as ImageIcon } from 'lucide-react'
 import { useApp } from '../../context/App'
+import { WindowDragBoundary } from '../WindowDragBoundary'
 
 
 
@@ -109,6 +110,7 @@ function fileIcon(filename: string) {
 export default function ProjectWindow() {
     const { isProjectsOpen, setProjectsOpen, isProjectsMinimized, setProjectsMinimized, savedDocs, projectFolderItems, removeFromProjectFolder } = useApp()
     const dragControls = useDragControls()
+    const dragBoundaryRef = React.useRef<HTMLDivElement>(null)
     const [isMaximized, setIsMaximized] = useState(false)
     const [isMobile, setIsMobile] = useState(false)
     const W = 760, H = 500
@@ -124,9 +126,12 @@ export default function ProjectWindow() {
     return (
         <AnimatePresence>
             {isProjectsOpen && !isProjectsMinimized && (
+                <>
+                <WindowDragBoundary ref={dragBoundaryRef} />
                 <motion.div
                     drag={!isMobile && !isMaximized}
                     dragControls={dragControls}
+                    dragConstraints={dragBoundaryRef}
                     dragListener={false}
                     dragMomentum={false}
                     initial={{ scale: 0.95, opacity: 0, y: 20 }}
@@ -275,6 +280,7 @@ export default function ProjectWindow() {
                         </div>
                     </div>
                 </motion.div>
+                </>
             )}
         </AnimatePresence>
     )

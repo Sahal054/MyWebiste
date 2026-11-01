@@ -4,6 +4,7 @@ import { motion, AnimatePresence, useDragControls } from 'framer-motion'
 import { X, Minus,Maximize2, FileText, Film, FolderMinus, Image as ImageIcon } from 'lucide-react'
 import { useApp } from '../../context/App'
 import { CERTIFICATIONS_FOLDER_ID, CERTIFICATIONS_FOLDER_NAME, isPdfDocument } from '../../lib/certifications'
+import { WindowDragBoundary } from '../WindowDragBoundary'
 
 function fileIcon(filename: string) {
     const ext = filename.toLowerCase().split('.').pop() ?? ''
@@ -34,6 +35,7 @@ export default function FolderWindow() {
         return () => window.removeEventListener('resize', check)
     }, [])
     const dragControls = useDragControls()
+    const dragBoundaryRef = React.useRef<HTMLDivElement>(null)
     const [isMaximized, setIsMaximized] = useState(false)
     const W = 620, H = 420
 
@@ -74,9 +76,12 @@ export default function FolderWindow() {
     return (
 <AnimatePresence>
             {isFolderWindowOpen && folder && !isFolderWindowMinimized && (
+                <>
+                <WindowDragBoundary ref={dragBoundaryRef} />
                 <motion.div
                     drag={!isMobile && !isMaximized}
                     dragControls={dragControls}
+                    dragConstraints={dragBoundaryRef}
                     dragListener={false}
                     dragMomentum={false}
                     initial={{ scale: 0.95, opacity: 0, y: isMobile ? 40 : 20 }}
@@ -204,6 +209,7 @@ export default function FolderWindow() {
                         </div>
                     </div>
                 </motion.div>
+                </>
             )}
         </AnimatePresence>
     )

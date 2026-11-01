@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { X, Cpu, HardDrive } from 'lucide-react'
 import { useApp } from '../../context/App'
 import { motion, AnimatePresence } from 'framer-motion'
+import { WindowDragBoundary } from '../WindowDragBoundary'
 
 interface ServerStats {
     memory: {
@@ -50,6 +51,7 @@ export default function ServerStatsPanel() {
     const [error, setError] = useState(false)
     const [tick, setTick] = useState(0)
     const [isMobile, setIsMobile] = useState(false)
+    const dragBoundaryRef = useRef<HTMLDivElement>(null)
 
     useEffect(() => {
         const check = () => setIsMobile(window.innerWidth < 640)
@@ -86,28 +88,14 @@ export default function ServerStatsPanel() {
     return (
         <AnimatePresence>
             {isNotificationsOpen && (
-                
+                <>
+                <WindowDragBoundary ref={dragBoundaryRef} />
 
                 
-                // <motion.div
-                //     initial={isMobile ? { y: 80, opacity: 0 } : { x: '100%', opacity: 0 }}
-                //     animate={isMobile ? { y: 0, opacity: 1 } : { x: 0, opacity: 1 }}
-                //     exit={isMobile ? { y: 80, opacity: 0 } : { x: '100%', opacity: 0 }}
-                //     transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                //     // FIXED: Added text-gray-900 dark:text-gray-100 right here!
-                //     className={`fixed z-50 flex flex-col bg-white dark:bg-[#1d1f27] text-gray-900 dark:text-gray-100 border-2 border-black dark:border-gray-600 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] rounded-lg overflow-hidden ${
-                //         isMobile
-                //             ? 'bottom-20 left-4 right-4'
-                //             : 'top-4 right-4 w-72'
-                //     }`}
-                // >
-
-
-
-
                 <motion.div
 
                         drag={!isMobile} 
+                        dragConstraints={dragBoundaryRef}
                         dragMomentum={false}
                         // 2. CHANGE ANIMATION TO DROP DOWN INSTEAD OF SLIDE FROM RIGHT
                         initial={isMobile ? { y: 80, opacity: 0 } : { y: -20, opacity: 0 }}
@@ -210,6 +198,7 @@ export default function ServerStatsPanel() {
                         <span className="text-[11px] text-gray-400">Live · refreshes every 3s</span>
                     </div>
                 </motion.div>
+                </>
             )}
         </AnimatePresence>
     )

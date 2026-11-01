@@ -5,6 +5,7 @@ import { motion, AnimatePresence, useDragControls } from 'framer-motion'
 // IMPORTED Briefcase ICON HERE
 import { X, Maximize2, Minus, Mail, Link2, Send, Briefcase } from 'lucide-react'
 import { useApp } from '../../context/App'
+import { WindowDragBoundary } from '../WindowDragBoundary'
 
 const CONTACT_EMAIL = 'sahalmsachu@gmail.com'
 const LINKEDIN_URL = 'https://www.linkedin.com/in/sahal054/'
@@ -16,6 +17,7 @@ const MIN_H = 300
 export default function ContactWindow() {
     const { isContactOpen, setContactOpen, isContactMinimized, setContactMinimized } = useApp()
     const dragControls = useDragControls()
+    const dragBoundaryRef = React.useRef<HTMLDivElement>(null)
     const [isMaximized, setIsMaximized] = useState(false)
     const [isMobile, setIsMobile] = useState(false)
     
@@ -97,9 +99,12 @@ export default function ContactWindow() {
     return (
         <AnimatePresence>
             {isVisible && (
+                <>
+                <WindowDragBoundary ref={dragBoundaryRef} />
                 <motion.div
                     drag={isFloating}
                     dragControls={dragControls}
+                    dragConstraints={dragBoundaryRef}
                     dragListener={false}
                     dragMomentum={false}
                     initial={{ scale: 0.95, opacity: 0, y: 20 }}
@@ -279,6 +284,7 @@ export default function ContactWindow() {
                         </>
                     )}
                 </motion.div>
+                </>
             )}
         </AnimatePresence>
     )
