@@ -14,6 +14,9 @@ interface DraggableDesktopIconProps {
 export default function DraggableDesktopIcon({ app, constraintsRef, onDropOnTrash, onDropOnFolder }: DraggableDesktopIconProps) {
     const { setIsHoveringTrash,wallpaper } = useApp();
     const isHoveringRef = useRef(false); // Tracks state without forcing re-renders
+    const iconRef = useRef<HTMLDivElement>(null)
+    const lastGridSlotRef = useRef<{ left: number; top: number } | null>(null)
+    const isDraggingRef = useRef(false)
     const didDragRef = useRef(false)
     const lastTapRef = useRef(0)
     const controls = useAnimationControls()
@@ -119,8 +122,21 @@ export default function DraggableDesktopIcon({ app, constraintsRef, onDropOnTras
         }
     }, [])
 
+    useEffect(() => {
+        const icon = iconRef.current
+        if (!icon) return
+        const currentSlot = { left: icon.offsetLeft, top: icon.offsetTop }
+        const lastSlot = lastGridSlotRef.current
+        if (lastSlot && !isDraggingRef.current) {
+            x.set(x.get() + (lastSlot.left - currentSlot.left))
+            y.set(y.get() + (lastSlot.top - currentSlot.top))
+        }
+        lastGridSlotRef.current = currentSlot
+    })
+
     // Checks if the mouse coordinates intersect with the Trash icon
     const handleDragEnd = (event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
+        isDraggingRef.current = false
         isHoveringRef.current = false
         setIsHoveringTrash(false)
         clearDropTargetHighlight()
@@ -209,6 +225,7 @@ export default function DraggableDesktopIcon({ app, constraintsRef, onDropOnTras
 
     return (
         <motion.div
+            ref={iconRef}
             data-desktop-icon-id={app.id ?? app.label}
             data-folder-id={isFolder && app.id ? app.id : undefined}
             id={app.label === 'Trash' ? 'trash-desktop' : undefined}
@@ -219,7 +236,7 @@ export default function DraggableDesktopIcon({ app, constraintsRef, onDropOnTras
             animate={controls}
             style={{ x, y }}
             onPointerDown={() => { didDragRef.current = false }}
-            onDragStart={() => { didDragRef.current = true }}
+            onDragStart={() => { isDraggingRef.current = true; didDragRef.current = true }}
             onDrag={handleDrag}       //    Track drag in real time
             onDragEnd={handleDragEnd}
             onClick={!isMobile && isPdf && !isFolder ? handleClick : undefined}
