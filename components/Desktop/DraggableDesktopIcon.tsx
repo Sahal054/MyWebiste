@@ -125,9 +125,11 @@ export default function DraggableDesktopIcon({ app, constraintsRef, onDropOnTras
         const icon = iconRef.current
         if (!icon) return
 
+        const slot = icon.offsetParent
+        if (!(slot instanceof HTMLElement)) return
         const currentSlotPosition = {
-            left: icon.offsetLeft,
-            top: icon.offsetTop,
+            left: slot.offsetLeft,
+            top: slot.offsetTop,
         }
         const previousSlotPosition = previousSlotPositionRef.current
         if (previousSlotPosition) {
