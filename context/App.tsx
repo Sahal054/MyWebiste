@@ -424,13 +424,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
                 const aboutDocIndex = parsedDocs.findIndex(doc => doc.filename === ABOUT_DOC_FILENAME)
                 const aboutContentVersion = localStorage.getItem(ABOUT_CONTENT_VERSION_KEY)
                 const aboutContentBaseline = localStorage.getItem(ABOUT_CONTENT_BASELINE_KEY)
-                const shouldUpdateAbout = aboutDocIndex !== -1 && (
-                    aboutContentVersion !== ABOUT_CONTENT_VERSION ||
-                    (aboutContentBaseline !== null &&
-                        parsedDocs[aboutDocIndex].content === aboutContentBaseline &&
-                        parsedDocs[aboutDocIndex].content !== ABOUT_CONTENT)
-                )
-                const docs = aboutDocIndex === -1 && aboutContentVersion === null
+                const canUpdateAboutContent = aboutDocIndex !== -1 &&
+                    aboutContentBaseline !== null &&
+                    parsedDocs[aboutDocIndex].content === aboutContentBaseline &&
+                    parsedDocs[aboutDocIndex].content !== ABOUT_CONTENT
+                const shouldUpdateAbout = aboutContentVersion !== ABOUT_CONTENT_VERSION && canUpdateAboutContent
+                const shouldAddMissingAbout = aboutDocIndex === -1 && aboutContentVersion === null
+                const docs = shouldAddMissingAbout
                     ? [
                         ...parsedDocs,
                         {
