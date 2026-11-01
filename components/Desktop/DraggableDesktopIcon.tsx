@@ -218,6 +218,7 @@ export default function DraggableDesktopIcon({ app, constraintsRef, onDropOnTras
             dragMomentum={false}
             animate={controls}
             style={{ x, y }}
+            onPointerDown={() => { didDragRef.current = false }}
             onDragStart={() => { didDragRef.current = true }}
             onDrag={handleDrag}       //    Track drag in real time
             onDragEnd={handleDragEnd}
