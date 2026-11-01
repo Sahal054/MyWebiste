@@ -430,7 +430,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
                         parsedDocs[aboutDocIndex].content === aboutContentBaseline &&
                         parsedDocs[aboutDocIndex].content !== ABOUT_CONTENT)
                 )
-                const docs = aboutDocIndex === -1
+                const docs = aboutDocIndex === -1 && aboutContentVersion === null
                     ? [
                         ...parsedDocs,
                         {
