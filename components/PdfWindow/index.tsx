@@ -1,11 +1,12 @@
 "use client";
 
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence, useDragControls } from 'framer-motion'
 import { X, Maximize2, Minus } from 'lucide-react'
 import { useApp } from '../../context/App'
 import { loadMediaObjectUrl } from '../Desktop/mediaStorage'
 import { isPdfDocument } from '../../lib/certifications'
+import { WindowDragBoundary } from '../WindowDragBoundary'
 
 function PdfWindowCard({ windowId, docId }: { windowId: string; docId: string }) {
     const {
@@ -16,6 +17,7 @@ function PdfWindowCard({ windowId, docId }: { windowId: string; docId: string })
         certificationDocs,
     } = useApp()
     const dragControls = useDragControls()
+    const dragBoundaryRef = useRef<HTMLDivElement>(null)
     const [isMaximized, setIsMaximized] = useState(false)
     const [resolvedSrc, setResolvedSrc] = useState<string | null>(null)
     const [isMobile, setIsMobile] = useState(false)
@@ -66,9 +68,12 @@ function PdfWindowCard({ windowId, docId }: { windowId: string; docId: string })
     if (!doc || !isPdfDocument(doc.filename, doc.content) || !windowState) return null
 
     return (
+        <>
+        <WindowDragBoundary ref={dragBoundaryRef} />
         <motion.div
             drag={!isMobile && !isMaximized}
             dragControls={dragControls}
+            dragConstraints={dragBoundaryRef}
             dragListener={false}
             dragMomentum={false}
             initial={{ scale: 0.95, opacity: 0, y: 20 }}
@@ -122,6 +127,7 @@ function PdfWindowCard({ windowId, docId }: { windowId: string; docId: string })
                 />
             </div>
         </motion.div>
+        </>
     )
 }
 

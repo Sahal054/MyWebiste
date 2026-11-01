@@ -5,6 +5,7 @@ import { motion, AnimatePresence, useDragControls } from 'framer-motion'
 import { X, Maximize2, Minimize2,Minus } from 'lucide-react'
 import { useApp } from '../../context/App'
 import { loadMediaObjectUrl } from '../Desktop/mediaStorage'
+import { WindowDragBoundary } from '../WindowDragBoundary'
 
 function isVideo(filename: string) {
     return ['mov', 'mp4', 'avi', 'webm'].includes(filename.toLowerCase().split('.').pop() ?? '')
@@ -17,6 +18,7 @@ function isImage(filename: string) {
 export default function MediaWindow() {
     const { isMediaWindowOpen, setMediaWindowOpen, isMediaWindowMinimized, setMediaWindowMinimized, activeMediaDocId, setActiveMediaDocId, savedDocs } = useApp()
     const dragControls = useDragControls()
+    const dragBoundaryRef = React.useRef<HTMLDivElement>(null)
     const [isMaximized, setIsMaximized] = useState(false)
     const [resolvedSrc, setResolvedSrc] = useState<string | null>(null)
 
@@ -74,9 +76,12 @@ export default function MediaWindow() {
     return (
             <AnimatePresence>
             {isMediaWindowOpen && !isMediaWindowMinimized && (
+                <>
+                <WindowDragBoundary ref={dragBoundaryRef} />
                 <motion.div
                     drag={!isMobile && !isMaximized}
                     dragControls={dragControls}
+                    dragConstraints={dragBoundaryRef}
                     dragListener={false}
                     dragMomentum={false}
                     initial={{ scale: 0.95, opacity: 0, y: isMobile ? 40 : 20 }}
@@ -153,6 +158,7 @@ export default function MediaWindow() {
                         )}
                     </div>
                 </motion.div>
+                </>
             )}
         </AnimatePresence>
     )

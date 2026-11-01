@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" shape-rendering="crispEdges">
+  <!-- Hair and head -->
+  <path fill="#17171b" d="M8 3h16v2h3v4h2v9h-3v3h-2v4H8v-4H6v-3H3V9h2V5h3z"/>
+  <path fill="#ad6742" d="M8 5h16v2h3v6H6V7h2z"/>
+  <path fill="#f0bd91" d="M6 11h21v6h-3v3H9v-3H6z"/>
+  <path fill="#d89569" d="M6 11h4v4h7v2H9v3H6z"/>
+  <rect x="12" y="15" width="2" height="4" fill="#17171b"/>
+  <rect x="20" y="15" width="2" height="4" fill="#17171b"/>
+  <!-- Arms and red shirt -->
+  <path fill="#17171b" d="M7 19H4v2H2v7h3v2h5v-3h12v3h5v-2h3v-7h-2v-2h-3v-2H7z"/>
+  <path fill="#e52d1f" d="M9 19h14v8H9z"/>
+  <path fill="#f0bd91" d="M4 21h4v6H4zM24 21h4v6h-4z"/>
+  <!-- Blue trousers and shoes -->
+  <path fill="#17171b" d="M8 27h16v2h2v3h-8v-2h-4v2H6v-3h2z"/>
+  <path fill="#1682b5" d="M9 27h14v3h-5v-2h-4v2H9z"/>
+</svg>

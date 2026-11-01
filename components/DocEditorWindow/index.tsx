@@ -9,6 +9,7 @@ import {
     X, Minus, Maximize2, Save,
 } from 'lucide-react'
 import { useApp } from '../../context/App'
+import { WindowDragBoundary } from '../WindowDragBoundary'
 
 const MIN_W = 420
 const MIN_H = 300
@@ -22,6 +23,7 @@ export default function DocEditorWindow() {
     } = useApp()
 
     const dragControls = useDragControls()
+    const dragBoundaryRef = useRef<HTMLDivElement>(null)
     const editorRef = useRef<HTMLDivElement>(null)
     const windowRef = useRef<HTMLDivElement>(null)
     const [filename, setFilename] = useState('untitled.mdx')
@@ -135,10 +137,13 @@ export default function DocEditorWindow() {
     return (
         <AnimatePresence>
             {isVisible && (
+                <>
+                <WindowDragBoundary ref={dragBoundaryRef} />
                 <motion.div
                     ref={windowRef}
                     drag={isFloating}
                     dragControls={dragControls}
+                    dragConstraints={dragBoundaryRef}
                     dragListener={false}
                     dragMomentum={false}
                     initial={{ scale: 0.95, opacity: 0, y: isMobile ? 40 : 20 }}
@@ -265,7 +270,7 @@ export default function DocEditorWindow() {
                         contentEditable
                         suppressContentEditableWarning
                         spellCheck
-                        className={`flex-1 overflow-y-auto outline-none text-[14px] leading-relaxed bg-white dark:bg-[#1e2130] text-gray-900 dark:text-gray-100 ${
+                        className={`document-editor min-w-0 flex-1 overflow-y-auto outline-none text-[14px] leading-relaxed bg-white dark:bg-[#1e2130] text-gray-900 dark:text-gray-100 ${
                             isMobile ? 'p-4' : 'p-8'
                         } empty:before:content-[attr(data-placeholder)] empty:before:text-gray-400 dark:empty:before:text-gray-600`}
                         data-placeholder="Start typing your document…"
@@ -304,6 +309,7 @@ export default function DocEditorWindow() {
                         </>
                     )}
                 </motion.div>
+                </>
             )}
         </AnimatePresence>
     )

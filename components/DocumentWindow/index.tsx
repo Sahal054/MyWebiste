@@ -9,6 +9,7 @@ import {
     X, Minus, Maximize2,
 } from 'lucide-react'
 import { useApp } from '../../context/App'
+import { WindowDragBoundary } from '../WindowDragBoundary'
 
 const DEFAULT_CONTENT = `<h1 style="font-size:1.75rem;font-weight:800;margin:0 0 4px;text-align:center">SAHAL M</h1>
 <p style="margin:0 0 16px;text-align:center;font-size:0.9rem">
@@ -93,6 +94,7 @@ const STORAGE_KEY = 'doc-resume-content'
 export default function DocumentWindow() {
     const { isDocOpen, setDocOpen, isDocMinimized, setDocMinimized } = useApp()
     const dragControls = useDragControls()
+    const dragBoundaryRef = useRef<HTMLDivElement>(null)
     const editorRef = useRef<HTMLDivElement>(null)
     const windowRef = useRef<HTMLDivElement>(null)
     const [filename, setFilename] = useState('resume.mdx')
@@ -193,10 +195,13 @@ export default function DocumentWindow() {
     return (
         <AnimatePresence>
             {isVisible && (
+                <>
+                <WindowDragBoundary ref={dragBoundaryRef} />
                 <motion.div
                     ref={windowRef}
                     drag={isFloating}
                     dragControls={dragControls}
+                    dragConstraints={dragBoundaryRef}
                     dragListener={false}
                     dragMomentum={false}
                     initial={{ scale: 0.95, opacity: 0, y: isMobile ? 40 : 20 }}
@@ -388,6 +393,7 @@ export default function DocumentWindow() {
                         </>
                     )}
                 </motion.div>
+                </>
             )}
         </AnimatePresence>
     )
