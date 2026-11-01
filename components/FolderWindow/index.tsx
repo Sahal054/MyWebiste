@@ -3,7 +3,7 @@ import React, { useState , useEffect} from 'react'
 import { motion, AnimatePresence, useDragControls } from 'framer-motion'
 import { X, Minus,Maximize2, FileText, Film, FolderMinus, Image as ImageIcon } from 'lucide-react'
 import { useApp } from '../../context/App'
-import { CERTIFICATIONS_FOLDER_ID, CERTIFICATIONS_FOLDER_NAME } from '../../lib/certifications'
+import { CERTIFICATIONS_FOLDER_ID, CERTIFICATIONS_FOLDER_NAME, isPdfDocument } from '../../lib/certifications'
 
 function fileIcon(filename: string) {
     const ext = filename.toLowerCase().split('.').pop() ?? ''
@@ -45,8 +45,6 @@ export default function FolderWindow() {
         : savedDocs.filter(d => folder?.items.includes(d.id))
     const isVideo = (filename: string) => ['mov', 'mp4', 'avi', 'webm'].includes(filename.toLowerCase().split('.').pop() ?? '')
     const isImage = (filename: string) => ['png', 'jpg', 'jpeg', 'gif', 'webp'].includes(filename.toLowerCase().split('.').pop() ?? '')
-    const isPdf = (filename: string) => filename.toLowerCase().endsWith('.pdf')
-
     const handleClose = () => {
         setFolderWindowOpen(false)
         setActiveFolderWindowId(null)
@@ -63,7 +61,7 @@ export default function FolderWindow() {
             setMediaWindowOpen(true)
             return
         }
-        if (isPdf(target.filename)) {
+        if (isPdfDocument(target.filename, target.content)) {
             openPdfWindow(target.id)
             return
         }
@@ -169,7 +167,7 @@ export default function FolderWindow() {
                                                     <button
                                                         type="button"
                                                         onClick={() => openItem(doc.id)}
-                                                        className="absolute inset-0 flex items-center justify-center"
+                                                        className="absolute inset-0 flex cursor-pointer items-center justify-center"
                                                     >
                                                         <Icon className="w-8 h-8 text-gray-500 dark:text-gray-400" strokeWidth={1.5} />
                                                     </button>
