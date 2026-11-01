@@ -5,6 +5,7 @@ import { motion, AnimatePresence, useDragControls } from 'framer-motion'
 import { X, Maximize2, Minus } from 'lucide-react'
 import { useApp } from '../../context/App'
 import { loadMediaObjectUrl } from '../Desktop/mediaStorage'
+import { isPdfDocument } from '../../lib/certifications'
 
 function PdfWindowCard({ windowId, docId }: { windowId: string; docId: string }) {
     const {
@@ -35,7 +36,7 @@ function PdfWindowCard({ windowId, docId }: { windowId: string; docId: string })
         let cancelled = false
 
         const resolve = async () => {
-            if (!doc || !doc.filename.toLowerCase().endsWith('.pdf')) {
+            if (!doc || !isPdfDocument(doc.filename, doc.content)) {
                 setResolvedSrc(null)
                 return
             }
@@ -62,7 +63,7 @@ function PdfWindowCard({ windowId, docId }: { windowId: string; docId: string })
         }
     }, [doc])
 
-    if (!doc || !doc.filename.toLowerCase().endsWith('.pdf') || !windowState) return null
+    if (!doc || !isPdfDocument(doc.filename, doc.content) || !windowState) return null
 
     return (
         <motion.div
@@ -74,7 +75,7 @@ function PdfWindowCard({ windowId, docId }: { windowId: string; docId: string })
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.95, opacity: 0, y: 20 }}
             transition={{ type: 'spring', stiffness: 320, damping: 28 }}
-            className={`fixed z-[45] flex flex-col overflow-hidden select-none ${isMobile ? 'rounded-none' : 'rounded-xl'}`}
+            className={`fixed z-[47] flex flex-col overflow-hidden select-none ${isMobile ? 'rounded-none' : 'rounded-xl'}`}
             style={isMobile ? { inset: 0 } : isMaximized ? { inset: '1rem' } : { top: '10vh', left: 0, right: 0, margin: '0 auto', width: W, maxWidth: 'calc(100vw - 1rem)', height: H, maxHeight: 'calc(100dvh - 1rem)' }}
         >
             <div className="absolute inset-0 rounded-xl border-2 border-black/60 dark:border-white/20 pointer-events-none z-10" />

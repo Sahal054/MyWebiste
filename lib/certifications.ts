@@ -8,7 +8,25 @@ export type CertificationRecord = {
     createdAt: number
 }
 
+export function isPdfDocument(filename: string, content?: string) {
+    return [filename, content].some(value => value
+        ? value.toLowerCase().split(/[?#]/, 1)[0].endsWith('.pdf')
+        : false)
+}
+
 export const CERTIFICATION_RECORDS: CertificationRecord[] = [
+    {
+        id: 'AWS-Certified-Developer-Associate',
+        filename: 'AWSCertifiedDeveloperAssociatecertificate.pdf',
+        url: '/certificates/AWSCertifiedDeveloperAssociatecertificate.pdf',
+        createdAt: 1793544421,
+    },
+    {
+        id: 'Claude-Certified-Developer-Foundations',
+        filename: 'ClaudeCertifiedDeveloperFoundations.pdf',
+        url: '/certificates/ClaudeCertifiedDeveloperFoundations.pdf',
+        createdAt: 1793544409,
+    },
     {
         id: 'cert-react-foundations',
         filename: 'react-foundations.pdf',
@@ -28,16 +46,10 @@ export const CERTIFICATION_RECORDS: CertificationRecord[] = [
         url: '/certificates/Microsoft-c.pdf',
         createdAt: 1786487609,
     },
-   { 
-        id: 'cert-nvidia',
-        filename: 'Nvidia.pdf',
-        url: '/certificates/Nvidia.pdf',
-        createdAt: 1786487633,
-    },
-        {
-        id: 'cert-Udemy-FastApi',
-        filename: 'Udemy-FastApi.pdf',
-        url: '/certificates/Udemy-FastApi.pdf',
-        createdAt: 1786487793,
+    {
+        id: 'SAP-Certified-Integration-Developer',
+        filename: 'SAPCertifiedIntegrationDeveloper.pdf',
+        url: '/certificates/SAPCertifiedIntegrationDeveloper.pdf',
+        createdAt: 1793544250,
     },
 ]

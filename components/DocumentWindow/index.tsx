@@ -24,63 +24,66 @@ const DEFAULT_CONTENT = `<h1 style="font-size:1.75rem;font-weight:800;margin:0 0
 
 <h2 style="font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin:20px 0 6px">Work Experience</h2>
 
-<p style="margin:0"><strong>CARESTACK (Product SaaS)</strong> <span style="float:right;opacity:.75;font-size:.9em">November 2025 – July 2026</span></p>
+<p style="margin:0"><strong>TATA CONSULTANCY SERVICES (TCS)</strong> <span style="float:right;opacity:.75;font-size:.9em">August 2026 – Present</span></p>
+<p style="margin:0"><em>Assistant System Engineer</em> <span style="float:right;opacity:.75;font-size:.9em">Bangalore, Karnataka</span></p>
+<ul style="margin:6px 0 16px 20px;padding:0;line-height:1.6;font-size:0.9rem">
+  <li>Undergoing technical training in Java, SQL, SAP Cloud Platform Integration (SAP CPI), and SAP Fiori, covering programming, relational databases, enterprise integration, and application development.</li>
+</ul>
+
+<p style="margin:0"><strong>CARESTACK (Product Sass)</strong> <span style="float:right;opacity:.75;font-size:.9em">November 2025 – July 2026</span></p>
 <p style="margin:0"><em>Analyst 1 - Product Operations</em> <span style="float:right;opacity:.75;font-size:.9em">Thiruvananthapuram, Kerala</span></p>
 <ul style="margin:6px 0 16px 20px;padding:0;line-height:1.6;font-size:0.9rem">
-  <li>Developed two .NET migration tools utilizing the Lead Tools library in Microsoft Visual Studio to facilitate high-fidelity conversion of proprietary dental formats (.tig, auto) to standard PNGs via byte processing, ensuring 100% data integrity during transitions.</li>
-  <li>Streamlined onboarding for 30+ enterprise clients by architecting complex SQL workflows for the validation, mapping, and cleansing of patient records into the proprietary PMS, demonstrating strong database fundamentals and secure coding practices.</li>
+  <li>Developed two C#/.NET migration tools using the Lead Tools library in Microsoft Visual Studio to convert proprietary dental formats (.tig, auto) to PNG through byte-level processing and validation, preserving 100% data integrity.</li>
+  <li>Designed SQL workflows for validating, mapping, and cleansing patient records during onboarding for 30+ enterprise clients, supporting reliable data access, data integrity, and secure handling of records within the proprietary PMS.</li>
 </ul>
 
 <p style="margin:0"><strong>TATA ELXSI</strong> <span style="float:right;opacity:.75;font-size:.9em">July 2024 – Aug 2024</span></p>
 <p style="margin:0"><em>Corporate Quality Intern</em> <span style="float:right;opacity:.75;font-size:.9em">Thiruvananthapuram, Kerala</span></p>
 <ul style="margin:6px 0 16px 20px;padding:0;line-height:1.6;font-size:0.9rem">
-  <li>Built a QA dashboard via Microsoft Power Apps for real-time analytics, tracking 15+ key SDLC metrics for 50+ developers.</li>
+  <li>Built a real-time QA dashboard using Microsoft Power Apps to track 15+ SDLC metrics across 50+ developers, improving visibility into development progress and software quality.</li>
 </ul>
 
 <p style="margin:0"><strong>GENPRO RESEARCH (Acquired clinical research technology firm)</strong> <span style="float:right;opacity:.75;font-size:.9em">May 2023 – Aug 2023</span></p>
 <p style="margin:0"><em>Backend Developer Intern</em> <span style="float:right;opacity:.75;font-size:.9em">Thiruvananthapuram, Kerala</span></p>
 <ul style="margin:6px 0 16px 20px;padding:0;line-height:1.6;font-size:0.9rem">
-  <li>Engineered 'envstore,' a FastAPI and Docker-based tool deployed on Linux environments, generating innovative solutions to improve environment management and reduce setup cycles.</li>
+  <li>Engineered envstore, a Python/FastAPI backend application with REST API endpoints, packaged with Docker and deployed on Linux to streamline environment management and reduce setup cycles.</li>
 </ul>
 
 <h2 style="font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin:20px 0 6px">Projects</h2>
 
 <p style="margin:0"><strong>TRAVELLING SALESMAN</strong> <span style="float:right;opacity:.75;font-size:.9em"><a href="https://github.com/Sahal054/Travel" style="color:#2563eb;text-decoration:underline">github.com/Sahal054/Travel app</a></span></p>
 <ul style="margin:6px 0 16px 20px;padding:0;line-height:1.6;font-size:0.9rem">
-  <li>Built a comprehensive FastAPI web application utilizing Docker, PostgreSQL, and the Gemini API that routes models to narrow down a location from any video or social media post.</li>
+  <li>Built a Python/FastAPI web application integrating PostgreSQL, Docker, and the Gemini API to identify locations from video and social media content, combining backend processing with relational database access.</li>
 </ul>
 
-<p style="margin:0"><strong>WAHN DESIGN | <a href="https://wahndesign.com" style="color:#2563eb;text-decoration:underline">wahndesign.com</a></strong> <span style="float:right;opacity:.75;font-size:.9em">Freelancing</span></p>
+<p style="margin:0"><strong>WAHN DESIGN</strong> <span style="float:right;opacity:.75;font-size:.9em">Freelancing</span></p>
 <ul style="margin:6px 0 16px 20px;padding:0;line-height:1.6;font-size:0.9rem">
-  <li>Managed full SDLC for 6 responsive web applications (4 international, 2 domestic); generated 100,000+ in revenue.</li>
+  <li>Managed the full software development life cycle (SDLC) for six responsive web applications across four international and two domestic clients, delivering end-to-end implementations and generating 100,000+ in revenue.</li>
 </ul>
 
 <p style="margin:0"><strong>RESTAURANT BOOKING SYSTEM</strong> <span style="float:right;opacity:.75;font-size:.9em"><a href="https://github.com/Sahal054/Little-lemon-capstone-project" style="color:#2563eb;text-decoration:underline">github.com/Sahal054/Little-lemon-capstone-project</a></span></p>
 <ul style="margin:6px 0 12px 20px;padding:0;line-height:1.6;font-size:0.9rem">
-  <li>Build a Django/Python/SQL application handling concurrent users with &lt;200ms response times and 98.5% automated test coverage.</li>
+  <li>Built a Python/Django and SQL restaurant-booking application to support concurrent users, achieving response times under 200 ms and 98.5% automated test coverage.</li>
 </ul>
 
-<h2 style="font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin:20px 0 6px">Activities</h2>
+<h2 style="font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin:20px 0 6px">Certifications</h2>
+<p style="margin:0 0 12px;line-height:1.6;font-size:0.9rem">AWS Certified Developer - Associate, Anthropic Claude Certified Developer - Foundations, Meta Back-End Developer, SAP Certified - Integration Developer, CompTIA Learning Linux Command Line</p>
 
-<p style="margin:0"><strong>Fashion Club TKMCE</strong> <span style="float:right;opacity:.75;font-size:.9em">Aug 2023 – May 2025</span></p>
-<p style="margin:0"><em>Founder & President</em> <span style="float:right;opacity:.75;font-size:.9em">Kollam, Kerala</span></p>
+<h2 style="font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin:20px 0 6px">Technical Skills</h2>
 <ul style="margin:6px 0 12px 20px;padding:0;line-height:1.6;font-size:0.9rem">
-  <li>Established the campus's first fashion organization, raising ₹60,000 in corporate sponsorships and directing 3+ major campus-wide events.</li>
-</ul>
-
-<p style="margin:0"><strong>IEDC TKMCE (Innovation and Entrepreneurship Development Cell)</strong> <span style="float:right;opacity:.75;font-size:.9em">July 2022 – May 2024</span></p>
-<p style="margin:0"><em>Coordinator</em> <span style="float:right;opacity:.75;font-size:.9em">Kollam, Kerala</span></p>
-<ul style="margin:6px 0 12px 20px;padding:0;line-height:1.6;font-size:0.9rem">
-  <li>Led three national-level hackathons with 1,000+ registrations and secured ₹100,000+ in corporate funding to support student-led startups.</li>
+  <li><strong>Programming Languages:</strong> Python, C#, Java, JavaScript, TypeScript, SQL</li>
+  <li><strong>Backend & API Development:</strong> .NET, FastAPI, Django, REST API Development, Backend Development</li>
+  <li><strong>Frontend & Full-Stack Development:</strong> React.js (React), Next.js, HTML5, CSS3, Tailwind CSS</li>
+  <li><strong>Databases:</strong> PostgreSQL, MySQL, Relational Databases</li>
+  <li><strong>Cloud & DevOps:</strong> AWS, Docker, Linux, Git, GitHub, CI/CD</li>
+  <li><strong>Enterprise Integration:</strong> SAP Cloud Platform Integration (SAP CPI), SAP Fiori, API Management</li>
+  <li><strong>AI & Generative AI:</strong> LLMs, RAG, Vector Embeddings, Gemini API, LLM Integration</li>
+  <li><strong>Developer Tools:</strong> Microsoft Visual Studio, Claude, ChatGPT, Gemini, GitHub Copilot, Cursor</li>
 </ul>
 
 <h2 style="font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin:20px 0 6px">Additional</h2>
 <ul style="margin:6px 0 12px 20px;padding:0;line-height:1.6;font-size:0.9rem">
-  <li><strong>Technical Skills:</strong> Python, .NET, C#, SQL (PostgreSQL, MySQL), JavaScript, Django, FastAPI, Docker, Git, React, HTML, CSS, Linux</li>
-  <li><strong>AI Tools:</strong> claude, ChatGPT, Gemini, GitHub Copilot, Cursor</li>
-  <li><strong>AI/ML Techniques:</strong> RAG, Vector Embeddings, LLMs, Gemini API, AI/ML Productivity Tools</li>
-  <li><strong>Certifications & Training:</strong> CompTIA Learning Linux Command Line (2025), Meta Back-End Developer (2025)</li>
-  <li><strong>Awards:</strong> First Prize, ACM Inter-Collegiate Coding Competition (2023); Honorable Mention, National Model United Nations (2024)</li>
+  <li><strong>Leadership:</strong> Founder & President, Fashion Club TKMCE (60,000 sponsorships; 3+ major events) | Coordinator, IEDC TKMCE (3 national-level hackathons, 1,000+ registrations; 1,00,000+ corporate funding)</li>
 </ul>`
 
 const MIN_W = 480
