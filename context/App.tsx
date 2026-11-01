@@ -445,12 +445,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
                             ? { ...doc, content: ABOUT_CONTENT }
                             : doc)
                         : parsedDocs
-                const aboutDocAfterMigration = docs.find(doc => doc.filename === ABOUT_DOC_FILENAME)
-                const nextAboutBaseline = aboutDocAfterMigration?.content ?? ABOUT_CONTENT
                 setSavedDocs(docs)
                 localStorage.setItem(DOCS_KEY, JSON.stringify(docs))
                 localStorage.setItem(ABOUT_CONTENT_VERSION_KEY, ABOUT_CONTENT_VERSION)
-                localStorage.setItem(ABOUT_CONTENT_BASELINE_KEY, nextAboutBaseline)
+                localStorage.setItem(ABOUT_CONTENT_BASELINE_KEY, ABOUT_CONTENT)
             } else {
                 // New visitors start with a small set of portfolio documents.
                 const homeDoc: SavedDoc = {
