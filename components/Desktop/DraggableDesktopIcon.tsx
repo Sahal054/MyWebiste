@@ -1,5 +1,5 @@
 "use client";
-import React, { useRef, useState, useEffect, useLayoutEffect } from 'react'
+import React, { useRef, useState, useEffect, useLayoutEffect, useCallback } from 'react'
 import { motion, PanInfo, useAnimationControls, useMotionValue } from 'framer-motion'
 import { AppIcon, AppItem } from '../OSIcons/AppIcon'
 import { useApp } from '../../context/App'
@@ -109,6 +109,26 @@ export default function DraggableDesktopIcon({ app, constraintsRef, onDropOnTras
 
     const [isMobile, setIsMobile] = useState(false)
 
+    const rebaseIconPosition = useCallback(() => {
+        const icon = iconRef.current
+        const slot = icon?.offsetParent
+        if (!(slot instanceof HTMLElement)) return
+
+        const slotRect = slot.getBoundingClientRect()
+        const currentSlotPosition = {
+            left: slotRect.left,
+            top: slotRect.top,
+        }
+        const previousSlotPosition = previousSlotPositionRef.current
+        if (previousSlotPosition) {
+            const deltaX = currentSlotPosition.left - previousSlotPosition.left
+            const deltaY = currentSlotPosition.top - previousSlotPosition.top
+            if (deltaX !== 0) x.set(x.get() - deltaX)
+            if (deltaY !== 0) y.set(y.get() - deltaY)
+        }
+        previousSlotPositionRef.current = currentSlotPosition
+    }, [x, y])
+
     useEffect(() => {
         const check = () => setIsMobile(window.innerWidth < 640)
         check()
@@ -122,24 +142,30 @@ export default function DraggableDesktopIcon({ app, constraintsRef, onDropOnTras
     }, [])
 
     useLayoutEffect(() => {
-        const icon = iconRef.current
-        if (!icon) return
-
-        const slot = icon.offsetParent
-        if (!(slot instanceof HTMLElement)) return
-        const currentSlotPosition = {
-            left: slot.offsetLeft,
-            top: slot.offsetTop,
-        }
-        const previousSlotPosition = previousSlotPositionRef.current
-        if (previousSlotPosition) {
-            const deltaX = currentSlotPosition.left - previousSlotPosition.left
-            const deltaY = currentSlotPosition.top - previousSlotPosition.top
-            if (deltaX !== 0) x.set(x.get() - deltaX)
-            if (deltaY !== 0) y.set(y.get() - deltaY)
-        }
-        previousSlotPositionRef.current = currentSlotPosition
+        rebaseIconPosition()
     })
+
+    useEffect(() => {
+        const icon = iconRef.current
+        const slot = icon?.offsetParent
+        const grid = slot?.parentElement
+        if (!(grid instanceof HTMLElement)) return
+
+        const handleResize = () => {
+            rebaseIconPosition()
+        }
+
+        window.addEventListener('resize', handleResize)
+        const resizeObserver = typeof ResizeObserver !== 'undefined'
+            ? new ResizeObserver(handleResize)
+            : null
+        resizeObserver?.observe(grid)
+
+        return () => {
+            window.removeEventListener('resize', handleResize)
+            resizeObserver?.disconnect()
+        }
+    }, [rebaseIconPosition])
 
     // Checks if the mouse coordinates intersect with the Trash icon
     const handleDragEnd = (event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
